@@ -1,52 +1,18 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* # ***** sort to /src/misc
+/* # ***** sort to /src/misc
    # ***** */
 
 /* A memory allocator with only the ability to free all memory allocated.
    It is a modification of the description below.    MK 11/95
    */
 
-/* 
+/*
  memory allocator for fastcap
  - almost identical to Kerigan & Ritchie sec 8.7
  - differs in that there is no free list since fastcap never frees any memory
- - also the amount of memory sbrk()'d is exactly equal (within a unit) to 
+ - also the amount of memory sbrk()'d is exactly equal (within a unit) to
    the requested amount if its more than NALLOC units
    this cuts down on unused blocks usually added to the free list
-   while still keeping the number of sbrk()'s down 
+   while still keeping the number of sbrk()'s down
  - the regular allocation functions are still availible for stdio to use
    although  stdio buffers are passed over when new memory is set up
  - machine dependancy should be confined to the type `ALIGN' and
@@ -54,6 +20,10 @@ operation of Software or Licensed Program(s) by LICENSEE or its customers.
  - no attempt is made to make allocation efficient in terms of virtual pages
 */
 #include <stdio.h>
+
+// Enrico
+#include <stdlib.h>
+#include <string.h>
 
 #define NALLOC 8184		/* >= sizeof(HEADER)*NALLOC bytes sbrk()'d */
 #define MAGICN 0xaaaaaaaaL	/* used to check fidelity of allocated blks */
@@ -85,15 +55,17 @@ union header {			/* allocated block header - all mem allocated
 
 typedef union header HEADER;
 
-/* 
+/*
   uses calloc to get a new block of memory
   - any header space put in by calloc is wasted
   - zeros memory
   - an alternative to mocore() but should only be used if sbrk() doesnt zero
 */
 #define MORECORE(SIZE) (HEADER *)calloc(1, SIZE*sizeof(HEADER))
-char *calloc();
-char *malloc();
+
+// Enrico
+//char *calloc();
+//char *malloc();
 
 static HEADER *base = NULL;    	/* base of allocated block list */
 static HEADER *allocp = NULL;	/* last allocated block */
@@ -156,11 +128,11 @@ void ufree()
   allocp = lastblock = NULL;
 
 }
-    
-      
 
-/* 
-  ugly storage allocator 
+
+
+/*
+  ugly storage allocator
   - no frees
   - allocates in blocks at least NALLOC*sizeof(HEADER) bytes long
   - ultimately uses mocore(), since no frees are done (sbrk() zeros added
@@ -184,7 +156,7 @@ unsigned int nbytes;
 #if UGDEBG == 1 || UGDEBG == 2
   nunits = 3+(nbytes-1)/sizeofHDR; /* rm for 2 hdrs too */
 #else
-  nunits = 2+(nbytes-1)/sizeofHDR; /* rm for 1 hdr (gets subtracted later)*/ 
+  nunits = 2+(nbytes-1)/sizeofHDR; /* rm for 1 hdr (gets subtracted later)*/
 #endif
 
   if((q = allocp) == NULL) {	/* no allocation yet */
@@ -200,7 +172,7 @@ unsigned int nbytes;
 #endif
   }
 
-  /* 
+  /*
     check previously allocated block for room
     - if it's big enough, use head (not tail) part of it
     - if it's not, break out more memory and discard the previous block
@@ -232,7 +204,7 @@ unsigned int nbytes;
     return((char *) q);	/* use old header location */
 #endif
   }
-  else {			/* get more memory, add to top block beyond 
+  else {			/* get more memory, add to top block beyond
 				   any stdio buffers made since last ualloc */
     brkunits = (nunits > NALLOC) ? nunits : NALLOC;
     if((q = mocore(brkunits)) == NULL) return(NULL);
@@ -290,8 +262,8 @@ void ualloc_verify()
     if(p == base && cnt > 1) break;
 #endif
 #if UGDEBG == 2
-    fprintf(stdout, 
-	   "%d 0x%x 0x%x %u %u bytes (osize %u enlarged from 0x%x to 0x%x)\n", 
+    fprintf(stdout,
+	   "%d 0x%x 0x%x %u %u bytes (osize %u enlarged from 0x%x to 0x%x)\n",
 	    cnt, p, p->s.ptr, p->s.size, p->s.request,
 	    p->s.osize, p->s.enlgdfrom, p->s.enlarged);
 #endif
@@ -316,7 +288,7 @@ void ualloc_verify()
 /*
   compares the total address range broken out to amount requested
   - efficiency is 100*memcount/(sbrk(0)-base) = 100*requested/(ttl broken out)
-  - UGDEBG == 2 prints waste values: 
+  - UGDEBG == 2 prints waste values:
       ualloc waste = 100*(mem discarded)/(ttl broken out)
       stdio waste = 100*(mem discarded to apease stdio usage)/(ttl broken out)
        (stdio waste is often zero and ualloc waste does not include the
@@ -348,18 +320,18 @@ long memcount;
     if(p == NULL) break;	/* compatability when ualloc not used */
     if(p->s.request == 0) {
       if((p->s.ptr)->s.size >= p->s.size) { /* if block dropped bec. too sm. */
-	if(p != allocp) waste += p->s.size - 1; 
+	if(p != allocp) waste += p->s.size - 1;
 	else waste += p->s.size;
       }
       else {
-	if(p != allocp) stdiowaste += p->s.size - 1; 
-      }	
+	if(p != allocp) stdiowaste += p->s.size - 1;
+      }
     }
     first = 0;
   }
-  if(p != NULL) 
-      fprintf(stdout, 
-	      ", waste: %.2g%% (ualloc), %.2g%% (stdio)", 
+  if(p != NULL)
+      fprintf(stdout,
+	      ", waste: %.2g%% (ualloc), %.2g%% (stdio)",
 	      100*(double)(waste*sizeof(HEADER))/((double)total),
 	      100*(double)(stdiowaste*sizeof(HEADER))/((double)total));
 #endif

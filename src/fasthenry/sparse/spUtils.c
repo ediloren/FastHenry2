@@ -1,38 +1,4 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//*
+/*
  *  MATRIX UTILITY MODULE
  *
  *  Author:                     Advising professor:
@@ -94,7 +60,7 @@ static char RCSid[] =
  *
  *  >>> Import descriptions:
  *  spConfig.h
- *      Macros that customize the sparse matrix routines.
+ *      Macros that customize the sparse matrix routines._why i
  *  spMatrix.h
  *      Macros and declarations to be imported by the user.
  *  spDefs.h
@@ -108,7 +74,8 @@ static char RCSid[] =
 
 
 
-
+// Enrico prototypes
+static RealNumber ComplexCondition();
 
 
 #if MODIFIED_NODAL
@@ -1082,7 +1049,7 @@ ComplexNumber Pivot, cDeterminant;
         }
         if (Matrix->NumberOfInterchangesIsOdd)
             CMPLX_NEGATE( cDeterminant );
-        
+
         *pDeterminant = cDeterminant.Real;
         *piDeterminant = cDeterminant.Imag;
     }
@@ -1442,14 +1409,14 @@ RealNumber MaxPivot, MinPivot, Mag;
  *  A.K. Cline, C.B. Moler, G.W. Stewart, J.H. Wilkinson.  An estimate
  *  for the condition number of a matrix.  SIAM Journal on Numerical
  *  Analysis.  Vol. 16, No. 2, pages 368-375, April 1979.
- *  
+ *
  *  J.J. Dongarra, C.B. Moler, J.R. Bunch, G.W. Stewart.  LINPACK
  *  User's Guide.  SIAM, 1979.
- *  
+ *
  *  Roger G. Grimes, John G. Lewis.  Condition number estimation for
  *  sparse matrices.  SIAM Journal on Scientific and Statistical
  *  Computing.  Vol. 2, No. 4, pages 384-388, December 1981.
- *  
+ *
  *  Dianne Prost O'Leary.  Estimating matrix condition numbers.  SIAM
  *  Journal on Scientific and Statistical Computing.  Vol. 1, No. 2,
  *  pages 205-209, June 1980.
@@ -1862,7 +1829,7 @@ ComplexNumber Wp, Wm;
 
 
 /*
- *  L-INFINITY MATRIX NORM 
+ *  L-INFINITY MATRIX NORM
  *
  *  Computes the L-infinity norm of an unfactored matrix.  It is a fatal
  *  error to pass this routine a factored matrix.

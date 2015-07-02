@@ -1,44 +1,10 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* The following are support functions for holes in a ground plane. */
+/* The following are support functions for holes in a ground plane. */
 /*  For user defined hole functions, alter hole_user1() - hole_user10() */
 
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <math.h>
 #include "induct.h"
 
@@ -61,7 +27,7 @@ char *str, *line;
     }
     if (*str == '\0')
       return TRUE;
-    else 
+    else
       return FALSE;
   }
 }
@@ -87,9 +53,9 @@ int *skip;
   HoleList *holep;
   char *linep;
   double *vals;
-  
+
   holep = (HoleList *)Gmalloc(sizeof(HoleList));
-  
+
   name[MAXNAME-1] = '\0';
   sscanf(line, "%19s%n",name,&skip1);
   line+=skip1;
@@ -112,7 +78,7 @@ int *skip;
   holep->relx = relx;
   holep->rely = rely;
   holep->relz = relz;
-    
+
   skip3 = 0;
   while(isspace(*line) && *line != '\0') {
     line++;
@@ -120,8 +86,8 @@ int *skip;
   }
 
   if (*line != '(')
-    hole_error("Values for hole must start with '('",line,holep); 
-  
+    hole_error("Values for hole must start with '('",line,holep);
+
   /* let's count how many values we have first */
   linep = line;
   holep->numvals = 0;
@@ -171,10 +137,10 @@ char *line;
     skip++;
     line++;
   }
-  
+
   return skip;
 }
-  
+
 /* End of string test */
 eos(chr)
 char chr;
@@ -192,7 +158,7 @@ HoleList *holep;
   fprintf(stderr, "Where type is a string, and valn is a floating point value\n");
   exit(1);
 }
-  
+
 is_one_of(letter, one_of)
 char letter, *one_of;
 {
@@ -239,7 +205,7 @@ HoleList *holep;
     hole_user6(holep, gp, relx, rely, relz, units);
   else if (strncmp("user7",holep->func,5) == 0)
     hole_user7(holep, gp, relx, rely, relz, units);
-  else 
+  else
     hole_error("Unknown type of hole","",holep);
 }
 
@@ -254,14 +220,14 @@ double relx,rely,relz,units;
   double *vals = holep->vals;
   int i1,j1;
 
-  if (holep->numvals != 3) 
+  if (holep->numvals != 3)
     hole_error("Exactly 3 values required for a point hole.","",holep);
 
   delete_node(find_nearest_gpnode(vals[0]*units + relx, vals[1]*units + rely,
 			      vals[2]*units + relz, gp, &i1, &j1));
 }
 
-/* The following function creates a hole which is in the shape of 
+/* The following function creates a hole which is in the shape of
    a rectangle whose edges are parallel to the ground plane edges.
    The 6 values in holep->vals are two (x,y,z) pairs which represent
    opposite corners of the rectangle.
@@ -276,7 +242,7 @@ double relx,rely,relz,units;
   double *vals = holep->vals;
   int i_beg, i_end, j_beg, j_end, i, j;
 
-  if (holep->numvals != 6) 
+  if (holep->numvals != 6)
     hole_error("Exactly 6 values required for a square hole.","",holep);
 
   node1 = find_nearest_gpnode(vals[0]*units + relx, vals[1]*units + rely,
@@ -293,7 +259,7 @@ double relx,rely,relz,units;
     i_beg = i2;
     i_end = i1;
   }
-  
+
   if (j1 <= j2) {
     j_beg = j1;
     j_end = j2;
@@ -310,7 +276,7 @@ double relx,rely,relz,units;
 }
 
 /* The following function makes a hole in the shape of a circle.
-   It takes 4 values in holep->vals.  The first three are (x,y,z) of 
+   It takes 4 values in holep->vals.  The first three are (x,y,z) of
    the center and the last is the radius, R.
 */
 hole_circle(holep, gp, relx, rely, relz, units)
@@ -327,7 +293,7 @@ double relx,rely,relz,units;
   double edge2;
   int k_up, k_down, p_left, p_right;
 
-  if (holep->numvals != 4) 
+  if (holep->numvals != 4)
     hole_error("Exactly 4 values required for a circular hole.","(x,y,z,radius)",holep);
 
   center[0] = holep->vals[0]*units + relx;
@@ -335,7 +301,7 @@ double relx,rely,relz,units;
   center[2] = holep->vals[2]*units + relz;
 
   R = holep->vals[3]*units;
- 
+
   /* find node nearest to center as a place to start (a 'reference')*/
   nodec = find_nearest_gpnode(center[0], center[1], center[2], gp, &ic, &jc);
 

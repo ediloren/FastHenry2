@@ -1,40 +1,8 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*/#include<stdio.h>
-#include<math.h>
+#include <stdio.h>
+#include <math.h>
 #include "induct.h"
+// Enrico
+#include <string.h>
 
 #define PIOVER2 1.570796327
 
@@ -44,7 +12,7 @@ double square(x)
 double x;
 {
   double val;
-  
+
   val = x * x;
   return val;
 }
@@ -102,15 +70,15 @@ double findangle(p1,p2,p3,p4,x, y, z)
 int p1,p2,p3,p4;
 double x[4], y[4], z[4];
 {
-  
+
   double temp1, temp2, temp3, value;
 
   temp1 = innerproduct(p1,p2,p3,p4,x, y, z);
   temp2 = lengthof(p1,p2,x, y, z);
   temp3 = lengthof(p3,p4,x, y, z);
-  
+
   value = acos((temp1/(temp2 * temp3)));
- 
+
   return value;
 }
 
@@ -121,7 +89,7 @@ void order(p, q)
 int *p, *q;
 {
   int temp;
-  
+
   if(abs(*p) > abs(*q)){
     temp = *p;
     *p = *q;
@@ -152,15 +120,15 @@ int o1, o2, mid;
   double temp1, temp2, temp3;
   int to1, to2, tmid;
   int value;
-  
+
   temp1 = PIOVER2 - (findangle(o1,mid, o1, o2, x, y, z));
   temp2 = PIOVER2 - (findangle(o1, mid, mid, o2, x, y, z));
-  temp3 = PIOVER2 - (findangle(o1, o2, o2, mid, x, y, z)); 
+  temp3 = PIOVER2 - (findangle(o1, o2, o2, mid, x, y, z));
 
   if((fabs(temp1) < fabs(temp2)) && (fabs(temp1) < fabs(temp3))){
     tmid = 0; to1 = 1; to2 = 2;}
    else if((fabs(temp2) < fabs(temp3)) && (fabs(temp2) < fabs(temp1))){
-    tmid = 1; to1 = 0; to2 = 2;} 
+    tmid = 1; to1 = 0; to2 = 2;}
   else {
     tmid = 2; to1 = 0; to2 = 1;}
 
@@ -168,7 +136,7 @@ int o1, o2, mid;
     return 1;
   else
     return 0;
- 
+
 }
 
 /* function that checks if the given coordinates satisfy the equation of the */
@@ -179,11 +147,11 @@ int mid,o1,o2;
 {
   double xpart, ypart, zpart, value;
   double equation;
-  
+
   xpart = ((ycord[o1] - ycord[mid])*(zcord[o2] - zcord[mid])) -
     ((zcord[o1] - zcord[mid])*(ycord[o2] - ycord[mid]));
 
-  ypart = ((zcord[o1] - zcord[mid])*(xcord[o2] - xcord[mid])) - 
+  ypart = ((zcord[o1] - zcord[mid])*(xcord[o2] - xcord[mid])) -
     ((xcord[o1] - xcord[mid])*(zcord[o2] - zcord[mid]));
 
   zpart = ((xcord[o1] - xcord[mid])*(ycord[o2] - ycord[mid])) -
@@ -193,7 +161,7 @@ int mid,o1,o2;
 
   equation = ( xpart * x) + (ypart * y) + (zpart * z);
 
-  if (fabs(value - equation)/(xpart*xpart+ypart*ypart+zpart*zpart+1e-200) 
+  if (fabs(value - equation)/(xpart*xpart+ypart*ypart+zpart*zpart+1e-200)
       < EPS) {
     return 1;
   } else {
@@ -201,7 +169,7 @@ int mid,o1,o2;
     return 0;
   }
 }
- 
+
 /* function that finds the width of a segment given its coordinates and the */
 /* dimensions of a plane.                                                   */
 double findsegmentwidth(x, y, z, mid, o1, o2, dim)
@@ -209,7 +177,7 @@ double x[4], y[4], z[4];
 int mid, o1, o2, dim;
 {
   double value, theta, temp1;
-  
+
   theta = findangle(mid, o1, mid, o2, x, y, z);
   temp1 = lengthof(mid, o1, x, y, z);
 
@@ -255,7 +223,7 @@ GROUNDPLANE *plane;
 
   cols = plane->seg2 + 1;
   rows = plane->seg1 + 1;
-  plane->row[0] = rows; 
+  plane->row[0] = rows;
   plane->col[0] = cols;
 
   /* allocate the space */
@@ -274,7 +242,7 @@ GROUNDPLANE *plane;
   rows = plane->seg1 + 1;
   plane->row[1] = rows;
   plane->col[1] = cols;
-  
+
   /* allocate the space for grid2 */
   plane->grid2 = (double **)MatrixAlloc(rows, cols, sizeof(double));
 
@@ -282,7 +250,7 @@ GROUNDPLANE *plane;
     for(j = 0; j < rows; j++){
       seg = plane->segs2[j][i];
       filnumber = seg->filaments[0].filnumber;
-      
+
       plane->grid2[j][i] = (double)filnumber + 1.0;
     }
   }
@@ -313,19 +281,19 @@ int flag;
     ((plane->x[0] - plane->x[1])*(plane->z[2] - plane->z[1]));
   zpart = ((plane->x[0] - plane->x[1])*(plane->y[2] - plane->y[1])) -
     ((plane->y[0] - plane->y[1])*(plane->x[2] - plane->x[1]));
-  
+
   value = xpart*plane->x[1] + ypart*plane->y[1] + zpart*plane->z[1];
- 
+
   if(flag == 0){                           /* need to find the x_coordinate */
     equation = ypart*y + zpart*z;
     divpart = xpart;
-  } 
+  }
   else if(flag == 1){                      /* need to find the y_coordinate */
-    equation = xpart*x + zpart*z; 
+    equation = xpart*x + zpart*z;
     divpart = ypart;
-  } 
+  }
   else if(flag == 2){                      /* need to find the z_coordinate */
-    equation = xpart*x + ypart*y; 
+    equation = xpart*x + ypart*y;
     divpart = zpart;
   } else {
     printf("flag does not match coordinates \n");
@@ -340,7 +308,7 @@ int flag;
   }
 
 }
- 
+
 void findrefnodes(plane, begnode, endnode, b0, b1, e0, e1)
 GROUNDPLANE *plane;
 NODES *begnode, *endnode;
@@ -389,7 +357,7 @@ GROUNDPLANE *plane;
     printf("nodes not in the groundplane !! \n");
     exit(1);
   }
- 
+
   tempnode = find_nearest_gpnode(nodein->x, nodein->y, nodein->z, plane, &bc0, &bc1);
   tempnode = find_nearest_gpnode(nodeout->x, nodeout->y, nodeout->z, plane, &ec0, &ec1);
 
@@ -400,7 +368,7 @@ GROUNDPLANE *plane;
     ;
   else
     printf("find_nearest_gpnode failed!!!\n");
-  
+
   path = (SPATH *)MattAlloc(1, sizeof(SPATH));         /* allocate the space */
   tpath = path;
   tpath->next = NULL;
@@ -411,14 +379,14 @@ GROUNDPLANE *plane;
   counter2 = b1 + (deco2 > 0 ? 0.0 : -1.0);
 
   for(i = 0; i < abs(deco1); i++){            /* segments from input to (o1) */
-    
+
     pathpointer = tpath;                       /* pointer to previous path */
 
     tempseg = plane->segs1[counter1][b1];
     tempseg_ptr.segp = (void *)tempseg;
     tpath->seg = tempseg_ptr;                              /* assign the seg to the path */
     counter1 = counter1 + (deco1 > 0 ? 1.0 : -1.0);
-    
+
     tpath->next = (SPATH *)MattAlloc(1, sizeof(SPATH));
     tpath = tpath->next;
 
@@ -437,7 +405,7 @@ GROUNDPLANE *plane;
   }
 
   for(i = 0; i < abs(deco2); i++){              /* segments from output to (o2) */
-    
+
     pathpointer = tpath;
 
     tempseg = plane->segs2[e0][counter2];
@@ -506,7 +474,7 @@ MELEMENT **old_makeMlist(plane, checksegs, M, mesh)
 GROUNDPLANE *plane;
 int *checksegs;
 double **M;
-int mesh; 
+int mesh;
 {
   MELEMENT **pMlist, *melem, *melem2;
   FILAMENT **loopfils;
@@ -525,13 +493,13 @@ int mesh;
 
   for(i = 0; i < plane->seg2; i++){
     for(j = 0; j < plane->seg1; j++){
-      
+
       node = plane->pnodes[j][i];
       plusnode = node->number;            /* initialize plusnode */
 
       for(k = 0; k < 4; k++){
 	switch (k) {
-	  
+
 	case 0:
 	  seg = plane->segs1[j][i];
 	  signofelem = -1.0;
@@ -560,7 +528,7 @@ int mesh;
 	  melem->fil = &seg->filaments[n-1];
 	  melem->sign = 1;
 	  melem->mnext = (MELEMENT *)MattAlloc(1, sizeof(MELEMENT));
-	  
+
 	  melem = melem->mnext;
 	  melem->filindex = seg->filaments[n].filnumber;
 	  melem->fil = &seg->filaments[n];
@@ -627,7 +595,7 @@ GROUNDPLANE *plane;
     exit(1);
   }
 
-  if (is_nonuni_gp(plane)) 
+  if (is_nonuni_gp(plane))
     path = path_through_nonuni_gp(nodein, nodeout, plane);
   else {
     /* we will use node->examined to mark if each node of a failed path */
@@ -653,12 +621,12 @@ This may be due to \n\
 
 /* this returns a path from node to node_goal.  It takes one step and then
    calls itself recursively.  */
-SPATH *get_a_path(node, node_goal, plane, nodes_so_far, s1_momentum, 
+SPATH *get_a_path(node, node_goal, plane, nodes_so_far, s1_momentum,
 		  s2_momentum)
 NODES *node, *node_goal;
 GROUNDPLANE *plane;
 NPATH *nodes_so_far;
-int s1_momentum, s2_momentum;  
+int s1_momentum, s2_momentum;
 {
 #define MAXchoices 4
   choice_list choices[MAXchoices];
@@ -751,7 +719,7 @@ int num;
 	choices[j] = temp;
       }
 }
-	
+
 clear_marks(indsys)
 SYS *indsys;
 {
@@ -796,7 +764,7 @@ SYS *indsys;
   nmeshes = indsys->tree_meshes;
 
   temp = (double *)Gmalloc(buffer_rows*buffer_cols*sizeof(double));
-  line_list = (double **)Make_C_array(temp, buffer_rows, buffer_cols, 
+  line_list = (double **)Make_C_array(temp, buffer_rows, buffer_cols,
 				      sizeof(double));
 
   counter = 0;
@@ -820,9 +788,9 @@ SYS *indsys;
 
   for(i = counter; i < buffer_rows; i++)
     line_list[i][3] = 0;
-  
-  savemat_mod(fp, j + 100, "meshes", buffer_rows, buffer_cols, 0, 
-	      line_list[0], (double *)NULL, 0, 
+
+  savemat_mod(fp, j + 100, "meshes", buffer_rows, buffer_cols, 0,
+	      line_list[0], (double *)NULL, 0,
 	      buffer_rows*buffer_cols);
 
   fclose(fp);
@@ -868,10 +836,10 @@ SYS *indsys;
 
 }
 
-/* This makes a chunk of memory look like a doubly subscripted C array. 
-   It takes a continuous chunk of memory  of size rows*cols*size bytes, 
+/* This makes a chunk of memory look like a doubly subscripted C array.
+   It takes a continuous chunk of memory  of size rows*cols*size bytes,
    beginning at 'start',
-   and returns an array of pointers to the beginning of each row.  
+   and returns an array of pointers to the beginning of each row.
 */
 void **Make_C_array(start, rows, cols, size)
 void *start;
@@ -881,7 +849,7 @@ int rows, cols, size;
   int i;
 
   ptr = (char **)Gmalloc(rows*sizeof(char *));
-  
+
   if (sizeof(char) != 1) {
     fprintf(stderr,"oops");
     exit(1);
@@ -912,7 +880,7 @@ int s1_momentum, s2_momentum;
   static int against_momentum = 1;
 
   int with_momentum = new_s1_mom*s1_momentum + new_s2_mom*s2_momentum;
-  
+
   if (seg != NULL && !is_orignode_in_list(node, nodes_so_far)
       && node->examined == 0) {
     choice->seg = seg;
@@ -933,7 +901,7 @@ int s1_momentum, s2_momentum;
       if (is_right_direction == 0)
 	/* not completely the wrong way */
 	choice->rank += half_wrong_way;
-      
+
       choice->rank += (choice->seg->is_deleted)*overlap;
     }
 
@@ -942,7 +910,7 @@ int s1_momentum, s2_momentum;
   else
     return 0;
 }
-    
+
 clear_plane_marks(plane)
 GROUNDPLANE *plane;
 {

@@ -1,37 +1,35 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
+/*
+Copyright (c) 1994 Massachusetts Institute of Technology, Cambridge, MA.
+All rights reserved.
+
+This Agreement gives you, the LICENSEE, certain rights and obligations.
+By using the software, you indicate that you have read, understood, and
+will comply with the terms.
+
+Permission to use, copy and modify for internal, noncommercial purposes
+is hereby granted.  Any distribution of this program or any part thereof
+is strictly prohibited without prior written consent of M.I.T.
+
+Title to copyright to this software and to any associated documentation
+shall at all times remain with M.I.T. and LICENSEE agrees to preserve
+same.  LICENSEE agrees not to make any copies except for LICENSEE'S
+internal noncommercial use, or to use separately any portion of this
+software without prior written consent of M.I.T.  LICENSEE agrees to
+place the appropriate copyright notice on any such copies.
+
+Nothing in this Agreement shall be construed as conferring rights to use
+in advertising, publicity or otherwise any trademark or the name of
+"Massachusetts Institute of Technology" or "M.I.T."
+
+M.I.T. MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  By
+way of example, but not limitation, M.I.T. MAKES NO REPRESENTATIONS OR
+WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR
+THAT THE USE OF THE LICENSED SOFTWARE COMPONENTS OR DOCUMENTATION WILL
+NOT INFRINGE ANY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+M.I.T. shall not be held liable for any liability nor for any direct,
+indirect or consequential damages with respect to any claim by LICENSEE
+or any third party on account of or arising from this Agreement or use
+of this software.
 */
 
 #ifndef _INDUCT_H
@@ -42,15 +40,15 @@ operation of Software or Licensed Program(s) by LICENSEE or its customers.
 #include "cmplx.h"
 #include "mulGlobal.h"
 
-#define FHVERSION "3.0"
-#define FHDATE "29Sep96"
+#define FHVERSION "3.0.1"
+#define FHDATE "28May12"
 
 #define AVER_MAT_MAX 110        /* These are two constants used to */
 #define MAX_DIV_RAT 0.25        /* decide partitioning level      */
 
 #define MAX_PRE_LEVEL 6         /* maximum allowed level if  */
                                 /* auto_refine == OFF */
- 
+
 /*#define MAXITERS 200 */           /* Maximum number of GMRES iters */
 #define FILS_PER_MESH 2         /* filaments per mesh for breaking big loops.*/
 #define PI 3.14159265358979323846
@@ -156,7 +154,7 @@ typedef struct Nodelist{
   double x, y, z;                     /* coordinates of the node */
 
   struct Nodelist *next;
-} NODELIST;       
+} NODELIST;
 
 /* temporary list of holes to be made.
    (used in addgroundplane() in file readGeom.c */
@@ -186,7 +184,7 @@ typedef struct sseg_ptr {
   char type;   /* NORMAL means seg is a SEGMENT, PSEUDO means seg is PSEUDO */
   void *segp;   /* a pointer to either a SEGMENT or a PSEUDO_SEG */
 } seg_ptr;
- 
+
 typedef struct Filament {
   double x[2], y[2], z[2];  /* endpoints */
   double length, area, width, height;
@@ -228,7 +226,7 @@ typedef struct Segment {
                        /* in the direction of width*/
    int number;         /* an arbitrary number for the segment */
    int type;    /* CMS 8/21/92 -- type of structure the segment is in */
-   double length;      
+   double length;
    double area;        /* area of cross section */
    double width, height;  /*width and height to cross section */
    int hinc, winc;             /* number of filament divisions in each dir */
@@ -253,9 +251,9 @@ typedef struct pseudo_seg {
   NODES *node[2];
   char type;  /* Voltage source, or ground plane */
   struct pathlist *loops;   /* loops in which this segment is a member */
-  int upper_num_segs;  /* an upper bound on the number of real segments for 
+  int upper_num_segs;  /* an upper bound on the number of real segments for
                           this pseudo_seg.  For estimating num_meshes before
-			  big loops are broken into small ones for new 
+			  big loops are broken into small ones for new
 			  preconditioner 			  */
   int is_deleted;
 } PSEUDO_SEG;
@@ -284,7 +282,7 @@ typedef struct _int_list {
 
 typedef struct external {
   PSEUDO_SEG *source;   /* this branch will represent the 1 volt source */
-  int_list *indices;    /* indices of the loops into the M matrix */ 
+  int_list *indices;    /* indices of the loops into the M matrix */
   int Yindex;           /* index in the final impedance matrix, Y */
   int col_Yindex;       /* column number, in case -x option is used */
   struct pathlist *loops;
@@ -292,7 +290,7 @@ typedef struct external {
   char *portname;
   struct external *next;
 } EXTERNAL;
-  
+
 typedef struct melement {  /* an element of the M matrix */
   int filindex;     /* filament number (column of M) */
                 /* note: filindex is really a mesh index in indsys->Mtrans */
@@ -304,16 +302,16 @@ typedef struct melement {  /* an element of the M matrix */
 typedef struct _minfo {  /* info about a mesh */
   int type;               /* UNCONSTRAINED or CONSTRAINED */
   int mesh_num;           /* mesh number for this mesh */
-  /* The following apply only if it is CONSTRAINED or is a constraint for 
+  /* The following apply only if it is CONSTRAINED or is a constraint for
      another mesh */
-  int constraining_mesh;  /* if type==CONSTRAINED then this mesh must have 
+  int constraining_mesh;  /* if type==CONSTRAINED then this mesh must have
 			     the same mesh current as constraining_mesh */
   int other_mesh;      /* we need one more reference mesh that is constained
 			   but not the constraining mesh.  For precond */
   int first;            /* Mesh number for first mesh in Mlist for this group*/
   int num_meshes;             /* number of meshes */
 } Minfo;
-  
+
 typedef struct precond_element { /* An element in the preconditioner */
                                /* Each row will be saved as a linked list */
                                /* these */
@@ -385,7 +383,7 @@ typedef struct indsystem {
   int num_mesh;                /* number of meshes */
   int num_trees;               /* # of trees (physically separate conductors)*/
   int tree_meshes;             /* big loops from graph */
-  int extra_meshes;            /* upper bound on number of meshes from 
+  int extra_meshes;            /* upper bound on number of meshes from
 				  breaking big loops for new precond */
   int num_extern;             /* number of external nodes (also # conductors)*/
   int num_sub_extern;         /* no. of ports (conductors) requested with -x*/
@@ -441,7 +439,7 @@ typedef struct pathlist {
   SPATH *path;
   struct pathlist *next;
 } PATHLIST;
-  
+
 /* list of segments connect to a node */
 typedef struct seglist {
   seg_ptr seg;
@@ -482,7 +480,7 @@ struct _ind_opts {
   int precond;           /* ON or OFF */
   int order;             /* multipole expansion order */
   int level;             /* multipole partition level. AUTO,0,1...*/
-  int makeFastCapFile;   /* Make a fastcap file of the structure. 
+  int makeFastCapFile;   /* Make a fastcap file of the structure.
 			    OFF, SIMPLE, REFINED, BOTH */
   int gp_draw;           /* Draw ground planes in fastcap file.
 			    OFF - just make outline. ON - Draw all segs */
@@ -503,7 +501,7 @@ struct _ind_opts {
   double shell_r0;       /* radius for shell preconditioner */
   int regurgitate;        /* whether or not to spit input file back out */
   char *fname;           /* input filename */
-} /* ind_opts */;  
+} /* ind_opts */;
 
 /* stuff for mutual terms lookup table */
 typedef struct _table {
@@ -528,7 +526,7 @@ typedef struct _alloc_info {
   AllocList *head;
 } AllocInfo;
 
-enum degen_type {brick = 0, flat = 1, skinny = 2, too_long = 3, too_short = 4, 
+enum degen_type {brick = 0, flat = 1, skinny = 2, too_long = 3, too_short = 4,
 		   short_flat = 5, short_skinny = 6, impossible = 7};
 
 PATHLIST *add_to_front();

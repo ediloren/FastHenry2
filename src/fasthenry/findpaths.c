@@ -1,45 +1,12 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* this function finds all paths from node1 to node2 */
+/* this function finds all paths from node1 to node2 */
 /* this does not search through ground planes yet */
 
 #include "induct.h"
 
+// Enrico
+#include <string.h>
 
-
-/* puts all the paths in 'paths' onto the beginning of 'front' */     
+/* puts all the paths in 'paths' onto the beginning of 'front' */
 PATHLIST *add_to_front(paths, front)
 PATHLIST *paths, *front;
 {
@@ -111,7 +78,7 @@ NODES *getothernode(node, tseg)
 NODES *node;
 seg_ptr tseg;
 {
-  
+
   SEGMENT *seg;
   PSEUDO_SEG *pseg;
   NODES *node1, *node0, *realnode;
@@ -194,7 +161,7 @@ seg_ptr seg;
   return (seg.type == PSEUDO);
 }
 
-#endif 
+#endif
 
 /* is this segment in a ground plane */
 is_gp(seg)
@@ -297,7 +264,7 @@ GPLIST *gplist;
   onegpl = (GPLIST *)Gmalloc(sizeof(GPLIST));
   onegpl->gp = gp;
   onegpl->next = gplist;
-  
+
   return onegpl;
 }
 
@@ -335,7 +302,7 @@ SPATH *path;
 PATHLIST *pathlist;
 {
 
-  SPATH *pathcopy, *pathelem;  
+  SPATH *pathcopy, *pathelem;
 
   if (pathlist != NULL) {
     while(pathlist->next != NULL) {
@@ -384,7 +351,7 @@ SPATH *path;
 }
 
 /* returns a pointer to the node named name.  If it is not there, it
-   checks the pseudo-list and returns a real node to which the 
+   checks the pseudo-list and returns a real node to which the
    pseudo-name corresponds. Otherwise an error.
    Note: The node returned may be '.equiv'alenced to something else.
          Call getrealnode(node) to get the real node
@@ -397,7 +364,7 @@ SYS *indsys;
 
   NODES *node;
   PSEUDO_NODE *pnode;
-  
+
   node = indsys->nodes;
   while((node != NULL) && (strcmp(name, node->name) != 0))
     node = node->next;
@@ -408,7 +375,7 @@ SYS *indsys;
     pnode = indsys->pseudo_nodes;
     while ((pnode != NULL) && (strcmp(name, pnode->name) != 0))
       pnode = pnode->next;
-    if (pnode == NULL) 
+    if (pnode == NULL)
       return NULL;
     else
       return pnode->node;
@@ -447,7 +414,7 @@ SYS *indsys;
       pn->next = pnlist;
       pnlist = pn;
     }
-    else 
+    else
       nlist = add_node_to_list(node, nlist);
   }
 
@@ -460,11 +427,11 @@ SYS *indsys;
   realnode = getrealnode(nlist->node);
 
   /* assign the pseudo nodes to realnode */
-  for(pn = pnlist; pn != NULL; pn = pn->next) 
+  for(pn = pnlist; pn != NULL; pn = pn->next)
     pn->node = realnode;
 
   /* make the others also equivalent */
-  for(nl = nlist->next; nl != NULL; nl = nl->next) 
+  for(nl = nlist->next; nl != NULL; nl = nl->next)
     make_equiv(nl->node, realnode);
 
   free_nodelist(nlist);
@@ -505,7 +472,7 @@ NODES *orignode, *realnode;
   NODES *node;
 
   node = getrealnode(orignode);
-  
+
   if(is_real_node(realnode) == 0 ) {
     fprintf(stderr, "make_equiv: Internal error: Can't equiv to a nonreal node\n");
     exit(1);
@@ -527,7 +494,7 @@ NODES *orignode, *realnode;
   }
 
   /* find end of connected_segs list */
-  for(segl = realnode->connected_segs; segl != NULL && segl->next != NULL; 
+  for(segl = realnode->connected_segs; segl != NULL && segl->next != NULL;
       segl = segl->next)
     ;
 
@@ -550,12 +517,12 @@ SYS *indsys;
   if (pnlist != NULL) {
     for(end = pnlist; end->next != NULL; end = end->next)
       ;
-    
+
     end->next = indsys->pseudo_nodes;
     indsys->pseudo_nodes = end;
   }
 }
-    
+
 
 
 NODES *find_next_external(node)
@@ -596,11 +563,11 @@ PSEUDO_SEG *pseudo_seg;
     segelem->seg.segp = (void *)pseudo_seg;
   }
   else {
-    fprintf(stderr, 
+    fprintf(stderr,
 	    "add_to_connected_seg: Error: seg or pseudo_seg must be NULL\n");
     exit(1);
   }
- 
+
   segelem->next = realnode->connected_segs;
   realnode->connected_segs = segelem;
 }
@@ -626,12 +593,12 @@ PSEUDO_SEG *pseudo_seg;
 
   realnode = getrealnode(node);
 
-  segelem = realnode->connected_segs; 
+  segelem = realnode->connected_segs;
   if (segelem == NULL) {
     fprintf(stderr, "remove_from_  : No segs connected to node %s\n", realnode->name);
     exit(1);
   }
-  
+
   /* check if the first one is the seg */
   if (segelem->seg.segp == vptr && segelem->original == node) {
     realnode->connected_segs = segelem->next;
@@ -639,11 +606,11 @@ PSEUDO_SEG *pseudo_seg;
     segelem = realnode->connected_segs;
   }
   else {
-    while(segelem->next != NULL && 
-	  (segelem->next->seg.segp != vptr 
+    while(segelem->next != NULL &&
+	  (segelem->next->seg.segp != vptr
 	   || segelem->next->original != node) )
       segelem = segelem->next;
-    
+
     if (segelem->next == NULL) {
       fprintf(stderr, "remove_from_  : Couldn't remove seg from node %s\n",
 	      realnode->name);
@@ -657,8 +624,8 @@ PSEUDO_SEG *pseudo_seg;
     }
   }
   /* let's check to make sure this seg isn't in the list twice */
-  while(segelem != NULL && 
-	(segelem->seg.segp != vptr 
+  while(segelem != NULL &&
+	(segelem->seg.segp != vptr
 	 || segelem->original != node) )
     segelem = segelem->next;
   if (segelem != NULL) {
@@ -692,16 +659,16 @@ double x,y,z;
 GROUNDPLANE *gp;
 int *i, *j;
 {
-  static int o1 = 0, mid = 1, o2 = 2;     
+  static int o1 = 0, mid = 1, o2 = 2;
 
   double cos1, cos2, distance;
   int count1, count2;
   NODES *node;
   double *xt = gp->x, *yt = gp->y, *zt = gp->z;
-  
-  cos1 = dotp(x - xt[mid], y - yt[mid], z - zt[mid], 
+
+  cos1 = dotp(x - xt[mid], y - yt[mid], z - zt[mid],
 	      gp->ux1, gp->uy1, gp->uz1);
-  cos2 = dotp(x - xt[mid], y - yt[mid], z - zt[mid], 
+  cos2 = dotp(x - xt[mid], y - yt[mid], z - zt[mid],
 	      gp->ux2, gp->uy2, gp->uz2);
 
   count1 = cos1/gp->d1 + 0.5;
@@ -712,7 +679,7 @@ int *i, *j;
 	    x,y,z,gp->name);
     exit(1);
   }
-  
+
   node = gp->pnodes[count1][count2];
   *i = count1;
   *j = count2;
@@ -777,7 +744,7 @@ char type;
       fprintf(stderr,"Internal Err: gp pseudo_seg nodes not in same plane!\n");
       exit(1);
     }
-    /* estimate path length as distance from opposite corners */ 
+    /* estimate path length as distance from opposite corners */
     temp_seg->upper_num_segs = node1->gp->seg1 + node1->gp->seg2;
   }
   else if (type == EXTERNTYPE)
@@ -786,7 +753,7 @@ char type;
     fprintf(stderr, "Internal Error: Unknown type of pseudo_seg\n");
     exit(1);
   }
-#endif 
+#endif
 
   return temp_seg;
 }
@@ -828,7 +795,7 @@ int Yindex;
 char *name1, *name2, *portname;
 {
  EXTERNAL *temp_ex;
- 
+
  temp_ex = (EXTERNAL *)Gmalloc(sizeof(EXTERNAL));
  temp_ex->source = source;
  temp_ex->indices = NULL;
@@ -905,14 +872,14 @@ NPATH **stack;
   NODES *node;
   NPATH *killme;
 
-  if (stack == NULL) 
+  if (stack == NULL)
     return NULL;
   else {
     node = (*stack)->node;
     killme = *stack;
     *stack = (*stack)->next;
     free(killme);
-    
+
     return node;
   }
 }
@@ -939,7 +906,7 @@ SYS *indsys;
   TREE *atree;
   NPATH *stack = NULL;
   SEGLIST *branches;
-  
+
   indsys->trees = NULL;
   indsys->num_trees = 0;  /* used in fillA() */
 
@@ -955,7 +922,7 @@ SYS *indsys;
     while(stack != NULL) {
       node = pop_node(&stack);
       /* skip deleted and gp segs, and get original node */
-      branches = get_next_branch(node->connected_segs); 
+      branches = get_next_branch(node->connected_segs);
       while(branches != NULL) {
 	other = getrealnode(getothernode(branches->original, branches->seg));
 
@@ -985,9 +952,9 @@ SYS *indsys;
    junk
 	  /* We must treat Voltage sources from .extern statements carefully.
 	     This is for the new Preconditioner which requires that a voltage
-	     source appear in only one mesh.  The following should keep 
+	     source appear in only one mesh.  The following should keep
 	     the pseudo-seg for a source off the tree, but use it only if it
-	     completes a mesh.  
+	     completes a mesh.
 	  */
 	  if (other->level != -1) {
 	    make_loop(node, other, branches->seg, atree);
@@ -999,7 +966,7 @@ SYS *indsys;
 #if 1==0
   junk
 	branches = get_next_branch(branches->next);
-	    
+
       }  /* end while(branches.. */
 
 #endif
@@ -1011,7 +978,7 @@ SYS *indsys;
     tempnode = get_next_treeless_node(tempnode);
   }
 }
-	
+
 SEGLIST *get_next_branch(b_list)
 SEGLIST *b_list;
 {
@@ -1033,13 +1000,13 @@ seg_ptr seg;
     exit(1);
   }
 }
-    
+
 mark_seg(seg)
 seg_ptr seg;
 {
   if (seg.type == NORMAL)
     ((SEGMENT *)seg.segp)->is_deleted = 1;
-  else 
+  else
     ((PSEUDO_SEG *)seg.segp)->is_deleted = 1;
 }
 
@@ -1048,7 +1015,7 @@ seg_ptr seg;
 {
   if (seg.type == NORMAL)
     ((SEGMENT *)seg.segp)->is_deleted = 0;
-  else 
+  else
     ((PSEUDO_SEG *)seg.segp)->is_deleted = 0;
 }
 
@@ -1137,8 +1104,8 @@ TREE *tree;     /* tree that this loop will be contained within */
 #if 1==0
   junk
     else if (pre_node != node_s) {
-      if (pre_node->level == node_s->level && 
-	  getrealnode(getothernode(node_s, node_s->pred)) 
+      if (pre_node->level == node_s->level &&
+	  getrealnode(getothernode(node_s, node_s->pred))
 	  == getrealnode(getothernode(pre_node, pre_node->pred)) ) {
 	/* the assumption that node_s was on the main trunk was wrong */
 	/*  We need two more segments (note: order is important)*/
@@ -1150,9 +1117,9 @@ TREE *tree;     /* tree that this loop will be contained within */
 	exit(1);
       }
     }
-#endif 
+#endif
   }
-    
+
   tree->loops = add_path_to_list(path, tree->loops);
   tree->number_of_loops += 1;
   /* add this to other things too? */
@@ -1171,12 +1138,12 @@ TREE *trees;
   return total;
 }
 
-#if 1==0 
+#if 1==0
   unimplemented obsolete junk
 
 /* This estimates the number of extra meshes to be produced by breaking
    all the big meshes into many smaller ones which will have at most
-   fils_per_mesh filaments per mesh 
+   fils_per_mesh filaments per mesh
 */
 estimate_extra_meshes(trees, fils_per_mesh)
 TREE *trees;
@@ -1186,7 +1153,7 @@ int fils_per_mesh;
   PATHLIST *plist;
   SPATH *one_seg;
   int segs_in_loop;
-  
+
   while(trees != NULL) {
     for(plist = trees->loops; plist != NULL; plist = plist->next) {
       segs_in_loop = 0;
@@ -1212,7 +1179,7 @@ int count_externals(ext_list)
 EXTERNAL *ext_list;
 {
   int count = 0;
-  
+
   while(ext_list != NULL) {
     ext_list = ext_list->next;
     count++;
@@ -1227,16 +1194,16 @@ PSEUDO_SEG *pseg;
 {
   return pseg->upper_num_segs;
 }
-#endif 1==0
+#endif //1==0, Enrico
 
 
 /****  The following are functions for finding meshes created by holes ***/
 /****  in ground planes.  Many functions are near duplicates of those above **/
 
-/* this finds all the extra meshes that result from holes in the plane. 
+/* this finds all the extra meshes that result from holes in the plane.
    Each hole needs one mesh which outlines it.
    It adds a tree to indsys->trees which contains all the new loops.
-*/   
+*/
 
 find_hole_meshes(indsys)
 SYS *indsys;
@@ -1278,7 +1245,7 @@ SYS *indsys;
 	    }
 	  }
     }
-      
+
     /* find all surrounding nodes */
     surrounding_nodes = find_surrounding(nodes_in_hole);
 
@@ -1310,7 +1277,7 @@ NODES *node;
 
   return node;
 }
-		       
+
 NPATH *find_surrounding(nodes_in_hole)
 NPATH *nodes_in_hole;
 {
@@ -1329,7 +1296,7 @@ NPATH *nodes_in_hole;
     pnodes = plane->pnodes;
     nodes1 = plane->num_nodes1;
     nodes2 = plane->num_nodes2;
-    
+
     /* check node's eight neighbors for hole nodes */
     for(i = MAX(s1 - 1,0); i <= MIN(s1 + 1, nodes1 - 1); i++)
       for(j = MAX(s2 - 1,0); j <= MIN(s2 + 1, nodes2 - 1); j++)
@@ -1354,7 +1321,7 @@ NPATH *nlist;
   }
 }
 
-/* find all the circuits (loops) formed by the nodes in nlist.  
+/* find all the circuits (loops) formed by the nodes in nlist.
    This is nearly identical to make_trees().
    Also clear seg->is_deleted when done */
 make_gp_trees(nlist, atree)
@@ -1400,7 +1367,7 @@ TREE *atree;
     }
     np = get_next_unexamined_node(np);
   }
-  
+
   if (counter > 1) {
     printf("Warning: Multiple boundaries found around one hole region\n");
     printf("  possibly due to an isolated or nearly isolated region of conductor.\n");
@@ -1430,9 +1397,9 @@ NPATH *nlist;
   static seg_ptr seg;
 
   seg.segp = (void *)get_next_gp_seg(node, counter);
-  
-  while(seg.segp != NULL 
-	&& (is_marked(seg) 
+
+  while(seg.segp != NULL
+	&& (is_marked(seg)
 	    || !is_orignode_in_list(getothernode(node,seg),nlist)))
       seg.segp = (void *)get_next_gp_seg(node, counter);
 
@@ -1487,7 +1454,7 @@ int *counter;
 
 }
 
-/* given a starting and ending node, this makes a path from the tree 
+/* given a starting and ending node, this makes a path from the tree
    information.  This is almost identical to make_loops().  I just had
    to take out all the 'getrealnode' calls and I made it return a SPATH. */
 SPATH *make_gp_loop(node_l, node_s, seg)
@@ -1523,7 +1490,7 @@ seg_ptr seg;    /* segment connecting above nodes (not in tree) */
       exit(1);
     }
   }
-    
+
   return path;
 }
 
@@ -1561,7 +1528,7 @@ NPATH *nodelist;
 
   if (nodelist == NULL)
     return NULL;
-  
+
   min_node = nodelist->node;
   min = dist_between_nodes(node, min_node);
 

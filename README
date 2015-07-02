@@ -1,4 +1,6 @@
-FastHenry 3.0 information.   10/9/96
+FastHenry 3.0.1 information.
+ 
+Updated May 28th 2012 by FastFieldSolvers, www.fastfieldsolvers.com
 
 FastHenry is a program for the efficient extraction of inductances and 
 resistances of complex 3-D geometries of conductors.  
@@ -26,7 +28,9 @@ Configuring for your machine:
 
     Linux: 
       prompt % config default
-      Then see note c. below
+
+      prompt % config x64
+      to force compile for x86 64bit machines
 
   System V operating systems:
 
@@ -53,18 +57,16 @@ Configuring for your machine:
 
        CFLAGS = -O -DFIVE -DNO_GETHOSTNAME
 
-    c. I've had problems getting FastHenry to run reliably on Intel based 
-    machines running Linux and compiling with gcc with optimization.  
-    Removing the "-O" option from CFLAGS in the Makefiles (zbuf and fasthenry)
-    seems to help.
 
 Compiling:
 
-   prompt %   cd fasthenry-3.0
+   prompt %   cd fasthenry-3.0.1
    prompt %   make all
 
-  produces the executables:  fasthenry-3.0/bin/fasthenry
-                         and fasthenry-3.0/bin/zbuf
+  produces the executables:  fasthenry-3.0.1/bin/fasthenry
+                             fasthenry-3.0.1/bin/zbuf
+                             fasthenry-3.0.1/bin/ReadOutput
+                             fasthenry-3.0.1/bin/MakeLcircuit
 
   If you want to save space after "make all",
 
@@ -73,19 +75,22 @@ Compiling:
   will clean up *.o and *.a files.
 
 Documentation:
-  The manual is in postscript in three files
 
-     fasthenry-3.0/doc/manual_001.ps
-     fasthenry-3.0/doc/manual_002.ps
-     fasthenry-3.0/doc/manual_003.ps
+  The manuals are in Acrobat Reader pdf format in the directory 'doc'
 
-  The manual for nonuniformly discretized reference planes is
-     fasthenry-3.0/doc/nonuniform_manual_1.ps
-     fasthenry-3.0/doc/nonuniform_manual_2.ps
+-------------------------------------------------------------
+Major changes in 3.0.1 since version 3.0
 
+- Added various stability bug fixes over original 3.0 distribution
 
-    These files contain many detailed postscript images and may take
-	significant time to print.
+- Added stability improvement under Linux
+
+- Added various includes and other minor updates to avoid warnings
+  with latest versions of GCC
+
+- Updated source code to compile on 64 bit machines
+
+- Added Makefile option for 64 bit machines
 
 -------------------------------------------------------------
 Major changes in 3.0 since version 2.5
@@ -153,8 +158,4 @@ Version 2.0 - this is a far improvement over the past versions
 
 
 -----------------------------------------------------------------
-Updates:
-
- If small changes are made,  a new tar
- file will appear from rle-vlsi.mit.edu with a more recent date.
 

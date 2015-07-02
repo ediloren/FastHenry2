@@ -1,41 +1,41 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
+/*
+Copyright (c) 1990 Massachusetts Institute of Technology, Cambridge, MA.
+All rights reserved.
+
+This Agreement gives you, the LICENSEE, certain rights and obligations.
+By using the software, you indicate that you have read, understood, and
+will comply with the terms.
+
+Permission to use, copy and modify for internal, noncommercial purposes
+is hereby granted.  Any distribution of this program or any part thereof
+is strictly prohibited without prior written consent of M.I.T.
+
+Title to copyright to this software and to any associated documentation
+shall at all times remain with M.I.T. and LICENSEE agrees to preserve
+same.  LICENSEE agrees not to make any copies except for LICENSEE'S
+internal noncommercial use, or to use separately any portion of this
+software without prior written consent of M.I.T.  LICENSEE agrees to
+place the appropriate copyright notice on any such copies.
+
+Nothing in this Agreement shall be construed as conferring rights to use
+in advertising, publicity or otherwise any trademark or the name of
+"Massachusetts Institute of Technology" or "M.I.T."
+
+M.I.T. MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  By
+way of example, but not limitation, M.I.T. MAKES NO REPRESENTATIONS OR
+WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR
+THAT THE USE OF THE LICENSED SOFTWARE COMPONENTS OR DOCUMENTATION WILL
+NOT INFRINGE ANY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+M.I.T. shall not be held liable for any liability nor for any direct,
+indirect or consequential damages with respect to any claim by LICENSEE
+or any third party on account of or arising from this Agreement or use
+of this software.
 */
 
 #include "mulGlobal.h"
 #include "quickif.h"
+// Enrico
+#include <string.h>
 
 /*
   tells if any conductor name alias matches a string
@@ -76,7 +76,7 @@ Name *cur_name;
 }
 
 /*
-  adds an alias 
+  adds an alias
 */
 void add_to_alias(cur_name, new_name)
 Name *cur_name;
@@ -143,7 +143,7 @@ int *num_cond;
   /* check to see if name is present */
   for(cur_name = *name_list, i = 1; cur_name != NULL;
       cur_name = cur_name->next, i++) {
-    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name)) 
+    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name))
 	return(i); /* return conductor number */
     prev_name = cur_name;
   }
@@ -174,7 +174,7 @@ Name *name_list;
   /* check to see if name is present */
   for(cur_name = name_list, i = 1; cur_name != NULL;
       cur_name = cur_name->next, i++) {
-    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name)) 
+    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name))
 	return(i); /* return conductor number */
     prev_name = cur_name;
   }
@@ -200,7 +200,7 @@ int cond_num;
   }
 
   /* number not found */
-  fprintf(stderr, 
+  fprintf(stderr,
 	  "getConductorName: conductor no. %d not defined\n", cond_num);
   return(NULL);
 }
@@ -265,7 +265,7 @@ Name **name_list;
     if(!strcmp(cur_name->name, old_name) || alias_match(cur_name, old_name)) {
       /* old name is cur name or old name is an alias */
       /* if new name isn't in alias list, add it to alias list */
-      if(!alias_match(cur_name, new_name)) 
+      if(!alias_match(cur_name, new_name))
 	  add_to_alias(cur_name, new_name);
       return(TRUE);
     }
@@ -306,16 +306,16 @@ FILE *fp;
 
   /* save the title, strip leading '0' */
   if(title[0] == '\0') strcpy(title, delcr(&line[1]));
-  
+
   /* read in and load structs */
   while(fgets(line1, sizeof(line1), fp) != NULL) {
     if(line1[0] == 'Q' || line1[0] == 'q') {
-      if(sscanf(line1, 
+      if(sscanf(line1,
 		"%s %s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-		temp, condstr, 
+		temp, condstr,
 		&x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3, &x4, &y4, &z4)
 	 != 14) {
-	fprintf(stderr, "quickif: bad quad format, line %d:\n%s\n", 
+	fprintf(stderr, "quickif: bad quad format, line %d:\n%s\n",
 		linecnt, line1);
 	exit(0);
       }
@@ -332,7 +332,7 @@ FILE *fp;
 	CALLOC(curquad->next, 1, quadl, ON, AMSC);
 	curquad = curquad->next;
       }
-      
+
       /* load quad struct */
       if(surf_type == CONDTR || surf_type == BOTH)
 	  curquad->cond = getConductorNum(condstr, name_list, num_cond);
@@ -354,9 +354,9 @@ FILE *fp;
     }
     else if(line1[0] == 'T' || line1[0] == 't') {
       if(sscanf(line1, "%s %s %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-		temp, condstr, &x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3) 
+		temp, condstr, &x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3)
 	 != 11) {
-	fprintf(stderr, "quickif: bad tri format, line %d:\n%s\n", 
+	fprintf(stderr, "quickif: bad tri format, line %d:\n%s\n",
 		linecnt, line1);
 	exit(0);
       }
@@ -373,7 +373,7 @@ FILE *fp;
 
       /* add suffix */
       strcat(condstr, name_suffix);
-      
+
       /* load tri struct */
       if(surf_type == CONDTR || surf_type == BOTH)
 	  curtri->cond = getConductorNum(condstr, name_list, num_cond);
@@ -392,7 +392,7 @@ FILE *fp;
     }
     else if(line1[0] == 'N' || line1[0] == 'n') {
       if(sscanf(line1, "%s %s %s", temp, condstr, temp2) != 3) {
-	fprintf(stderr, "quickif: bad rename format, line %d:\n%s\n", 
+	fprintf(stderr, "quickif: bad rename format, line %d:\n%s\n",
 		linecnt, line1);
 	exit(0);
       }
@@ -405,7 +405,7 @@ FILE *fp;
 	strcat(condstr, name_suffix);
 	strcat(temp2, name_suffix);
 
-	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE) 
+	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE)
 	    exit(0);
       }
 
@@ -414,12 +414,12 @@ FILE *fp;
     else if(line1[0] == '%' || line1[0] == '*' ||
 	    line1[0] == '#') linecnt++; /* ignore comments */
     else {
-      fprintf(stderr, "quickif: bad line format, line %d:\n%s\n", 
+      fprintf(stderr, "quickif: bad line format, line %d:\n%s\n",
 		linecnt, line1);
       exit(0);
     }
   }
-	
+
   /* setup tris in charge structs */
   for(curtri = fsttri; curtri != NULL; curtri = curtri->next) {
 

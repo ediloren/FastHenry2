@@ -1,40 +1,8 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* This is the main part of the code */
+/* This is the main part of the code */
 
 #include "induct.h"
+// Enrico
+#include <string.h>
 
 /* these are missing in some math.h files */
 extern double asinh();
@@ -138,7 +106,7 @@ char *argv[];
   num_mutualfil = 0;
   num_found = 0;
   num_perp = 0;
-  
+
   opts = indsys->opts;
 
   tol = opts->tol;
@@ -163,20 +131,20 @@ char *argv[];
 
   /* read in geometry */
   err = readGeom(fp, indsys);
-  if (err != 0) 
+  if (err != 0)
     return err;
 
   fclose(fp);
 
   /*  fprintf(stdout,"Number of nodes before breaking up: %d\n",
       indsys->num_nodes); */
-  
+
   /* regurgitate input file to stdout */
   if (opts->regurgitate == TRUE) {
     regurgitate(indsys);
   }
 
-  if ((opts->makeFastCapFile & HIERARCHY) 
+  if ((opts->makeFastCapFile & HIERARCHY)
       && !(opts->makeFastCapFile & (SIMPLE | REFINED)))
     /* the hierarchy has been dumped already, and nothing more to do. so quit*/
     return 0;
@@ -206,7 +174,7 @@ char *argv[];
   num_fils = 0;
   chgend = &chgdummy;
 
-  for(seg = indsys->segment; seg != NULL; seg = seg->next) 
+  for(seg = indsys->segment; seg != NULL; seg = seg->next)
     chgend = assignFil(seg, &num_fils, chgend);
 
   indsys->num_fils = num_fils;
@@ -230,7 +198,7 @@ char *argv[];
   stoptimer;
   ftimes[5] = dtime;
 
-  if (indsys->opts->debug == ON) 
+  if (indsys->opts->debug == ON)
     printf("Time for Multipole Setup: %lg\n",dtime);
 
   starttimer;
@@ -247,7 +215,7 @@ char *argv[];
      that they are marked before regular ground plane meshes  */
   find_hole_meshes(indsys);
 
-  /* determine if a subset of columns is to be computed and assign 
+  /* determine if a subset of columns is to be computed and assign
      col_Yindex.  This will happen if -x option is used. */
   num_sub_extern = indsys->num_sub_extern
                        = pick_subset(opts->portlist, indsys);
@@ -256,7 +224,7 @@ char *argv[];
   ftimes[6] = dtime;
 
   /* Write to Zc.mat only if we aren't only running for visualization */
-  if ( !(opts->makeFastCapFile & (SIMPLE | REFINED)) 
+  if ( !(opts->makeFastCapFile & (SIMPLE | REFINED))
        && !(opts->orderROM > 0 && opts->onlyROM)   ) {
     concat4(outfname,"Zc",opts->suffix,".mat");   /* put filnames together */
     fp3 = fopen(outfname, "w");
@@ -279,11 +247,11 @@ char *argv[];
     if (num_sub_extern != indsys->num_extern)
       for(ext = indsys->externals; ext != NULL; ext=ext->next) {
         if (ext->col_Yindex != -1)
-          fprintf(fp3,"Col %d: port name: %s\n", 
+          fprintf(fp3,"Col %d: port name: %s\n",
                   ext->col_Yindex+1,ext->portname);
       }
   }
-    
+
   /* count nodes */
   indsys->num_real_nodes = 0;
   indsys->num_nodes = 0;
@@ -293,14 +261,14 @@ char *argv[];
     if (getrealnode(node) == node) {
       indsys->num_real_nodes++;
       if (last + 1 != i) {
-      /* printf("Non equivalent nodes must be listed first??, 
+      /* printf("Non equivalent nodes must be listed first??,
 	 no I take that back.\n"); */
       /* exit(1); */
       }
       last = i;
     }
   }
-  
+
   /* CMS 7/3/92 ------------------------------------------------------------*/
   planemeshes = 0;
   nonp = 0;
@@ -312,13 +280,13 @@ char *argv[];
   }
   /*------------------------------------------------------------------------*/
 
-/* moved lower for shading 
+/* moved lower for shading
   if (opts->makeFastCapFile & REFINED) {
     fprintf(stdout, "Making refined zbuf file...");
     fflush(stdout);
 
     concat4(outfname,"zbuffile2",opts->suffix,"");
-    
+
 
     concat4(outfname2,outfname,"_","shadings");
     writefastcap(outfname, outfname2, indsys);
@@ -337,7 +305,7 @@ char *argv[];
 
   indsys->extra_meshes = tree_meshes;
 
-#if 1==0 
+#if 1==0
   unimplemented junk
   indsys->extra_meshes = estimate_extra_meshes(indsys->trees, FILS_PER_MESH);
 #endif
@@ -354,7 +322,7 @@ char *argv[];
   fmax = indsys->fmax;
   logofstep = indsys->logofstep;
 
-  /*  dont_form_Z = fmin == 0 && opts->mat_vect_prod == DIRECT 
+  /*  dont_form_Z = fmin == 0 && opts->mat_vect_prod == DIRECT
                         && opts->soln_technique == ITERATIVE; */
 
   dont_form_Z = fmin == 0 && opts->soln_technique == LUDECOMP;
@@ -367,7 +335,7 @@ char *argv[];
   printf("Number of nodes:     %10d\n", num_nodes);
   printf("Number of meshes:    %10d\n", num_mesh);
   printf("          ----from tree:                   %d \n",tree_meshes);
-  printf("          ----from planes: (before holes)  %d \n",planemeshes);  
+  printf("          ----from planes: (before holes)  %d \n",planemeshes);
                                                             /* CMS 7/6/92 */
   printf("Number of conductors:%10d   (rows of matrix in Zc.mat) \n",
 	 num_extern);
@@ -375,7 +343,7 @@ char *argv[];
 	 num_sub_extern);
 
   printf("Number of real nodes:%10d\n", num_real_nodes);  /* non equivalent */
-  
+
 /*  A = MatrixAlloc(num_real_nodes, num_fils, sizeof(double)); */
   if (opts->mat_vect_prod == DIRECT || opts->soln_technique == LUDECOMP) {
 /*  indsys->M = MatrixAlloc(num_fils, num_mesh, sizeof(double)); */
@@ -398,9 +366,9 @@ char *argv[];
   indsys->Precond = (PRE_ELEMENT **)MattAlloc(num_mesh, sizeof(PRE_ELEMENT *));
   if (1 == 1) {  /* let's always dump the residual history */
     indsys->resids = MatrixAlloc(num_sub_extern,user_maxiters, sizeof(double));
-    indsys->resid_real = MatrixAlloc(num_sub_extern, user_maxiters, 
+    indsys->resid_real = MatrixAlloc(num_sub_extern, user_maxiters,
 				     sizeof(double));
-    indsys->resid_imag = MatrixAlloc(num_sub_extern, user_maxiters, 
+    indsys->resid_imag = MatrixAlloc(num_sub_extern, user_maxiters,
 				     sizeof(double));
     indsys->niters = (double *)MattAlloc(num_sub_extern, sizeof(double));
   }
@@ -448,7 +416,7 @@ char *argv[];
   num_mesh = indsys->num_mesh;  /* actual number of meshes */
 
   /* let's save a little space and allocate MZMt now. */
-  if (!dont_form_Z 
+  if (!dont_form_Z
       && (opts->mat_vect_prod == DIRECT || opts->soln_technique == LUDECOMP))
     indsys->MtZM = (CX **)MatrixAlloc(num_mesh, num_mesh, sizeof(CX));
 
@@ -469,12 +437,12 @@ char *argv[];
   stoptimer;
   ftimes[1] = dtime;
 
-  if (indsys->opts->debug == ON) 
+  if (indsys->opts->debug == ON)
     printf("Time to Form M and Z: %lg\n",dtime);
 
   printf("Total Memory allocated: %d kilobytes\n",memcount/1024);
 
-  if (indsys->opts->debug == ON) 
+  if (indsys->opts->debug == ON)
     printf("Memory used and freed by lookup table: %d kilobytes\n",
 	   get_table_mem());
 
@@ -545,16 +513,16 @@ char *argv[];
       printf("multiplying M*(L)*transpose(M)for model order reduction\n");
       /* this form of storage isn't the best */
       formMLMt(indsys);      /*form (M^t)*(L)*M and store in indys->MtZM*/
-      
+
 
       actual_order = ArnoldiROM(B, C, (double **)NULL, MRMt, num_mesh,
-                                num_extern, num_extern, opts->orderROM, 
+                                num_extern, num_extern, opts->orderROM,
                                 realMatVect, indsys, sys, chglist);
     }
     else if (indsys->opts->mat_vect_prod == MULTIPOLE)
-      actual_order = ArnoldiROM(B, C, (double **)NULL, MRMt, num_mesh, 
-                                num_extern, num_extern, opts->orderROM, 
-                                realComputePsi, indsys, sys, chglist); 
+      actual_order = ArnoldiROM(B, C, (double **)NULL, MRMt, num_mesh,
+                                num_extern, num_extern, opts->orderROM,
+                                realComputePsi, indsys, sys, chglist);
 
     if (indsys->opts->debug == ON) {
 #if 1==0
@@ -586,7 +554,7 @@ char *argv[];
       fprintf(stderr, "No open fROM\n");
     /* now dump the reduced order model */
     dumpROMequiv_circuit(fROM, indsys->Ar, indsys->Br, indsys->Cr, indsys->Dr,
-            actual_order * num_extern, num_extern, num_extern, 
+            actual_order * num_extern, num_extern, num_extern,
             indsys->title, opts->suffix, indsys);
     /* close and save away the file */
     fclose(fROM);
@@ -597,14 +565,14 @@ char *argv[];
   if (opts->orderROM > 0 && opts->onlyROM)
     exit(0);
 
-  for(freq = fmin, m = 0; 
+  for(freq = fmin, m = 0;
       (fmin != 0 && freq <= fmax*1.001) || (fmin == 0 && m == 0);
       m++, freq = (fmin != 0 ? pow(10.0,log10(fmin) + m*logofstep) : 0.0)) {
     printf("Frequency = %lg\n",freq);
 
     starttimer;
 
-    if (!dont_form_Z 
+    if (!dont_form_Z
         && (opts->mat_vect_prod == DIRECT || opts->soln_technique==LUDECOMP)) {
       printf("multiplying M*(R + jL)*transpose(M)\n");
       formMZMt(indsys);      /*form transpose(M)*(R+jL)*M  (no w) */
@@ -635,7 +603,7 @@ char *argv[];
       }
 
       printf("putting in frequency \n");
-      
+
       /* put in frequency */
       for(i = 0; i < num_mesh; i++)
 	for(j = 0; j < num_mesh; j++)
@@ -650,7 +618,7 @@ char *argv[];
     if (opts->soln_technique == ITERATIVE) {
       if (indsys->precond_type == LOC) {
 	printf("Forming local inversion preconditioner\n");
-	
+
 	if (opts->mat_vect_prod == DIRECT)
 	  indPrecond_direct(sys, indsys, 2*PI*freq);
 	else if (opts->mat_vect_prod == MULTIPOLE)
@@ -711,7 +679,7 @@ char *argv[];
                  spElementCount(indsys->sparMatrix));
 
         /* Reorder and Factor the matrix */
-        /* since w = 0, this matrix is real but all complex computations 
+        /* since w = 0, this matrix is real but all complex computations
            are done since that is how the sparse package was compiled.
            But changing it doesn't help that much.  Must be dominated by
            reordering and such.*/
@@ -737,14 +705,14 @@ char *argv[];
       printf("Time spent on forming Precond: %lg\n",dtime);
 
     starttimer;
-    for(ext = get_next_ext(indsys->externals), i=0; ext != NULL; 
+    for(ext = get_next_ext(indsys->externals), i=0; ext != NULL;
 	                       ext = get_next_ext(ext->next),i++) {
       printf("conductor %d from node %s\n",i, get_a_name(ext->source));
 
       /* initialize b */
       for(j = 0; j < num_mesh; j++)
 	b[j] = x0[j] = CXZERO;
-      
+
       fill_b(ext, b);
 
       sprintf(fname, "b%d_%d",m,i);
@@ -759,10 +727,10 @@ char *argv[];
 
       if (opts->soln_technique == ITERATIVE) {
 	printf("Calling gmres...\n");
-	if (opts->mat_vect_prod == MULTIPOLE) 
+	if (opts->mat_vect_prod == MULTIPOLE)
 	  gmres(MtZM, b, x0, inner, SetupComputePsi, num_mesh, maxiters, tol,
 		sys, chglist, 2*PI*freq, R, indsys, i);
-	else 
+	else
 	  gmres(MtZM, b, x0, inner, directmatvec,    num_mesh, maxiters, tol,
 		sys, chglist, 2*PI*freq, R, indsys, i);
 
@@ -773,12 +741,12 @@ char *argv[];
 	}
 	else if (indsys->precond_type == SPARSE)
 	  spSolve(indsys->sparMatrix, x0, x0);
-	  
+
       }
-      else 
+      else
         if (!dont_form_Z)
           cx_lu_solve(MtZM, x0, b, num_mesh);
-        else 
+        else
           spSolve(indsys->sparMatrix, b, x0);
 
       if (opts->dumpMats & GRIDS)
@@ -825,11 +793,11 @@ char *argv[];
     else
       fprintf(fp3, "ADMITTANCE matrix for frequency = %lg %d x %d\n ", freq,
 	      num_extern, num_sub_extern);
-      
+
     cx_dumpMat_totextfile(fp3, indsys->FinalY, num_extern, num_sub_extern);
     fflush(fp3);
   }
-  
+
   if (indsys->opts->debug == ON)
     fclose(fp);
 
@@ -839,7 +807,7 @@ char *argv[];
 
   printf("\nAll impedance matrices dumped to file Zc%s.mat\n\n",opts->suffix);
   totaltime = 0;
-  for(i = 0; i < TIMESIZE; i++) 
+  for(i = 0; i < TIMESIZE; i++)
     totaltime += ftimes[i];
 
   if (indsys->opts->debug == ON) {
@@ -893,7 +861,7 @@ charge *chgptr;
   int indices[4], row, col;
   double r_width, r_height;
             /* ratio of element sizes (for geometrically increasing size)*/
- 
+
   Hinc = seg->hinc;
   Winc = seg->winc;
   r_height = seg->r_height;
@@ -914,7 +882,7 @@ charge *chgptr;
   dummysurf->type = CONDTR;
   dummysurf->next = NULL;
   dummysurf->prev = NULL;
-  
+
   /*  To make the filaments have geometrically decreasing areas */
   /* Hdiv and Wdiv are 1/(smallest Width) */
 
@@ -993,9 +961,9 @@ charge *chgptr;
 
     delh = (seg->height)*(0.5 - h_from_edge);
 
-    if (delh < 0.0 && fabs(delh/seg->height) > EPS) 
+    if (delh < 0.0 && fabs(delh/seg->height) > EPS)
       printf("uh oh, delh < 0. delh/height = %lg\n", delh/seg->height);
-    
+
     w_from_edge = 0;
     min_width = 1.0/Wdiv;
     for(j = 0; j < Winc/2 || (Winc%2 == 1 && j == Winc/2); j++) {
@@ -1011,15 +979,15 @@ charge *chgptr;
 	w_from_edge += min_width/2;
       else
 	w_from_edge += min_width/2*pow(r_width,(double)(j-1))*(1+r_width);
-      
+
       delw = (seg->width)*(0.5 - w_from_edge);
 
-      if (delw < 0.0 && fabs(delw/seg->width) > EPS) 
+      if (delw < 0.0 && fabs(delw/seg->width) > EPS)
 	printf("uh oh, delw < 0. delw/width = %lg\n", delw/seg->width);
 /*    tempfil = filptr; */
       countfils = 0;
-      
-      row = i; 
+
+      row = i;
       col = j;
       if (row%2 == 1)
 	col = (Winc - 1) - col;
@@ -1035,10 +1003,10 @@ charge *chgptr;
       filptr->pchg = &ctemp[counter++];
 /*    filptr++; */
       countfils++;
-      
+
       /* do symmetric element wrt y */
       if(j != Winc/2) {
-	row = i; 
+	row = i;
 	col = (Winc - 1) - j;
 	if (row%2 == 1)
 	  col = (Winc - 1) - col;
@@ -1055,10 +1023,10 @@ charge *chgptr;
 /*	filptr++; */
 	countfils++;
       }
-      
+
       /* wrt z */
       if(i != Hinc/2) {
-        row = (Hinc - 1) - i; 
+        row = (Hinc - 1) - i;
 	col = j;
 	if (row%2 == 1)
 	  col = (Winc - 1) - col;
@@ -1075,10 +1043,10 @@ charge *chgptr;
 	filptr++;
 	countfils++;
       }
-      
+
       /* wrt z and y */
       if( i != Hinc/2 && j != Winc/2) {
-	row = (Hinc - 1) - i; 
+	row = (Hinc - 1) - i;
 	col = (Winc - 1) - j;
 	if (row%2 == 1)
 	  col = (Winc - 1) - col;
@@ -1095,7 +1063,7 @@ charge *chgptr;
 /*	filptr++; */
 	countfils++;
       }
-      
+
       for(k = 0; k < countfils; k++) {
 	tempfil = &(seg->filaments[indices[k]]);
 	tempfil->length = seg->length;
@@ -1124,7 +1092,7 @@ charge *chgptr;
 
 /*	tempfil++; */
       }
-      
+
     }
   }
 
@@ -1154,7 +1122,7 @@ int rows, cols, size;
         exit(1);
       }
 
-  for(i = 0; i < rows; i++) 
+  for(i = 0; i < rows; i++)
     temp[i] = (double *)MattAlloc(cols,size);
 
   if (temp[rows - 1] == NULL) {
@@ -1194,12 +1162,12 @@ SYS *indsys;
     }
     for(i = 0; i < seg->num_fils; i++) {
       fil = &seg->filaments[i];
-      Alist[node1->index] = insert_in_list(make_melement(fil->filnumber, 
+      Alist[node1->index] = insert_in_list(make_melement(fil->filnumber,
 							 fil, 1),
 					   Alist[node1->index]);
-      Alist[node2->index] = insert_in_list(make_melement(fil->filnumber, 
+      Alist[node2->index] = insert_in_list(make_melement(fil->filnumber,
 							 fil, -1),
-					   Alist[node2->index]);	   
+					   Alist[node2->index]);
     }
   }
 
@@ -1214,13 +1182,13 @@ SYS *indsys;
 /* it maps a matrix of mesh currents to branch currents */
 /* it might actually be what some think of as the transpose of M */
 /* Here, M*Im = Ib  where Im are the mesh currents, and Ib the branch */
-/* 6/92 I added Mlist which is a vector of linked lists to meshes. 
+/* 6/92 I added Mlist which is a vector of linked lists to meshes.
    This replaces M.  But I keep M around for checking things in matlab. */
 void old_fillM(indsys)
 SYS *indsys;
 {
 }
-    
+
 void fillZ(indsys)
 SYS *indsys;
 {
@@ -1240,7 +1208,7 @@ SYS *indsys;
       fil_j = &(seg1->filaments[j]);
       filnum_j = fil_j->filnumber;
       R[filnum_j] = resistance(fil_j, seg1->sigma);
-      if (indsys->opts->mat_vect_prod != MULTIPOLE 
+      if (indsys->opts->mat_vect_prod != MULTIPOLE
           && !indsys->dont_form_Z) {
 	for(seg2 = indsys->segment; seg2 != NULL; seg2 = seg2->next) {
 	  for(m = 0; m < seg2->num_fils; m++) {
@@ -1250,8 +1218,8 @@ SYS *indsys;
 	      Z[filnum_m][filnum_m] = selfterm(fil_m); /* do self-inductance */
 	    else
 	      if (filnum_m > filnum_j) /*we haven't done it yet */
-		
-		Z[filnum_m][filnum_j] 
+
+		Z[filnum_m][filnum_j]
 		  = Z[filnum_j][filnum_m] = mutual(fil_j, fil_m);
 	  }
 	}
@@ -1365,7 +1333,7 @@ SYS *indsys;
     nnz = nnz_inM(indsys->Alist, num_real_nodes);
 
     /* how many non-zeros in ground node 0? */
-    nnz0 = nnz_inM(indsys->Alist, 1);  
+    nnz0 = nnz_inM(indsys->Alist, 1);
 
     /* now dump it to a file without ground node */
 
@@ -1405,7 +1373,7 @@ SYS *indsys;
       fillMrow(indsys->Mlist, i, Mrow);
       dumpVec_totextfile(fp2, Mrow, num_fils);
     }
-    
+
     fclose(fp2);
     */
 
@@ -1414,24 +1382,24 @@ SYS *indsys;
       printf("Couldn't open file\n");
       exit(1);
     }
-    
+
     dumpVec_totextfile(fp2, R, num_fils);
-    
+
     fclose(fp2);
-    
+
     if (!indsys->dont_form_Z && indsys->opts->mat_vect_prod == DIRECT) {
       /* do imaginary part of Z */
-      
+
       concat4(outfname,"L",opts->suffix,".dat");
       if ( (fp2 = fopen(outfname,"w")) == NULL) {
 	printf("Couldn't open file\n");
 	exit(1);
       }
-      
+
       dumpMat_totextfile(fp2, Z, num_fils, num_fils);
-      
+
       fclose(fp2);
-      
+
     }
     else {
       if (indsys->dont_form_Z)
@@ -1442,7 +1410,7 @@ SYS *indsys;
   }
 
   /* Save Matlab files */
-  
+
   if (opts->kind & MATLAB && opts->dumpMats & DUMP_RL) {
     concat4(outfname,"RL",opts->suffix,".mat");
     if ( (fp = fopen(outfname,"w")) == NULL) {
@@ -1463,7 +1431,7 @@ SYS *indsys;
       printf("no space for R\n");
       exit(1);
     }
-    
+
     /* save and print matrices */
 
     /*
@@ -1472,19 +1440,19 @@ SYS *indsys;
 
     for(i = 0; i < num_mesh; i++) {
       fillMrow(indsys->Mlist, i, Mrow);
-      savemat_mod(fp, machine+100, "M", num_mesh, num_fils, 0, Mrow, 
+      savemat_mod(fp, machine+100, "M", num_mesh, num_fils, 0, Mrow,
 		  (double *)NULL, i, num_fils);
     }
     */
 
     /* this only saves the real part (savemat_mod.c modified) */
-    savemat_mod(fp, machine+100, "R", 1, num_fils, 0, R, (double *)NULL, 
+    savemat_mod(fp, machine+100, "R", 1, num_fils, 0, R, (double *)NULL,
 		0, num_fils);
-    
+
     if (!indsys->dont_form_Z && indsys->opts->mat_vect_prod == DIRECT) {
       /* do imaginary part of Z */
       for(i = 0; i < num_fils; i++) {
-	savemat_mod(fp, machine+100, "L", num_fils, num_fils, 0, Z[i], 
+	savemat_mod(fp, machine+100, "L", num_fils, num_fils, 0, Z[i],
 		    (double *)NULL, i, num_fils);
       }
     }
@@ -1494,7 +1462,7 @@ SYS *indsys;
       else
         printf("L matrix not dumped.  Run with mat_vect_prod = DIRECT if this is desired\n");
     }
-    
+
     /* save vector of filament areas */
     for(tmps = indsys->segment; tmps != NULL; tmps = tmps->next) {
       for(j = 0; j < tmps->num_fils; j++) {
@@ -1513,12 +1481,12 @@ SYS *indsys;
 		num_fils);
     savemat_mod(fp, machine+0, "pos", num_fils, 3, 0, dumbz, (double *)NULL, 1,
 		num_fils);
-    
+
     free(dumb);
     free(dumbx);
     free(dumby);
     free(dumbz);
-    
+
     fclose(fp);
   }
 }
@@ -1538,15 +1506,15 @@ int rows, cols;
 #endif
 
   /* this only saves the real part (savemat_mod.c modified) one byte per call*/
-  for(i = 0; i < rows; i++) 
-    for(j = 0; j < cols; j++) 
-      savemat_mod(fp, machine+100, name, rows, cols, 1, &Z[i][j].real, 
+  for(i = 0; i < rows; i++)
+    for(j = 0; j < cols; j++)
+      savemat_mod(fp, machine+100, name, rows, cols, 1, &Z[i][j].real,
 		  (double *)NULL, i+j, 1);
 
   /* do imaginary part of Z */
-  for(i = 0; i < rows; i++) 
+  for(i = 0; i < rows; i++)
     for(j = 0; j < cols; j++)
-      savemat_mod(fp, machine+100, name, rows, cols, 0, &Z[i][j].imag, 
+      savemat_mod(fp, machine+100, name, rows, cols, 0, &Z[i][j].imag,
 		  (double *)NULL, 1, 1);
 }
 
@@ -1576,7 +1544,7 @@ int rows, cols;
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temp[j] = Z[i][j].real;
-    savemat_mod(fp, machine+100, name, rows, cols, 1, temp, 
+    savemat_mod(fp, machine+100, name, rows, cols, 1, temp,
 		(double *)NULL, i, cols);
   }
 
@@ -1584,7 +1552,7 @@ int rows, cols;
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temp[j] = Z[i][j].imag;
-    savemat_mod(fp, machine+100, name, rows, cols, 0, temp, 
+    savemat_mod(fp, machine+100, name, rows, cols, 0, temp,
 		(double *)NULL, 1, cols);
   }
 }
@@ -1692,7 +1660,7 @@ SYS *indsys;
   for(mesh = 0; mesh < num_mesh; mesh++) {
     for(j = 0; j < nfils; j++) {
       tempsum = 0;
-      for(melem = Mlist[mesh]; melem != NULL; melem = melem->mnext) 
+      for(melem = Mlist[mesh]; melem != NULL; melem = melem->mnext)
 	tempsum += L[j][melem->filindex]*melem->sign;
       if (j < nmesh)
 	Zm[j][mesh].real = tempsum;
@@ -1717,7 +1685,7 @@ SYS *indsys;
     }
   }
 /*      savecmplx(fp, "step2", Zm, num_mesh, num_mesh); */
-  
+
   /* R is diagonal, so M*R*Mt is easy */
   for(i = 0; i < num_mesh; i++) {
     for(j = i; j < num_mesh; j++) {
@@ -1725,14 +1693,14 @@ SYS *indsys;
       /* brute force search for elements */
       for(melem = Mlist[i]; melem != NULL; melem = melem->mnext) {
 	for(melem2 = Mlist[j]; melem2 != NULL; melem2 = melem2->mnext) {
-	  if (melem2->filindex == melem->filindex) 
+	  if (melem2->filindex == melem->filindex)
 	    tempsum += melem->sign*R[melem->filindex]*melem2->sign;
 	}
       }
       Zm[i][j].real = Zm[j][i].real = tempsum;
     }
   }
-  /* don't free the temp space */    
+  /* don't free the temp space */
   /*
   if (rows > cols) {
     for(i = 0; i < rows - cols; i++)
@@ -1759,7 +1727,7 @@ int number, size;
   return blah;
 }
 
-/* forms the transpose of M.  Makes a linked list of each row.  Mlist is 
+/* forms the transpose of M.  Makes a linked list of each row.  Mlist is
     a linked list of its rows. */
 /* Note: This uses the same struct as Mlist but in reality, each linked list
    is composed of mesh indices, not fil indices. (filindex is a mesh index) */
@@ -1815,7 +1783,7 @@ SYS *indsys;
 	    mt = mt->mnext;
 	  }
 	  printf("Internal Warning: Mesh %d contains the same filament %d times\n",j,count);
-	} 
+	}
       }
     }
     mt->mnext = NULL;
@@ -1828,11 +1796,11 @@ SYS *indsys;
                   mt = mt->mnext, mt2 = mt2->mnext)
       if (mt->filindex != mt2->filindex || mt->sign != mt2->sign)
         printf("different: %d  %d %d\n",i,mt->filindex, mt2->filindex);
-    if (mt != mt2) 
+    if (mt != mt2)
       printf("both not NULL:  mt: %u  mt2: %u\n", mt, mt2);
   }
 #endif
-      
+
 }
 
 compare_meshes(mesh1, mesh2)
@@ -1858,7 +1826,7 @@ int rows, cols;
   int i, j;
 
   for(i = 0; i < rows; i++) {
-    for(j = 0; j < cols; j++) 
+    for(j = 0; j < cols; j++)
       fprintf(fp, "%13.6lg %+13.6lgj ", Z[i][j].real, Z[i][j].imag);
     fprintf(fp, "\n");
   }
@@ -1873,7 +1841,7 @@ int rows, cols;
   int i, j;
 
   for(i = 0; i < rows; i++) {
-    for(j = 0; j < cols; j++) 
+    for(j = 0; j < cols; j++)
       fprintf(fp, "%13.6lg ", A[i][j]);
     fprintf(fp, "\n");
   }
@@ -1917,7 +1885,7 @@ SYS *indsys;
 
   strcpy(fname,"Ycond");
   strcat(fname,tempstr);
-  savecmplx(fp, fname, indsys->FinalY, indsys->num_extern, 
+  savecmplx(fp, fname, indsys->FinalY, indsys->num_extern,
 	    indsys->num_sub_extern);
 
   strcpy(fname,"resids");
@@ -1992,7 +1960,7 @@ int num_mesh, nnz;
 
   if (counter != nnz)
     fprintf(stderr,"Internal Warning: nnz %d != counter %d\n",nnz,counter);
-  
+
 }
 
 dump_M_to_matlab(fp, Mlist, num_mesh, nnz, mname)
@@ -2020,7 +1988,7 @@ char *mname;
 
   if (counter != nnz)
     fprintf(stderr,"Internal Warning: nnz %d != counter %d\n",nnz,counter);
-}  
+}
 
 /* this picks one node in each tree to be a ground node */
 pick_ground_nodes(indsys)
@@ -2038,7 +2006,7 @@ SYS *indsys;
       node = getrealnode(((SEGMENT *)atree->loops->path->seg.segp)->node[0]);
     else
       node = getrealnode(((PSEUDO_SEG *)atree->loops->path->seg.segp)->node[0]);
-      
+
     if (node->index != -1) {
       fprintf(stderr,"huh? index == %d in pick_ground_node\n",node->index);
       exit(1);
@@ -2060,7 +2028,7 @@ SYS *indsys;
       ext->col_Yindex = ext->Yindex;
     return indsys->num_extern;
   }
-    
+
   for(ext = indsys->externals; ext != NULL; ext=ext->next)
     ext->col_Yindex = -1;
 

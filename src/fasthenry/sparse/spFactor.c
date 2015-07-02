@@ -1,38 +1,4 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//*
+/*
  *  MATRIX FACTORIZATION MODULE
  *
  *  Author:                     Advising Professor:
@@ -86,7 +52,6 @@ static char RCSid[] =
 #endif
 
 
-
 /*
  *  IMPORTS
  *
@@ -105,10 +70,30 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
+// Enrico, prototypes
+static FactorComplexMatrix();
+static CreateInternalVectors();
+static CountMarkowitz();
+static MarkowitzProducts();
+static ElementPtr SearchForPivot();
+static ElementPtr SearchForSingleton();
+static ElementPtr QuicklySearchDiagonal();
+static ElementPtr SearchDiagonal();
+static ElementPtr SearchEntireMatrix();
+static RealNumber FindLargestInCol();
+static RealNumber FindBiggestInColExclude();
+static ExchangeRowsAndCols();
+static ExchangeColElements();
+static ExchangeRowElements();
+static RealRowColElimination();
+static ComplexRowColElimination();
+static UpdateMarkowitzNumbers();
+static ElementPtr CreateFillin();
+static MatrixIsSingular();
+static ZeroPivot();
 
 
 
-
 /*
  *  ORDER AND FACTOR MATRIX
  *
@@ -522,7 +507,7 @@ ComplexNumber Mult, Pivot;
 /* Check for singular matrix. */
             Pivot = Dest[Step];
             if (CMPLX_1_NORM(Pivot) == 0.0) return ZeroPivot( Matrix, Step );
-            CMPLX_RECIPROCAL( *Matrix->Diag[Step], Pivot );  
+            CMPLX_RECIPROCAL( *Matrix->Diag[Step], Pivot );
         }
         else
         {   /* Update column using direct addressing scatter-gather. */
@@ -553,7 +538,7 @@ ComplexNumber Mult, Pivot;
 /* Check for singular matrix. */
             pElement = Matrix->Diag[Step];
             if (ELEMENT_MAG(pElement) == 0.0) return ZeroPivot( Matrix, Step );
-            CMPLX_RECIPROCAL( *pElement, *pElement );  
+            CMPLX_RECIPROCAL( *pElement, *pElement );
         }
     }
 
@@ -1067,7 +1052,7 @@ ElementPtr  SearchEntireMatrix();
     {
 /*
  * Either no singletons exist or they weren't acceptable.  Take quick first
- * pass at searching diagonal.  First search for element on diagonal of 
+ * pass at searching diagonal.  First search for element on diagonal of
  * remaining submatrix with smallest Markowitz product, then check to see
  * if it okay numerically.  If not, QuicklySearchDiagonal fails.
  */
@@ -2316,7 +2301,7 @@ ElementPtr  Element1, Element2;
  *
  *  Performs all required operations to exchange two columns. Those operations
  *  include: swap FirstInCol pointers, fixing up the NextInRow pointers,
- *  swapping column indexes in MatrixElements, and swapping Markowitz 
+ *  swapping column indexes in MatrixElements, and swapping Markowitz
  *  column counts.
  *
  *  >>> Arguments:

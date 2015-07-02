@@ -1,51 +1,21 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* This is FastHenry's overlapped preconditioner. It is based on much of the
- code from olmulPrcond() from FastCap.  It still contains remnants of the 
+/* This is FastHenry's overlapped preconditioner. It is based on much of the
+ code from olmulPrcond() from FastCap.  It still contains remnants of the
  actual FastCap code which could be removed. */
 
-/* Also added is the code for the sparse preconditioner.  This preconditioner 
+/* Also added is the code for the sparse preconditioner.  This preconditioner
 is the default.  Most of this code is if'd out for this precond */
 
 #include "induct.h"
+
+// Enrico, for spGetElement()
+#include "sparse/spMatrix.h"
+
 #define PARTMESH OFF    /* this should always be OFF */
 
 /* turn on positive definite preconditioner */
 /* #define POSDEF ON */
 
-/* This near picks up only the hamming distance one cubes. */    
+/* This near picks up only the hamming distance one cubes. */
 #define HNEAR(nbr, nj, nk, nl) \
 ((ABS((nbr)->j - (nj)) + ABS((nbr)->k - (nk)) + ABS((nbr)->l - (nl))) <= 1)
 
@@ -63,7 +33,7 @@ is the default.  Most of this code is if'd out for this precond */
 
 FILE *fp;
 static char outfname[80];
-	
+
 indPrecond(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
@@ -126,7 +96,7 @@ double w;
   double PrecondCost = 0;
   int totalcubes = 0;
   char *Matrix = indsys->sparMatrix;
-  
+
   if (filcount == NULL) {
     CALLOC(filcount, num_mesh, int, ON, IND);
     CALLOC(filcount2, num_mesh, int, ON, IND);
@@ -194,7 +164,7 @@ double w;
       is_in_nc[i] = 0;
       is_partial[i] = 0;
     }
-    for(i = 0; i < num_fils; i++) 
+    for(i = 0; i < num_fils; i++)
       findx[i] = -1;
 
     /*nsize = nc->directnumeles[0];*/
@@ -239,9 +209,9 @@ double w;
 
     /* bring in nearest neighbor terms.  Shouldn't get called if SPARSE */
     offset = nsize;
-    for(k=0; 
-        k < nc->numnbrs && (indsys->precond_type == LOC 
-                            || indsys->precond_subtype == SHELLS); 
+    for(k=0;
+        k < nc->numnbrs && (indsys->precond_type == LOC
+                            || indsys->precond_subtype == SHELLS);
         k++) {     /* loop on neighbors of nc */
       nnbr = nc->nbrs[k];
       if(NEAR(nnbr, nj, nk, nl)) {
@@ -265,7 +235,7 @@ double w;
 	    mat[i][offset + j] = nmat[i][j];
 
             if (indsys->precond_subtype == SHELLS) {
-              shiftval = shift_mutual(nc_pc[i]->fil, nnbr_pc[j]->fil, 
+              shiftval = shift_mutual(nc_pc[i]->fil, nnbr_pc[j]->fil,
                                       sys);
               if (fabs(shiftval) < fabs(mat[i][j + offset]))
                 mat[i][j + offset] -= shiftval;
@@ -350,7 +320,7 @@ double w;
 	    count++;
 	    j += melem->sign;
 	  }
-	  if (count != filcount[i] || (double)filcount2[i]/count < 0.5 
+	  if (count != filcount[i] || (double)filcount2[i]/count < 0.5
 	      || maxfilcount[i] != 0)
 	    filcount2[i] = -1;   /* this is a partial mesh */
 	}
@@ -362,14 +332,14 @@ double w;
 
 #endif
 
-    usefilcount = indsys->precond_type == SPARSE 
+    usefilcount = indsys->precond_type == SPARSE
 		   || (indsys->precond_subtype == OVERLAP);
 
     /* count total number of meshes */
     meshsize = 0;
     for(i = 0; i < num_mesh; i++) {
       if (usefilcount) {
-	if (filcount[i] > 0) 
+	if (filcount[i] > 0)
 	  meshsize++;
       }
       else if (!usefilcount) {
@@ -384,7 +354,7 @@ double w;
     if (meshsize > meshmax) {
       CALLOC(meshnum, meshsize + 10, int, ON, IND);
       CALLOC(meshmat, meshsize + 10, CX*, ON, IND);
-      for(i = 0; i < meshsize + 10; i++) 
+      for(i = 0; i < meshsize + 10; i++)
 	CALLOC(meshmat[i], meshsize + 10, CX, ON, IND);
       CALLOC(is_dup, meshsize + 10, DUPS, ON, IND);
       meshmax = meshsize + 10;
@@ -393,7 +363,7 @@ double w;
     /* fill indx and meshnum vectors */
     counter = 0;
     for(i = 0; i < num_mesh; i++) {
-      if ((usefilcount && filcount[i] > 0) 
+      if ((usefilcount && filcount[i] > 0)
 	  || (!usefilcount && filcount2[i] > 0)) {
 	indx[i] = counter;
 	meshnum[counter++] = i;
@@ -410,12 +380,12 @@ double w;
     for(i = 0; i < meshsize; i++)
       for(j = 0; j < meshsize; j++)
 	meshmat[i][j] = CXZERO;
-    
+
     /* for each element in mat, determine it's contribution to */
     /* meshmat = M*mat*Mtrans */
     /* there may be a more efficient way to do this with some more */
     /* temporary storage. Like a temp matrix for mat*Mtran */
-    
+
     posdef = indsys->precond_subtype == POSDEF_LOC;
 
     if (indsys->precond_subtype == SHELLS)
@@ -429,17 +399,17 @@ double w;
 	for(mtranj=Mtrans[fillist[j]]; mtranj != NULL; mtranj = mtranj->mnext)
 	  {
 	    if (filcount[mtranj->filindex] > 0 && !posdef
-		|| filcount2[mtranj->filindex] > 0 && posdef) {  
+		|| filcount2[mtranj->filindex] > 0 && posdef) {
 	      mcol = indx[mtranj->filindex];
 	      for(mtrani=Mtrans[fillist[i]]; mtrani!=NULL;mtrani=mtrani->mnext)
 		{
 		  if (filcount[mtrani->filindex] > 0 && !posdef
-		      || filcount2[mtrani->filindex] > 0 && posdef) {  
+		      || filcount2[mtrani->filindex] > 0 && posdef) {
 		    mrow = indx[mtrani->filindex];
-		    meshmat[mrow][mcol].imag 
+		    meshmat[mrow][mcol].imag
 		      += w*mtrani->sign*mat[i][j]*mtranj->sign;
 		    if (i == j)
-		      meshmat[mrow][mcol].real 
+		      meshmat[mrow][mcol].real
 			+= mtrani->sign*R[fillist[i]]*mtranj->sign;
 		  }
 		}
@@ -448,7 +418,7 @@ double w;
        }
        else if (i == j)
          fprintf(stderr,"Possible Bug:  self term in preconditioner == 0!\n");
-    
+
     if (indsys->precond_type == SPARSE) {
       for(i = 0; i < meshsize; i++) {
 	realmrow = meshnum[i];
@@ -456,7 +426,7 @@ double w;
 	for(j = 0; j < meshsize; j++) {
           if ( (meshmat[i][j].real != 0.0 || meshmat[i][j].imag != 0.0) ) {
             realmcol = meshnum[j];
-            (elem = (CX *)spGetElement(Matrix,realmrow+1,realmcol+1))->real 
+            (elem = (CX *)spGetElement(Matrix,realmrow+1,realmcol+1))->real
                              += meshmat[i][j].real;
             elem->imag += meshmat[i][j].imag;
           }
@@ -478,26 +448,26 @@ double w;
     else {
       /* check if duplicate partial meshes (fills is_dup) */
       mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx);
-      
+
       if (debug == 1) {
 	fp = fopen("chkinv.mat","w");
 	if (fp == NULL) {printf("no open\n"); exit(1); }
 	savecmplx(fp, "before", meshmat, meshsize, meshsize);
       }
-      
+
       if (indsys->opts->debug == ON)
 	fprintf(stdout, "Inverting a %d x %d matrix\n",meshsize,meshsize);
-      
+
       /* for experiment */
       /*
 	for(i=0; i<meshsize;i++)
 	for(j=0; j<meshsize;j++)
 	meshmat[i][j].imag = 0.0;
 	*/
-      
+
       /* now invert meshmat and skip duplicate rows and cols */
       cx_invert_dup(meshmat, meshsize, is_dup);
-      
+
       if (debug == 1) {
 	savecmplx(fp, "after", meshmat, meshsize, meshsize);
 	fclose(fp);
@@ -507,7 +477,7 @@ double w;
       /* this uses the allocated PRE_ELEMENTs that are there. */
       /* It is based on the fact that there are going to be more */
       for(i = 0; i < meshsize; i++) {
-	if (is_in_nc[meshnum[i]] != 1 || is_dup[i].sign != 0 
+	if (is_in_nc[meshnum[i]] != 1 || is_dup[i].sign != 0
 	    || is_partial[meshnum[i]] == TRUE) {
 	  /* this mesh is in one of the neighbors or it's a duplicate */
 	  continue;
@@ -530,14 +500,14 @@ double w;
 	      }
 	      prelast->next = pre;
 	    }
-	    
+
 	    pre->meshcol = meshnum[j];
 	    if (is_dup[j].sign == 0)
 	      pre->value = meshmat[i][j];
 	    else
 	      /* it's a duplicate, so use the duplicates inverse value. */
 	      /* this effectively 'adds' the mesh currents of all duplicates */
-	      cx_scalar_mult(pre->value, 
+	      cx_scalar_mult(pre->value,
 			     is_dup[j].sign, meshmat[i][is_dup[j].dup]);
 	    prelast = pre;
 	    pre = pre->next;
@@ -555,7 +525,7 @@ double w;
   /* make sure all meshes get preconditioned */
 
   if (indsys->precond_type == LOC) {
-    for(i = 0; i < num_mesh; i++) 
+    for(i = 0; i < num_mesh; i++)
       if (Precond[i] == NULL) {
 	/* set to PARTMESH = BLAH if calling bigmeshPre() */
 #if PARTMESH == OFF
@@ -566,10 +536,10 @@ double w;
 	Precond[i]->next = NULL;
 	Precond[i]->meshcol = i;
 	Precond[i]->value = CXONE;
-	
+
 	/* let's do better than the identity */
 	/* Try adding up self terms in mesh and inverting */
-	
+
 	tempsum = CXZERO;
 	for(melem = Mlist[i]; melem != NULL; melem = melem->mnext) {
 	  filchg = melem->fil->pchg;
@@ -592,14 +562,14 @@ double w;
 	  tempsum.real += R[melem->filindex];
 	  tempsum.imag += w*nc->directmats[0][j][j];
 	}
-	
+
 	/* for experiment */
 	/*    tempsum.imag = 0; */
-	
+
 	cx_div(Precond[i]->value, CXONE, tempsum);
 	if (indsys->opts->debug == ON)
 	  fprintf(stdout, "Sum of self terms: %lg +i*%lg\n",tempsum.real, tempsum.imag);
-	
+
 #else
 	fprintf(stderr, "Hey, mesh %d is never included in any cube??\n",i);
 	exit(1);
@@ -618,8 +588,8 @@ double w;
       exit(1);
   }
 
-  if (indsys->precond_type != SPARSE 
-      && (indsys->opts->dumpMats & PRE)) 
+  if (indsys->precond_type != SPARSE
+      && (indsys->opts->dumpMats & PRE))
     dumpPrecond(Precond, num_mesh, indsys->opts->suffix);
 
   if (indsys->precond_type == SPARSE && (indsys->opts->dumpMats & DUMP_Ls))
@@ -659,12 +629,12 @@ MELEMENT *getnext(mel, findx)
  int *findx;
 {
   while(mel != NULL && findx[mel->filindex] == -1)
-    mel = mel->mnext; 
+    mel = mel->mnext;
 
   return mel;
 }
-/* 
-  In-place inverts a matrix using guass-jordan. 
+/*
+  In-place inverts a matrix using guass-jordan.
   Skips rows and columns with is_dup[i].sign != 1.
 */
 cx_invert_dup(mat, size, is_dup)
@@ -789,7 +759,7 @@ char *suffix;
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.real;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow,
 		  (double *)NULL, i, cols);
   }
 
@@ -799,7 +769,7 @@ char *suffix;
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.imag;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow,
 		  (double *)NULL, 1, cols);
   }
 
@@ -807,8 +777,8 @@ char *suffix;
   printf("Done\n");
 }
 
-  
-  
+
+
 indPrecond_direct(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
@@ -890,7 +860,7 @@ double w;
     if (meshsize > meshmax) {
       CALLOC(meshnum, meshsize + 10, int, ON, IND);
       CALLOC(meshmat, meshsize + 10, CX*, ON, IND);
-      for(i = 0; i < meshsize + 10; i++) 
+      for(i = 0; i < meshsize + 10; i++)
 	CALLOC(meshmat[i], meshsize + 10, CX, ON, IND);
       meshmax = meshsize + 10;
     }
@@ -979,7 +949,7 @@ double w;
 	    prelast->next = pre;
 	  }
 	}
-      }	  
+      }
 #endif
 
 
@@ -990,7 +960,7 @@ double w;
 /*  bigmesh_direct(sys, indsys, w); */
 
   /* make sure all meshes get preconditioned */
-  for(i = 0; i < num_mesh; i++) 
+  for(i = 0; i < num_mesh; i++)
     if (Precond[i] == NULL) {
 /*
       CALLOC(Precond[i], 1, PRE_ELEMENT, ON, IND);
@@ -1006,4 +976,4 @@ double w;
   if (indsys->opts->dumpMats & PRE)
     dumpPrecond(Precond, num_mesh, indsys->opts->suffix);
 
-}  
+}

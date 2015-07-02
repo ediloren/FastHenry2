@@ -1,43 +1,10 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* This contains functions needed for the new preconditioner */
+/* This contains functions needed for the new preconditioner */
 
 #include "induct.h"
 #include "sparse/spMatrix.h"
 
-double *spGetElement();
+// redundant; already contained in "sparse/spMatrix.h"
+//double *spGetElement();
 
 static char outfname[80];
 
@@ -51,7 +18,7 @@ SYS *indsys;
 
   indsys->precond_type = precond_choice;
   indsys->precond_subtype = OFF;   /* will be changed below if necessary */
-  
+
   /* default */
   if (precond_choice == ON || precond_choice == SPARSE) {
     indsys->precond_type = SPARSE;
@@ -64,7 +31,7 @@ SYS *indsys;
   else if (precond_choice == POSDEF_LOC) {
     indsys->precond_type = LOC;
     indsys->precond_subtype = POSDEF_LOC;
-    if (indsys->opts->mat_vect_prod == DIRECT) 
+    if (indsys->opts->mat_vect_prod == DIRECT)
       fprintf(stderr,"Warning: -pposdef not supported with direct matrix\n \
 vector products.  POSDEF option ignored.\n");
   }
@@ -81,7 +48,7 @@ vector products.  POSDEF option ignored.\n");
     indsys->precond_subtype = SHELLS;
     radius_factor = indsys->opts->shell_r0;
   }
-    
+
   if (indsys->precond_type == SPARSE) {
 /*
     indsys->diagL = (double *)MattAlloc(indsys->num_fils,sizeof(double));
@@ -156,8 +123,8 @@ double w;  /* frequency */
   }
 #endif
   }
-  else if (indsys->precond_subtype == CUBEL 
-           || indsys->precond_subtype == SHELLS) 
+  else if (indsys->precond_subtype == CUBEL
+           || indsys->precond_subtype == SHELLS)
     indPrecond(sys, indsys, w);
   else if (indsys->precond_subtype == SEGML)
     fill_bySegment(sys, indsys, w);
@@ -165,7 +132,7 @@ double w;  /* frequency */
     printf("Unknown Sparse Preconditioner\n");
     exit(1);
   }
-    
+
   if (indsys->opts->dumpMats & PRE) {
     concat4(outfname,"Pre",indsys->opts->suffix,".mat");
     if (spFileMatrix(Matrix, outfname, "Precond", 0, 1, 1) == 0)
@@ -174,7 +141,7 @@ double w;  /* frequency */
 
 }
 
-/* this is called by choose_and_setup_precond() and also by main() if 
+/* this is called by choose_and_setup_precond() and also by main() if
    dont_form_Z is true (fmin = 0) */
 create_sparMatrix(indsys)
 SYS *indsys;
@@ -194,7 +161,7 @@ SYS *indsys;
     fprintf(stderr,"Couldn't create sparse matrix, err %d\n", err);
     exit(1);
   }
-} 
+}
 
 fill_bySegment(sys, indsys, w)
 ssystem *sys;
@@ -231,7 +198,7 @@ double w;
 
   max_fils = 0;
   for(seg = indsys->segment; seg != NULL; seg = seg->next)
-    if (seg->num_fils > max_fils) 
+    if (seg->num_fils > max_fils)
       max_fils = seg->num_fils;
 
   fillist = (Filcube *)malloc(max_fils*sizeof(Filcube));
@@ -276,7 +243,7 @@ double w;
 	    while(k < nc->numnbrs && nc->nbrs[k] != fillist[j].fc)
 	      k++;
 	    if (k < nc->numnbrs) {
-	      mat[i][j] = mat[j][i] = 
+	      mat[i][j] = mat[j][i] =
 		(nc->directmats[k])[cindex][fillist[j].cindex];
 	    }
 	    else {
@@ -296,21 +263,21 @@ double w;
 	}
       }
     }
-	
+
     for(i = 0; i < num_fils; i++) {
       if (ismulti)
 	fili = fillist[i].pchg->fil->filnumber;
       else
 	fili = seg->filaments[i].filnumber;
       for(j = 0; j < num_fils; j++) {
-	if (ismulti) 
+	if (ismulti)
 	  filj = fillist[j].pchg->fil->filnumber;
 	else
 	  filj = seg->filaments[j].filnumber;
 	for(mtranj=Mtrans[filj]; mtranj != NULL; mtranj = mtranj->mnext) {
 	  for(mtrani=Mtrans[fili]; mtrani != NULL; mtrani = mtrani->mnext) {
 	    ((CX *)spGetElement(Matrix,mtrani->filindex+1,
-				mtranj->filindex+1))->imag 
+				mtranj->filindex+1))->imag
 				  += w*mtrani->sign*mat[i][j]*mtranj->sign;
 	    if (i == j)
 	      ((CX *)spGetElement(Matrix,mtrani->filindex+1,
@@ -333,7 +300,7 @@ double w;
 /* this is mostly called by fill_spPre() to form the precondtioner */
 /* it used be called from main() if we are solving by LU decomposition
    and fmin=0 (the MZMt matrix will be a sparse MRMt).  but
-   now has it's own function, fill_diagR() 
+   now has it's own function, fill_diagR()
 */
 fill_diagL(sys, indsys, w)
 ssystem *sys;
@@ -360,7 +327,7 @@ double w;
   CX *elem;
   int ismulti, filnum;
 
-  ismulti = (indsys->opts->mat_vect_prod == MULTIPOLE 
+  ismulti = (indsys->opts->mat_vect_prod == MULTIPOLE
              && indsys->opts->soln_technique != LUDECOMP);
 
   for(seg = indsys->segment; seg != NULL; seg = seg->next) {
@@ -383,7 +350,7 @@ double w;
 	  exit(1);
 	}
 	cindex = j;
-	
+
 	val = nc->directmats[0][cindex][cindex];
       }
       else {
@@ -396,7 +363,7 @@ double w;
       for(mtranj=Mtrans[filnum]; mtranj != NULL; mtranj = mtranj->mnext) {
 	  for(mtrani=Mtrans[filnum]; mtrani != NULL; mtrani = mtrani->mnext) {
 	    (elem = (CX *)spGetElement(Matrix,mtrani->filindex+1,
-				       mtranj->filindex+1))->imag 
+				       mtranj->filindex+1))->imag
 					 += w*mtrani->sign*val*mtranj->sign;
 	    elem->real += mtrani->sign*valR*mtranj->sign;
 	  }
@@ -409,7 +376,7 @@ double w;
    Called from main() if we are solving by LU decomposition
    and fmin=0 (the MZMt matrix will be a sparse MRMt).
 
-   It puts the resistance matrix into a sparse matrix structure for a quick 
+   It puts the resistance matrix into a sparse matrix structure for a quick
    solve.  I thought that separating it out and using real matrices
    for this part would increase speed, but it didn't seem to.
    The reordering and fillin manipulation must be dominating and
@@ -446,9 +413,9 @@ SYS *indsys;
 
 /* computes  mu/(4 pi r0) * (l_i,l_j) where (l_i,l_j) is the dot product
    of the vectors from one end of each fil to the other end and r0 is
-   the multipole cube side length times a factor (radius_factor) which 
-   is specified on the command line or defaults to 0.87 = sqrt(3)*0.5 
-   so that the sphere encompasses the whole cube */ 
+   the multipole cube side length times a factor (radius_factor) which
+   is specified on the command line or defaults to 0.87 = sqrt(3)*0.5
+   so that the sphere encompasses the whole cube */
 double shift_mutual(fil_i, fil_j, sys)
 FILAMENT *fil_i, *fil_j;
 ssystem *sys;

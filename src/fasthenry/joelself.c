@@ -1,38 +1,4 @@
-/*!\page LICENSE LICENSE
- 
-Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
-Technology, hereafter designated as the Copyright Owners.
- 
-License to use, copy, modify, sell and/or distribute this software and
-its documentation for any purpose is hereby granted without royalty,
-subject to the following terms and conditions:
- 
-1.  The above copyright notice and this permission notice must
-appear in all copies of the software and related documentation.
- 
-2.  The names of the Copyright Owners may not be used in advertising or
-publicity pertaining to distribution of the software without the specific,
-prior written permission of the Copyright Owners.
- 
-3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
-REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
-LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
-MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
-SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
-RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
-WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
-ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
-SERVICE OR SUPPORT.
- 
-LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
-their trustees, officers, employees, students and agents against any and all
-claims arising out of the exercise of any rights under this Agreement,
-including, without limiting the generality of the foregoing, against any
-damages, losses or liabilities whatsoever with respect to death or injury to
-person or damage to property arising from or out of the possession, use, or
-operation of Software or Licensed Program(s) by LICENSEE or its customers.
- 
-*//* this file contains the functions for exact calculation of the
+/* this file contains the functions for exact calculation of the
    self-inductance of a rectangular bar and the mutual inductance of
    two parallel rectangular bars.
 
@@ -45,40 +11,40 @@ operation of Software or Licensed Program(s) by LICENSEE or its customers.
   ? 0 : (  ((x) > (y)) ? 1 : -1 )  )
 
 #define nearzero(x) (fabs(x) < EPS)
-  
+
 /* self inductance */
 double self(W,L,T)
-double W,L,T; 
+double W,L,T;
 {
 
     double w,t,aw,at,ar,r, z;
-    double asinh(), atan(), sqrt(); 
+    double asinh(), atan(), sqrt();
 
-    w = W/L; 
-    t = T/L; 
-    r = sqrt(w*w+t*t); 
-    aw = sqrt(w*w+1.0); 
-    at = sqrt(t*t+1.0); 
-    ar = sqrt(w*w+t*t+1.0); 
+    w = W/L;
+    t = T/L;
+    r = sqrt(w*w+t*t);
+    aw = sqrt(w*w+1.0);
+    at = sqrt(t*t+1.0);
+    ar = sqrt(w*w+t*t+1.0);
 
-    z = 0.25 * ((1/w) * asinh(w/at) + (1/t) * asinh(t/aw) + asinh(1/r)); 
-    z += (1/24.0) * ((t*t/w) * asinh(w/(t*at*(r+ar))) + (w*w/t) * asinh(t/(w*aw*(r+ar))) + 
-		     ((t*t)/(w*w)) * asinh(w*w/(t*r*(at+ar))) + ((w*w)/(t*t))*asinh(t*t/(w*r*(aw+ar))) + 
-		     (1.0/(w*t*t)) * asinh(w*t*t/(at*(aw+ar))) + (1.0/(t*w*w))*asinh(t*w*w/(aw*(at+ar)))); 
-    z -= (1.0/6.0) * ((1.0/(w*t)) * atan(w*t/ar) + (t/w) * atan(w/(t*ar)) + (w/t) * atan(t/(w*ar))); 
-    z -= (1.0/60.0) * ( ((ar+r+t+at)*t*t)/((ar+r)*(r+t)*(t+at)*(at+ar)) 
-		       + ((ar+r+w+aw)*(w*w)) / ((ar+r)*(r+w)*(w+aw)*(aw+ar)) 
-		       + (ar+aw+1+at)/((ar+aw)*(aw+1)*(1+at)*(at+ar))); 
-    z -= (1.0/20.0)*((1.0/(r+ar)) + (1.0/(aw+ar)) + (1.0/(at+ar))); 
-    
-    z *= (2.0/PI); 
+    z = 0.25 * ((1/w) * asinh(w/at) + (1/t) * asinh(t/aw) + asinh(1/r));
+    z += (1/24.0) * ((t*t/w) * asinh(w/(t*at*(r+ar))) + (w*w/t) * asinh(t/(w*aw*(r+ar))) +
+		     ((t*t)/(w*w)) * asinh(w*w/(t*r*(at+ar))) + ((w*w)/(t*t))*asinh(t*t/(w*r*(aw+ar))) +
+		     (1.0/(w*t*t)) * asinh(w*t*t/(at*(aw+ar))) + (1.0/(t*w*w))*asinh(t*w*w/(aw*(at+ar))));
+    z -= (1.0/6.0) * ((1.0/(w*t)) * atan(w*t/ar) + (t/w) * atan(w/(t*ar)) + (w/t) * atan(t/(w*ar)));
+    z -= (1.0/60.0) * ( ((ar+r+t+at)*t*t)/((ar+r)*(r+t)*(t+at)*(at+ar))
+		       + ((ar+r+w+aw)*(w*w)) / ((ar+r)*(r+w)*(w+aw)*(aw+ar))
+		       + (ar+aw+1+at)/((ar+aw)*(aw+1)*(1+at)*(at+ar)));
+    z -= (1.0/20.0)*((1.0/(r+ar)) + (1.0/(aw+ar)) + (1.0/(at+ar)));
+
+    z *= (2.0/PI);
     z *= L;  /* this is inductance */
-    
-    return z; 
+
+    return z;
 
 }
 
-/* This assumes the lengths of the fils are parallel and returns 1 if the 
+/* This assumes the lengths of the fils are parallel and returns 1 if the
    side faces are parallel also */
 edges_parallel(fil_j, fil_m, wid1, whperp)
 FILAMENT *fil_j, *fil_m;
@@ -98,7 +64,7 @@ double *wid1;
   }
   else {
     if (wid_j == NULL) {
-      /* get_wid(fil_j, wid1); */ 
+      /* get_wid(fil_j, wid1); */
       wid_j = wid1;
     }
     if (wid_m == NULL) {
@@ -180,7 +146,7 @@ double *wid, *height;
   height[ZZ] = hz;
 }
 
-/* exact mutual inductance based on C. Hoer and C.Love, 
+/* exact mutual inductance based on C. Hoer and C.Love,
    Journal of the National Bureau of Standards-C,  Vol. 69C, p 127-137, 1965.*/
 double exact_mutual(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m)
 FILAMENT *fil_j, *fil_m;
@@ -190,7 +156,7 @@ enum degen_type deg_j, deg_m;
 {
   double z_j[3];  /* unit vectors in the filament coord sys*/
   double origin[3];
-  double dumb, ox,oy,oz, length;
+  double dumb, vox,voy,voz, length;
   double a,b,c,d,l1,l2,l3,E,P, l3_1;
   double endx, endy, endz;
   int sign, sign2;
@@ -200,7 +166,7 @@ enum degen_type deg_j, deg_m;
   int a_deg, b_deg, c_deg, d_deg;
   extern int forced;
 
-  /* the width direction of j will be the x direction in the filament 
+  /* the width direction of j will be the x direction in the filament
      coordinate system */
   /*   get_wid(fil_j, x_j);  these are now passed as parms */
 
@@ -228,7 +194,27 @@ enum degen_type deg_j, deg_m;
     d = fil_m->height;
     c = fil_m->width;
   }
-    
+
+  // Enrico, bug fix
+  // The following piece of code has a potential numerical problem.
+  // The problem arises when 'fil_j', 'fil_m' end points are big numbers;
+  // however, the segment width and heigth is usually small, therefore
+  // the vector pointing from the segment j origin in the lower left
+  // corner to the first end point (end point 0) is small.
+  // ox, oy, oz are then calculated subtracting a small number from
+  // a big one (that is, 'fil_j->x[0]' is big and 'x_j[XX]*a/2 + y_j[XX]*b/2'
+  // is small). Later on, 'end' vector and especially l3_1 subtract 'o' vector
+  // from another big number. In particular, in l3_1, if the end point 1 of
+  // vector m conicides with end point 0 of vector j, the net result should
+  // be only 'o'. But this is not true because of numerical problems:
+  // we subtract from a big number the difference between a big, similar number
+  // and a small number.
+  // The bug fix assures that big, similar numbers are subtracted first and
+  // then the small difference is applied
+  //
+  // Original code
+  /*
+  // filament j lower left corner
   ox = origin[XX] = fil_j->x[0] - x_j[XX]*a/2 - y_j[XX]*b/2;
   oy = origin[YY] = fil_j->y[0] - x_j[YY]*a/2 - y_j[YY]*b/2;
   oz = origin[ZZ] = fil_j->z[0] - x_j[ZZ]*a/2 - y_j[ZZ]*b/2;
@@ -242,8 +228,37 @@ enum degen_type deg_j, deg_m;
   P = dotp(y_j[XX], y_j[YY], y_j[ZZ], endx, endy, endz) - c/2;
 
   l3 = dotp(z_j[XX], z_j[YY], z_j[ZZ], endx, endy, endz);
-  l3_1 = dotp(z_j[XX], z_j[YY], z_j[ZZ],fil_m->x[1] - ox, fil_m->y[1] - oy, 
+  l3_1 = dotp(z_j[XX], z_j[YY], z_j[ZZ],fil_m->x[1] - ox, fil_m->y[1] - oy,
 	      fil_m->z[1] - oz);
+  */
+
+  //
+  // Fixed code
+  //
+
+  // vector from <filament j origin in lower left corner> to <filament j central axis>
+  vox = x_j[XX]*a/2 + y_j[XX]*b/2;
+  voy = x_j[YY]*a/2 + y_j[YY]*b/2;
+  voz = x_j[ZZ]*a/2 + y_j[ZZ]*b/2;
+
+  endx = (fil_m->x[0] - fil_j->x[0]) + vox;
+  endy = (fil_m->y[0] - fil_j->y[0]) + voy;
+  endz = (fil_m->z[0] - fil_j->z[0]) + voz;
+  //endx = fil_m->x[0] + vox - fil_j->x[0];
+  //endy = fil_m->y[0] + voy - fil_j->y[0];
+  //endz = fil_m->z[0] + voz - fil_j->z[0];
+
+  E = dotp(x_j[XX], x_j[YY], x_j[ZZ], endx, endy, endz) - d/2;
+
+  P = dotp(y_j[XX], y_j[YY], y_j[ZZ], endx, endy, endz) - c/2;
+
+  l3 = dotp(z_j[XX], z_j[YY], z_j[ZZ], endx, endy, endz);
+  l3_1 = dotp(z_j[XX], z_j[YY], z_j[ZZ],(fil_m->x[1] - fil_j->x[0]) + vox,
+				(fil_m->y[1] - fil_j->y[0]) + voy, (fil_m->z[1] - fil_j->z[0]) + voz);
+
+  //
+  // End of fixed code
+  //
 
   l1 = fil_j->segm->length;
   l2 = fil_m->segm->length;
@@ -252,7 +267,7 @@ enum degen_type deg_j, deg_m;
     fprintf(stderr, "Huh?  filament not expected length\n");
     exit(1);
   }
-  
+
   if (l3 <= l3_1)
     sign = 1;
   else {
@@ -312,7 +327,7 @@ enum degen_type deg_j, deg_m;
   fill_4(q, E,a,d);ads
   fill_4(r, P,b,c);
   fill_4(s, l3,l1,l2);
-  
+
   totalM = 0;
 
   for(i = 0; i < 4; i++)
@@ -354,7 +369,7 @@ double x,y,z, ref_len;
   int num_nearzero_sq;
   double log_term(), tan_term();
   double one_over_ref_len;
-  double one_over_ref_len_sq; 
+  double one_over_ref_len_sq;
 
   one_over_ref_len = 1.0/MAX(ref_len, (fabs(x) + fabs(y) + fabs(z)));
   one_over_ref_len_sq = SQUARE(one_over_ref_len);
@@ -368,21 +383,21 @@ double x,y,z, ref_len;
   retval = one_60*len
               *(xsq*(xsq - 3*ysq) + ysq*(ysq - 3*zsq) + zsq*(zsq - 3*xsq));
 
-  num_nearzero = nearzero(x*one_over_ref_len) 
+  num_nearzero = nearzero(x*one_over_ref_len)
                  + nearzero(y*one_over_ref_len)
 		 + nearzero(z*one_over_ref_len);
 
-  num_nearzero_sq = nearzero(xsq*one_over_ref_len_sq) 
+  num_nearzero_sq = nearzero(xsq*one_over_ref_len_sq)
                  + nearzero(ysq*one_over_ref_len_sq)
 		 + nearzero(zsq*one_over_ref_len_sq);
 
   if (num_nearzero_sq < 2)
-    retval += one_24*(log_term(x, xsq, ysq, zsq, len) 
-		      + log_term(y, ysq, xsq, zsq, len) 
+    retval += one_24*(log_term(x, xsq, ysq, zsq, len)
+		      + log_term(y, ysq, xsq, zsq, len)
 		      + log_term(z, zsq, xsq, ysq, len));
 
   if (num_nearzero < 1)
-    retval -= one_6*(tan_term(x,y,z,zsq,len) + tan_term(x,z,y,ysq,len) 
+    retval -= one_6*(tan_term(x,y,z,zsq,len) + tan_term(x,z,y,ysq,len)
 		     + tan_term(z,y,x,xsq,len));
 
   return retval;
@@ -484,7 +499,7 @@ int *dim_count, *p_num_dims;
       *retval *= -1;
     return 1;
   }
-    
+
 }
 
 /* this fills the vector dims with the dimension information for fil_j
@@ -512,7 +527,7 @@ double *dims, *widthj, *heightj;
   z_j[XX] = fil_j->lenvect[XX]/length;
   z_j[YY] = fil_j->lenvect[YY]/length;
   z_j[ZZ] = fil_j->lenvect[ZZ]/length;
-  
+
   x = (fil_j->x[0]+fil_j->x[1]) - (fil_m->x[0]+fil_m->x[1]);
   y = (fil_j->y[0]+fil_j->y[1]) - (fil_m->y[0]+fil_m->y[1]);
   z = (fil_j->z[0]+fil_j->z[1]) - (fil_m->z[0]+fil_m->z[1]);
@@ -538,7 +553,7 @@ double *dims, *widthj, *heightj;
     j_first = 1;
   else if (is_same == 1 || is_same == 0)
     j_first = 0;
-    
+
   if (j_first == 1) {
     dims[i++] = fil_j->height;
     dims[i++] = fil_j->width;
@@ -596,7 +611,7 @@ double *dims, *widthj, *heightj;
     j_first = 1;
   else if (is_same == 1 || is_same == 0)
     j_first = 0;
-    
+
   if (j_first == 1) {
     dims[i++] = fil_j->height;
     dims[i++] = fil_j->width;
@@ -615,7 +630,7 @@ double *dims, *widthj, *heightj;
     exit(1);
   }
 }
-  
+
 /*
 int compare(x, y, eps)
 double x,y,eps;
@@ -652,7 +667,7 @@ Table ***ret_lastptr, **a_table;
     else if (is_same == -1) {
       lastptr = &(entry->next_val);
       entry = entry->next_val;
-    }      
+    }
     else {
       if (dim_count < num_dims - 1) {
 	dim_count++;
@@ -681,7 +696,7 @@ Table ***ret_lastptr, **a_table;
       */
   return 0;
 }
-      
+
 put_in_table(fil_j, fil_m, whperp, mutterm, dims, dim_count, lastptr, num_dims)
 FILAMENT *fil_j, *fil_m;
 int whperp;
@@ -701,7 +716,7 @@ Table **lastptr;
   (*lastptr) = entry;
   entry->val = dims[dim_count++];
   lastptr = &(entry->u.next_dim);
-  
+
   for(i = dim_count; i < num_dims; i++) {
     entry = (Table *)AllocAnEntry(&table_alloc);
     (*lastptr) = entry;
@@ -721,7 +736,7 @@ Table **lastptr;
 }
 
 /* no logic, just a nice number */
-#define ALLOCBLOCK 256 
+#define ALLOCBLOCK 256
 
 /* initialize info for allocating table so we can free it later */
 init_table()
@@ -764,7 +779,7 @@ AllocInfo *allocptr;
     elem = (AllocList *)malloc(sizeof(AllocList));
     elem->next = allocptr->head;
     allocptr->head = elem;
-    elem->ptr = allocptr->next_elem = 
+    elem->ptr = allocptr->next_elem =
                         (char *)malloc(allocptr->size*blocksize);
     allocptr->elems_left = blocksize - 1;
     if (allocptr->next_elem == NULL) {
@@ -816,7 +831,7 @@ double E,a,d,P,b,c,l3,l1,l2;
   fill_4(q, E,a,d);
   fill_4(r, P,b,c);
   fill_4(s, l3,l1,l2);
-  
+
   totalM = 0;
 
   for(i = 0; i < 4; i++)
@@ -840,7 +855,7 @@ double E,a,d,P,l3,l1,l2;
   fill_4(s, l3,l1,l2);
 
   totalM = 0;
-  
+
   for(i = 0; i < 4; i++)
       for(k = 0; k < 4; k++) {
 	sign2 = ( (i+k)%2 == 0 ? 1 : -1);
@@ -871,12 +886,12 @@ double x,y,z, ref_len;
 
   retval = -one_6*len*(xsq - 2*ysq + zsq);
 
-  num_nearzero_sq = nearzero(xsq*one_over_ref_len_sq) 
+  num_nearzero_sq = nearzero(xsq*one_over_ref_len_sq)
                  + nearzero(ysq*one_over_ref_len_sq)
 		 + nearzero(zsq*one_over_ref_len_sq);
 
   if (num_nearzero_sq < 2)
-    retval += 0.5*( (xsq - ysq)*z*log(z + len) + (zsq - ysq)*x*log(x + len) ); 
+    retval += 0.5*( (xsq - ysq)*z*log(z + len) + (zsq - ysq)*x*log(x + len) );
 
   if (!nearzero(y*one_over_ref_len))
     retval -= x*y*z*atan(x*z/(y*len));
@@ -898,7 +913,7 @@ double E,a,P,c,l3,l1,l2;
   fill_4(s, l3,l1,l2);
 
   totalM = 0;
-  
+
   for(i = 0; i < 2; i++)
     for(j = 0; j < 2; j++)
       for(k = 0; k < 4; k++) {
@@ -942,19 +957,19 @@ double x,y,z, ref_len;
   if (!(nzzsq && nzxsq))
     retval += (0.5*zsq - one_6*xsq)*x*log(y + len);
   if (!(nzzsq || nzysq || nzxsq))
-    retval += x*y*z*log(z + len); 
+    retval += x*y*z*log(z + len);
 
 /*  retval += (0.5*zsq - one_6*ysq)*y*log(x + len)
                 + (0.5*zsq - one_6*xsq)*x*log(y + len)
-		  + x*y*z*log(z + len); 
+		  + x*y*z*log(z + len);
 */
 
-  num_nearzero = nearzero(x*one_over_ref_len) 
+  num_nearzero = nearzero(x*one_over_ref_len)
                  + nearzero(y*one_over_ref_len)
 		 + nearzero(z*one_over_ref_len);
 
   if (num_nearzero < 1)
-    retval -= zsq*z*one_6*tan_tape(x,y,z,len) 
+    retval -= zsq*z*one_6*tan_tape(x,y,z,len)
                + 0.5*z*(xsq*tan_tape(y,z,x,len) + ysq*tan_tape(x,z,y,len));
 
   return retval;
