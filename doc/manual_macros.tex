@@ -1,0 +1,72 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Stuff for reading a file verbatim.  From TexBook
+%%   Usage: \listing{filename}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\uncatcodespecials{\def\do##1{\catcode`##1=12 }\dospecials}
+
+\def\setupverbatim{\tt \def\par{\leavevmode\endgraf} \catcode`\`=\active
+\obeylines \uncatcodespecials \obeyspaces}
+
+{\obeyspaces\global\let =\ } % let active space = control space
+
+%  {\catcode`\`=\active \gdef`{\relax\lq}}
+\def\listing#1{           %\setlength{\baselineskip}{0.01in}
+         \par\begingroup\setupverbatim\input#1 \endgroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Stuff for making text box, from lms/lums
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newlength{\boxwidth}
+\newlength{\exfsep}
+\newlength{\fboxwidth}
+\newlength{\yacktemp}
+\newlength{\zerolength}
+\setlength{\zerolength}{0pt}
+
+\newcommand{\ExBox}[3]{ % Title pos text
+\setlength{\fboxwidth}{\linewidth}
+\setlength{\boxwidth}{\linewidth}
+\addtolength{\boxwidth}{-\fboxsep}
+\addtolength{\boxwidth}{-\fboxsep}
+\setlength{\exfsep}{\zerolength}
+\setlength{\yacktemp}{\topsep}
+\setlength{\topsep}{0pt}
+\def\MaybeTitle{#1}
+\def\MaybePos{#2}
+\ifx\MaybeTitle\empty
+  \vspace{-6pt}
+\fi
+\begin{trivlist}\item[]
+  \framebox[\linewidth][t]{
+    \begin{minipage}[t]{\boxwidth}{
+      \ifx\MaybeTitle\empty
+%
+      \else
+        \begin{minipage}[t]{\boxwidth}
+          \if #2c \centerline{
+            \rule[-6pt]{0pt}{16pt}
+            {\sl \MaybeTitle}
+          } \else {
+            \rule[-6pt]{0pt}{16pt}
+            {\sl \MaybeTitle}
+          } \fi
+        \end{minipage}
+        \noindent {\hrule width \fboxwidth} % \vskip -0.1in
+        \setlength{\exfsep}{\fboxsep}
+        \addtolength{\boxwidth}{-\fboxsep}
+        \addtolength{\boxwidth}{-\fboxsep}
+      \fi
+      \hspace*{\exfsep}
+      \begin{minipage}[t]{\boxwidth}{
+        \vspace*{0.1in}{
+        \listing{#3}
+        }\vspace*{0.1in}
+      }\end{minipage}
+    }\end{minipage}
+  }
+\end{trivlist}
+\setlength{\topsep}{\yacktemp}
+}
+

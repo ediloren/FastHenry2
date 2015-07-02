@@ -1,0 +1,31 @@
+* Ground plane with a bar over it.  The return path for the bar is through the
+* ground plane.
+*
+.units meters
+.default sigma = 3.5e7
+.default nhinc =2
+.default nwinc =2 
+*
+* ground plane
+*
+g1 x1=0 y1=0 z1=0 x2=0.1 y2=0 z2=0 x3=0.1 y3=0.1 z3=0 thick=0.001 seg1=17 seg2=17
++   nodein (0.045,0.01)
++   nodeout (0.045,0.08)
++   nBin  (0.075,0.07)
++   nBout (0,0,0)
+*
+* bar 
+*
+NB1 x=0.035 y=0.03 z=0.002  
+NB2 x=0.065 y=0.05 z=0.002
+NB3 x=0.080 y=0.06 z=0.002
+eBseg1 NB1 NB2 w=0.002 h=0.001
+eBseg2 NB2 NB3 w=0.002 h=0.001
+*
+.equiv nBin Nb3
+.external NB1 NBout
+.external nodein nodeout
+*
+*
+.freq fmin=1e2 fmax=1e10 ndec=0.125
+.end

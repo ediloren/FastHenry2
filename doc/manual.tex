@@ -1,0 +1,1952 @@
+\documentstyle[12pt,twoside,psfig]{article}
+
+\pagestyle{headings}
+\setlength{\oddsidemargin}{0.25in}      % 1.25in left margin 
+\setlength{\evensidemargin}{0.00in}     % 1.00in left margin (even pages)
+\setlength{\topmargin}{0.0in}           % 1in top margin
+\setlength{\textwidth}{6.25in}          % 6.25in text
+\setlength{\textheight}{9in}            % Body ht for 1in margins
+\addtolength{\topmargin}{-\headheight}  % No header, so compensate
+\addtolength{\topmargin}{-\headsep}     % for header height and separation
+
+\input{manual_macros.tex}
+
+\begin{document}
+
+\begin{titlepage}
+\vskip 36pt
+\begin{center}
+{\bf FastHenry USER'S GUIDE}\\
+Version 3.0
+\end{center}
+
+\vskip 18pt
+\begin{center}
+M.\ Kamon \hspace*{0.5in} L.M.\ Silveira \hspace*{0.5in} C.\ Smithhisler
+\hspace*{0.5in} J.\ White
+\end{center}
+
+\vskip 18pt
+\begin{center}
+Research Laboratory of Electronics \\
+Department of Electrical Engineering and Computer Science \\
+Massachusetts Institute of Technology \\
+Cambridge, MA  02139 U.S.A.
+\end{center}
+\vskip 18pt
+\begin{center}
+11 November 1996
+\end{center}
+
+\vfill
+\noindent This work was supported by Defense Advanced Research Projects Agency
+contract N00014-91-J-1698, a National Science Foundation Graduate
+Fellowship, and grants from IBM and Digital Equipment Corporation.
+\end{titlepage}
+
+\begin{titlepage}
+$\;$
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\input{license_}
+\newpage
+
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{intro_}
+
+\section{How to Prepare Input Files}
+\label{all}
+
+This section of the manual describes how to prepare input files for
+FastHenry.  The input files specify the \underline{discretization} of
+\underline{conductor volumes} into \underline{filaments}.  
+The input file specifies each conductor as a sequence of straight
+\underline{segments}, or elements, connected together at
+\underline{nodes}.  Each segment has a finite conductivity and its
+shape is a cylinder of rectangular cross
+section of some width and height. A node is simply a point in
+3-space.  The cross section of each segment can then be broken into a 
+number of parallel, thin filaments, each of which will be assumed to
+carry a uniform cross section of current along its length.
+The first two parts of this section describe the file format through
+simple examples. A detailed description is in the third part, and more
+complex examples can be found in the last section and later in the manual.
+
+\subsection{A Simple Example}
+
+The following is an input file
+which calculates the loop inductance of four segments 
+nearly tracing the perimeter of a square.  It is described more
+thoroughly on the next page.
+
+\begin{quote}
+\begin{verbatim}  
+**This is the title line. It will always be ignored**. 
+* Everything is case INsensitive
+* An asterisk starts a comment line.
+
+* The following line names millimeters as the length units for the rest 
+* of the file.
+.Units MM
+
+* Make z=0 the default z coordinate and copper the default conductivity.
+* Note that the conductivity is in units 1/(mm*Ohms), not 1/(m*Ohms)
+* since the default units are millimeters.
+.Default z=0 sigma=5.8e4
+
+* The nodes of a square (z=0 is the default)
+N1 x=0 y=0
+N2 x=1 y=0
+N3 x=1 y=1
+N4 x=0 y=1
+N5 x=0 y=0.01
+
+* The segments connecting the nodes
+E1 N1 N2 w=0.2 h=0.1
+E2 N2 N3 w=0.2 h=0.1
+E3 N3 N4 w=0.2 h=0.1
+E4 N4 N5 w=0.2 h=0.1
+
+* define one 'port' of the network
+.external N1 N5
+
+* Frequency range of interest.
+.freq fmin=1e4 fmax=1e8 ndec=1
+
+* All input files must end with:
+.end
+\end{verbatim}
+\end{quote}
+
+As described in the comments, {\tt .Units MM} defines all
+coordinates and lengths to be in millimeters.  All lines with an
+{\tt N} in the first column define nodes, and all lines starting
+with {\tt E} define segments.  In particular, the line
+\begin{verbatim}
+E1 N1 N2 w=0.2 h=0.1
+\end{verbatim}
+defines segment E1 to extend from node {\tt N1} to {\tt N2} and have a
+width of 0.2 mm and height of 0.1 mm as drawn in Figure \ref{E1_2}.
+If the $n \times n$ impedance matrix, $Z(\omega)$, 
+for an $n$-conductor problem is
+thought of as the parameters describing an $n$-port network, then the line 
+\begin{verbatim}
+.external N1 N5
+\end{verbatim}
+defines {\tt N1} and {\tt N5} as one port of the network.  In this
+example, only one port is specified, so the output will be a $ 1
+\times 1 $ matrix containing the value of the impedance looking into
+this one port.
+
+\begin{figure}
+\centerline{
+\psfig{figure=/u0/matt/induct/manual/E1_2.ps,width=3.0in}
+}
+\caption{Example Segment for Sample Input File}
+\label{E1_2}
+\end{figure}
+
+FastHenry
+calculates $Z(\omega)$ at the discrete frequencies described by the
+line
+\begin{verbatim}
+.freq fmin=1e4 fmax=1e8 ndec=1
+\end{verbatim}
+where {\tt fmin} and {\tt fmax} are the minimum and maximum
+frequencies of interest, and {\tt ndec} is the number of desired frequency
+points per decade.  In this case, $Z(\omega)$ will be calculated at
+$10^4, 10^5, 10^6, 10^7,$ and $10^8$ Hz.   All input files must end with
+{\tt .end}.
+
+In the above example, FastHenry created one filament per segment since
+no discretization of the segments into filaments
+was specified.  In order to properly model non-uniform cross sectional
+current due to skin and proximity effects, a finer discretization
+must be used.  Finer filaments are easily specified in the segment
+definition.  For example, replacing the definition for {\tt E1}
+with
+\begin{verbatim}
+E1 N1 N2 w=0.2 h=0.1 nhinc=5 nwinc=7
+\end{verbatim}
+specifies that {\tt E1} is to be broken up into thirty-five filaments:
+five along its height ({\tt nhinc=5}) and seven along its width ({\tt
+nwinc=7}).  See Figure \ref{E1}.
+
+\begin{figure}
+\centerline{
+\psfig{figure=/u0/matt/induct/manual/E1.ps,width=3.0in}
+}
+\caption{Segment discretized into 35 filaments}
+\label{E1}
+\end{figure}
+
+\subsection{Another Simple Example}
+\label{another}
+
+To continue teaching by example, what follows is an example of
+computing the loop inductance of an L
+shaped trace over a ground plane with the trace's return path through
+the plane as shown in 
+Figure~\ref{simple_gp}.  Note that a line beginning with `+' is a
+continuation of the previous line.
+
+\begin{figure}
+\centerline{
+\psfig{figure=/u0/matt/induct/examples/formanual/simple_gp_bb.ps,width=3.2in}
+}
+\caption{L-shaped trace over ground plane}
+\label{simple_gp}
+\end{figure}
+
+\noindent
+\listing{/u0/matt/induct/examples/formanual/simple_gp.inp}
+
+%\ExBox{simple\_gp.inp}{c}{/u0/matt/induct/examples/formanual/simple_gp.inp}
+
+In this example, the ground plane is a $1000 mil \times 1000 mil$ sheet of
+copper (by default) defined by three of its four corners, $(0,0,0)$,
+$(1000,0,0)$, $(1000,1000,0)$.  The plane is $1.2$~mils thick and
+its discretization is specified by {\tt seg1} and {\tt seg2} (see
+Section~\ref{planes}).  The discretization of the plane forms a grid of
+nodes and interconnecting segments.  {\tt nin} and {\tt nout} refer to
+the internal nodes of the plane which are closest to $(800,800,0)$ and
+$(0,200,0)$, respectively.  
+ 
+To model skin effects on the trace, the default for the number of
+filaments per segment is set to $8$.
+
+To compute loop inductance, the node at one end of the trace is
+shorted to the plane by declaring the
+the node to be ``electrically equivalent'' to the node directly underneath.
+\begin{verbatim}
+.equiv nin n3
+\end{verbatim}
+and then the other end is declared as the ``port'' with the {\tt
+.external} statement.
+
+In this case, a single loop impedance will be computed.  If, however, the
+{\tt .equiv} and {\tt .external} were replaced with
+\begin{verbatim}
+.external N1 N3
+.external nout nin
+\end{verbatim}
+then the partial inductances and resistances of these two paths would
+be computed yielding a $2 \times 2$ impedance matrix.
+
+Computing the impedance for only two frequencies is useful for
+visualization of the distribution of current in the reference plane 
+as described later in Section~\ref{viewcur}.
+
+
+\subsection{Input File Syntax}
+\label{syntax}
+
+The previous section described many of the basics required for an
+input file.  This section gives a more complete and detailed description of the
+input file format and should serve as a reference.
+
+Some general facts about file syntax:
+\begin{itemize}
+        \item Lines are processed sequentially.
+        \item Uppercase is converted to lower case.
+        \item ``*'' at the beginning of a line marks a comment line.
+        \item Lines are restricted to 1000 characters but can be
+continued with a ``+'' as the first character of subsequent lines.
+Intervening ``*'' lines are allowed in this release.
+        \item The first line in the file is considered the title line
+and is ignored. It is recommended that this line start with an ``*''
+for future compatibility and file concatenation.
+        \item The file must end with the {\tt .End} keyword.
+        \item Names of objects are limited to 80 characters.
+\end{itemize}
+
+In general, each line of the input file will either define some
+geometrical object, such as a node or segment, or it will specify some
+program parameter.  
+All input lines that define geometrical objects begin with a letter
+defining their type, and then some unique alphanumeric string of up to
+80 characters.  For
+instance, all node definitions begin with the letter {\tt N}.  
+This sets object lines apart
+from parameter specification lines which begin with a period, ``.''.
+
+The remainder of this section will describe all
+possible input lines.  In the following description, any argument
+enclosed in `[ ]' indicates an optional argument.  If not included on
+the input line, the actual value used for this argument will be either
+the program default, or the user default defined by the {\tt .Default}
+keyword (described below). 
+
+\subsubsection{Node Definitions}
+
+\begin{verbatim}
+Syntax:  Nstr [x = x_val] [y = y_val] [z = z_val]
+\end{verbatim}
+
+This defines a node called {\tt Nstr} where {\tt str} is any
+alphanumeric string.  The first character on the line must begin with
+an {\tt N} for this to be interpreted as a node definition.
+The node will have location $ (x\_val, y\_val, z\_val) $ where each
+coordinate has units defined by the {\tt .Units} keyword.  
+
+Any of the coordinates can be omitted assuming that a default value
+has been previously specified with the {\tt .Default} keyword.
+Otherwise, an error will occur and the program will exit.
+
+\subsubsection{Segment Definitions}
+\label{segdef}
+
+\begin{verbatim}
+Syntax:  Estr node1 node2 [w = value] [h = value] [sigma, rho = value] 
+                 [wx = value wy = value wz = value] 
+                 [nhinc = value] [nwinc = value] [rh = value] [rw = value]
+\end{verbatim}
+
+This defines a segment called {\tt Estr} where {\tt str} is any
+alphanumeric string.  The first character on the line must begin with
+the letter {\tt E} for this to be interpreted as a segment definition.
+The segment will extend from node {\tt node1} to node {\tt node2}
+which must be previously defined node names.  {\tt h} and {\tt w} are
+the segment height and width.  Either {\tt sigma}, the conductivity,
+or {\tt rho}, the resistivity, can be specified for the segment.
+
+Discretization of the segment into multiple, parallel thin filaments
+is specified with the {\tt nhinc} and {\tt nwinc} arguments. {\tt
+nhinc} specifies the number of filaments in the height direction, and
+{\tt nwinc}, the number in the width direction.  Both must be
+integers. See Figure \ref{E1}.  By default, the ratio of adjacent
+filaments is 2.0 as in Figure \ref{E1}, however this can changed with
+the {\tt rh} and {\tt rw} arguments which specify the ratio 
+in the height and width direction, respectively.
+While an automatic technique of dividing a section into filaments 
+based on the skin depth may be a better approach, no such feature is
+available.  See Section~\ref{discret} for guidance in choosing
+filament discretizations.
+
+
+To specify the orientation of the cross section, {\tt wx}, {\tt wy},
+and {\tt wz} represent any vector pointing along the width of the
+segment's cross section.  If these are omitted, the width vector is
+assumed to lie in x-y plane perpendicular to the length.  If the
+length direction is parallel to the z-axis, then the width is assumed
+along the x-axis.
+
+{\tt h} and {\tt w} can be omitted provided they are assigned a default
+value in a previous {\tt .Default} line.
+
+{\tt nhinc}, {\tt nwinc}, and {\tt sigma} or {\tt rho} can be omitted,
+and if not previously given a default value, then 1, 1, and the
+conductivity of copper, respectively, are used as default values. 
+
+Note that the nodes used to define the elements must be defined
+under {\bf Node Definitions} described above and cannot be reference
+plane nodes (See Section~\ref{planes} for a description of reference
+planes).  
+To connect to a reference plane, the user must instead
+create a new node at the desired location 
+as described in {\bf Node Definitions} and then use the {\tt .Equiv}
+keyword to equivalence the reference plane node and the new node. For
+instance, the following is not allowed:
+\begin{quote}
+\begin{verbatim}
+g1 x1 = 0     y1 = 0     z1 = 0
++  x2 = 1000  y2 = 0     z2 = 0
+ .
+ .
++ n_gp (5,5,0)
+
+N1 x=5 y=5 z=10
+E1 N1 n_gp 
+\end{verbatim}
+\end{quote}
+
+\noindent The legal way to define the segment would be
+\begin{quote}
+\begin{verbatim}
+g1 x1 = 0     y1 = 0     z1 = 0
++  x2 = 1000  y2 = 0     z2 = 0
+ .
+ .
++ n_gp (5,5,0)
+
+N1 x=5 y=5 z=10
+N2 x=5 y=5 z=0
+E1 N1 N2
+.equiv N2 n_gp
+\end{verbatim}
+\end{quote}
+
+\subsubsection{{\tt .Units} keyword}
+
+\begin{verbatim}
+Syntax:  .Units unit-name
+\end{verbatim}
+
+This specifies the units to be used for all subsequent coordinates and lengths
+until the end of file or another {\tt .Units} specification is
+encountered.  Allowed units are kilometers, meters, centimeters, millimeters,
+micrometers, inches, and mils with {\tt unit-name} specified as 
+{\tt km, m, cm, mm, um, in,
+mils}, respectively.  
+
+Note that this keyword affects the expected units for the conductivity
+and resistivity.
+
+\subsubsection{{\tt .Default} keyword}
+
+\begin{verbatim}
+Syntax:  .Default [x = value] [y = value] [z = value] [w = value] 
+                  [h = value] [sigma, rho = value]
+                  [nhinc = value] [nwinc = value] [rh = value] [rw = value]
+\end{verbatim}
+
+This keyword specifies default values to be used for subsequent object
+definitions.  A certain default value is used until the end of the file, or
+until it is superseded by another {\tt .Default} line changing that value.
+
+\subsubsection{{\tt .External} keyword}
+
+\begin{verbatim}
+Syntax:  .External node1 node2 [portname]
+\end{verbatim}
+
+This keyword specifies node {\tt node1} and node {\tt node2} as a
+terminal pair or port whose impedance parameters should be calculated 
+for the output impedance matrix.  If an input file includes $ n $ {\tt
+.External} lines, then the impedance matrix will be an $ n \times n $
+complex matrix.  The port can be given a name by specifying a single
+word string {\tt portname}.  This name is used to reference this port
+in the output file, {\tt Zc.mat}, and is also used with 
+the command line {\tt -x} option described in Section~\ref{clo}.
+
+This keyword effectively places a voltage source between these nodes
+and will later use the current through that source to determine an
+entry in the admittance matrix.  The first node specified is the
+positive node.  Note that it is up to the user to insure that there
+are NO loops of only voltage sources.  Also, a voltage source with no
+possible return path will always carry zero current 
+producing a row of zeros in the admittance matrix.  The output
+impedance matrix will thus be nonsense (NaN).
+
+\subsubsection{{\tt .Freq} keyword}
+
+\begin{verbatim}
+Syntax:  .Freq fmin=value fmax=value [ndec = value]
+\end{verbatim}
+
+This keyword specifies the frequency range of interest.  
+{\tt fmin} and {\tt fmax} are the minimum and maximum
+frequencies of interest, and {\tt ndec} is the number of desired frequency
+points per decade.  FastHenry must perform the entire solution process
+for each frequency.
+
+Note that {\tt ndec} need not be an integer.  For instance, 
+\begin{verbatim}
+.freq fmin=1e3 fmax=1e7 ndec=0.5
+\end{verbatim}
+will have FastHenry calculate impedance matrices for $f = 10^3, 10^5, $
+and $ 10^7$ Hz. 
+
+If {\tt fmin} is zero, FastHenry will run only the DC case
+regardless of the value of {\tt fmax}.  
+
+\subsubsection{{\tt .Equiv} keyword}
+
+\begin{verbatim}
+Syntax:  .Equiv node1 node2 node3 node4 ...
+\end{verbatim}
+
+This keyword specifies that nodes {\tt node1, node2, node3, node4,...}
+are to be considered electrically equivalent yet maintain their separate
+spatial coordinates.  The nodes are effectively `shorted' together.  
+If any of the node names are not previously defined, then they become
+pseudonyms for those nodes in the list which are defined.
+Note that the current flow between equivalenced nodes is not
+electromagnetically modeled.
+
+\subsubsection{{\tt .End} keyword}
+
+\begin{verbatim}
+Syntax:  .End
+\end{verbatim}
+
+This keyword specifies the end of the file.  All subsequent lines are
+ignored.  This line must end the file.
+
+\subsubsection{Reference Plane definitions}
+\label{planes}
+
+{\bf Note:} It is recommended that nonuniformly discretized planes be
+used instead of what is described here if possible.   
+See the document ``nonuniform\_manual\_*.ps''.
+Uniform planes described below can still be used if they satisfy your
+needs. Also, for new users, understanding uniform planes is necessary to
+understand the nonuniform\_manual.ps document.
+
+\vspace{0.1in}
+\noindent {\bf Uniformly discretized planes}
+
+\begin{verbatim}
+Syntax:  Gstr x1=value y1=value z1=value x2=value y2=value z2=value 
+              x3=value y3=value z3=value
+              thick=value seg1=value seg2=value 
+              [segwid1 = value] [segwid2 = value] 
+              [sigma, rho = value] 
+              [nhinc=value] [rh=value] 
+              [relx=value] [rely=value] [relz=value]
+              [Nstr1     (x_val,y_val,z_val) ] 
+              [Nstr2     (x_val,y_val,z_val) ]
+              [Nstr3     (x_val,y_val,z_val) ].....
+              [hole <hole-type> (val1,val2,....)]              
+              [hole <hole-type> (val1,val2,....)].....
+\end{verbatim}
+
+This defines a uniformly discretized reference plane of finite extent
+and conductivity called {\tt Gstr} where {\tt str} is any alphanumeric
+string.  The first character on the line must begin with the letter
+{\tt G} for this to be interpreted as a reference (originally
+``ground'') plane definition.  The three locations $(x1,y1,z1),
+(x2,y2,z2), (x3, y3, z3)$ mark three of the four corners of the plane
+in either clockwise or counterclockwise order. FastHenry will
+determine the fourth corner assuming the first three are corners of a
+rectangle.  The thickness of the plane is specified with the {\tt
+  thick} argument and the conductivity with either the {\tt sigma} or
+{\tt rho} argument.  Note that current is modeled to flow two
+dimensionally, i.e., not in the thickness direction.
+
+\begin{figure}
+\centerline{
+%\psfig{figure=/u0/matt/induct/manual/gp.ps,width=3.0in}
+\psfig{figure=/u0/matt/induct/examples/formanual/gp_bb.ps,width=3.5in}
+}
+\caption{Discretization of a Reference Plane. Segments are one-third actual width.}
+\label{gp}
+\end{figure}
+
+The reference plane is approximated by first laying down a
+grid of nodes, and then with segments, connecting every
+node to its adjacent nodes excluding diagonally adjacent nodes.  Each
+segment is given a height equal to the specified thickness of the
+plane and, by default, width equal to the node 
+spacing.  This choice of width completely fills the
+space between segments.  Figure \ref{gp} shows a sample reference plane
+with segments that are one-third full width for illustration.
+
+{\tt seg1} and {\tt seg2} specify the number of segments along each
+edge of the plane.  {\tt seg1} is the number of segments along
+the edge from $(x1,y1,z1) $ to $(x2,y2,z2)$ and {\tt seg2}, the number
+along the edge from $(x2,y2,z2) $ to $ (x3, y3, z3)$.  Thus the total
+number of nodes created will be ({\tt seg1}+1)*({\tt seg2}+1), and the
+total number of segments created will be $ ({\tt seg1} + 1)*{\tt seg2}
++ {\tt seg1}*({\tt seg2} + 1)$ .  Note that the line from the node at
+$(x1,y1,z1)$ to the node at
+$(x2,y2,z2)$ define the edge of the plane, however segments that
+run from $(x1,y1,z1) $ to $(x2,y2,z2)$ will overhang the edge by half
+their width since nodes are defined at the center of segments. This
+slight overapproximation to the width of the plane is avoided in the
+nonuniform discretization code described in {\tt nonuniform\_manual\_*.ps}.
+
+{\tt nhinc} and {\tt rh} can be used to specify a number of filaments
+for discretization of each segment along the thickness (See
+Section~\ref{segdef}). This could be used for modeling nonuniform
+current across the thickness.  If {\tt nhinc} is omitted, the value
+of 1 is used regardless of the {\tt .Default}
+setting.  If {\tt rh} is omitted, the default value is used.
+
+{\bf Note:} If you do not want to use segwid1 and segwid2 or holes as
+described below, you can use the nonuniform plane
+definition as described in ``nonuniform\_manual.ps''.
+
+\vspace{0.3in}
+{\bf \noindent Connections to the plane}
+
+Since the reference plane nodes are generated internally, 
+there is no way to
+refer to them later in the input file.  The exceptions to this are the
+nodes explicitly referenced in the reference plane definition.  The
+argument
+\begin{verbatim}
+Nstr1     (x_val,y_val,z_val)
+\end{verbatim}
+where {\tt str1} is an alphanumeric string, will cause all subsequent
+references to {\tt Nstr1} to refer to the node in the plane closest to
+the point $(x\_val,y\_val,z\_val)$.  Note that {\em no spaces} are
+allowed between the `()'.  The referencing is accomplished internally
+by effectively doing
+\begin{verbatim}
+.Equiv Nstr1 <internal-node-name>
+\end{verbatim}
+where {\tt <internal-node-name>} is the internal node name of the
+nearest reference plane node.  
+
+If one or more of {\tt relx}, {\tt rely}, and {\tt relz} are
+specified, then the above node referencing instead chooses the node closest to
+$(x\_val + relx, y\_val + rely, z\_val + relz)$.  In other words, {\tt
+relx}, {\tt rely}, and {\tt relz} default to $0$ if not specified.
+
+A coarsely discretized plane (small {\tt seg1}, {\tt seg2}) may cause
+two different node references to refer to 
+the same reference plane node.  FastHenry will warn of such an event, but
+it is not an error condition.
+
+{\bf Note:} It is recommended that connections to the plane be done
+with the ``contact equiv\_rect'' utility for nonuniformly discretized
+planes as described in ``nonuniform\_manual.ps''.
+
+\vspace{0.3in}
+\noindent {\bf Meshed Planes}
+
+By default, the width of the segments of the plane are chosen to fill
+the space between adjacent segments.  However, to model meshed planes
+the width of the segments can be chosen to be smaller
+with the {\tt segwid1} and {\tt segwid2} arguments.  This
+gives the plane the appearance of a ``mesh'' as shown is Figure
+\ref{gp}.  {\tt segwid1} specifies the width of the segments that are in the
+direction parallel to the plane edge from $(x1,y1,z1)$ to
+$(x2,y2,z2)$.  {\tt segwid2} specifies the width along the edge from
+$(x2,y2,z2)$ to $(x3,y3,z3)$.  
+
+Note that if the section of conductor between meshes is large compared
+to the size of the mesh holes, this method of discretization may be
+too coarse.  
+%In other words, if the proportion of area of the plane that
+%is conductor is large compared to the area that is hole, the single
+%segment approximation to the current around a mesh is poor.  
+For instance, assume the mesh consists of only nine holes on a 3x3
+grid.  In such a situation, consider using the {\tt hole} functions
+described below to make the specific holes on a plane
+with {\tt seg1,seg2}~$>> 3$.  See also Section~\ref{sec:holey}.
+
+\vspace{0.3in}
+\noindent {\bf Holes in the plane}
+
+Holes can be specified in the plane with
+\begin{verbatim}
+hole <hole-type> (val1,val2,val3,...)
+\end{verbatim}
+where {\tt <hole-type>} is the hole type and the {\tt valn}'s make the list 
+of arguments to be sent to the hole generating function.  Holes are
+generated by first removing reference plane nodes, and then removing all 
+segments connected to those nodes.
+The following describes the available hole generating functions:
+\begin{verbatim}
+hole point (x,y,z)
+\end{verbatim}
+removes the node nearest to the point (x,y,z).  
+\begin{verbatim}
+hole rect (x1,y1,z1,x2,y2,z2)
+\end{verbatim}
+removes a rectangular region whose opposite corners are the
+nodes in the plane nearest (x1,y1,z1) and (x2,y2,z2).
+\begin{verbatim}
+hole circle (x,y,z,r)
+\end{verbatim}
+removes the nodes contained within the circle of radius {\tt r}
+centered at (x,y,z).
+\begin{verbatim}
+hole user1 (val1,val2,...)
+\end{verbatim}
+calls the user defined function hole\_user1() to remove nodes.  
+user1 - user7 are available.  The user can add the functions to the
+source file {\tt hole.c} contained in the release.  See the functions
+hole\_rect(), hole\_point(), and hole\_circle() to see examples of the
+format for
+writing user hole functions.
+
+Any shaped hole can be formed with a combination of hole directives.
+A few exceptions exist, however.  Forming a hole that isolates or
+nearly isolates a
+section of the plane is not allowed.  FastHenry warns of this with:
+\begin{verbatim}
+Warning: Multiple boundaries found around one hole region
+  possibly due to an isolated or nearly isolated region of conductor.
+  This may lead to no unique solution.
+\end{verbatim}
+
+\noindent If a nearly isolated section of conductor is truly desired, consider
+defining two separate planes and connecting them.
+
+Holes may not be produced as expected if the discretization of the
+plane is coarse.  It is recommended that the plane be viewed by using
+the options ``{\tt -f simple -g on}'' options to generate a {\tt zbuf}
+file which can be used to generate a postscript image of the plane as
+described in Section~\ref{postscript}.
+
+\subsection{Other Examples}
+
+This section describes other examples using more of the features of
+FastHenry.  Some examples were created by the authors and some
+contributed from users.  All files are available with the FastHenry
+source code.
+
+\subsubsection{Printed Circuit Board}
+
+The example file {\tt gpexamp\_copper.inp} shown in
+Figure~\ref{gpexamp_copper} is a portion of a printed circuit board from Digital Equipment Corporation.  This structure is to
+be placed underneath a PGA package.  This geometry includes 2
+reference planes sandwiching a large number of copper lines which lead
+to the center where the package would be placed.  The set of copper
+lines are grouped into 18 groups according to functionality (see the
+many .equiv statements at the bottom of the file).  
+
+\begin{figure}
+\centerline{
+\psfig{figure=/u0/matt/induct/gpexamp/gpexamp.ps,width=5.0in}
+}
+\caption{Printed Circuit Board example}
+\label{gpexamp_copper}
+\end{figure}
+
+\subsubsection{Vias and Meshed Planes}
+
+The example file {\tt vias.inp} shown in Figure~\ref{vias} shows three
+vias passing through a meshed ground plane.  To form the mesh
+structure, the standard reference plane definition is used with the
+{\tt segwid1} and {\tt segwid2} arguments.
+Some of the dimensions for this example were taken from B.J. Rubin, ``An
+electromagnetic approach for modeling high-performance computer
+packages,''  {\em IBM J. Res. Dev.}, Vol.~34, No.~4, July 1990.
+
+\begin{figure}
+\centerline{
+\psfig{figure=vias.ps,width=5.0in}
+}
+\caption{Vias through a meshed ground plane}
+\label{vias}
+\end{figure}
+
+\subsubsection{Holey ground plane}
+\label{sec:holey}
+
+The example file {\tt holey\_gp.inp} shown in Figure~\ref{holey}
+is a punctured version of the reference plane example of
+section~\ref{another}.  The holes of the plane are formed with 
+the {\tt rect} and {\tt circle} hole directives. 
+
+\begin{figure}
+\centerline{
+\psfig{figure=holey_gp_bb.ps,width=5.0in}
+}
+\caption{Trace over Ground Plane with holes}
+\label{holey}
+\end{figure}
+
+\subsubsection{Pin-connect}
+
+The example file {\tt pin-connect.inp} shown in
+Figure~\ref{pin-connect} is thirty-five pins of a 68-pin cerquad pin
+package from Digital Equipment Corporation.  
+%It is not clear why this contribution does not contain all 68 pins.
+
+\begin{figure}
+\centerline{
+\psfig{figure=pin-connect.ps,width=5.0in}
+}
+\caption{Thirty-Five Pins of a 68 pin Cerquad Package}
+\label{pin-connect}
+\end{figure}
+
+\subsubsection{Right Angle Connector}
+
+The example file {\tt 30pin.inp} from Teradyne Connection Systems
+Inc. shown in Figure~\ref{30pin} is a PCB right angle connector
+plugged into its thirty corresponding pins.  The V-shaped clamping
+portion and right angle bend make up the connector as shown in the
+single pin illustration of Figure~\ref{one_of_30pin}.  In reality, the
+pin protrudes through the V-shaped clamp, but that section conducts no
+current and is not included.
+
+Each of the thirty pins is a different shade of gray.  The
+white portions of the V are also part of each pin but appear white due
+to the limits of the shading algorithm.
+
+
+\begin{figure}
+\centerline{
+\psfig{figure=30pin.ps,width=5.0in}
+}
+\caption{Thirty pin right angle connector}
+\label{30pin}
+\end{figure}
+
+\begin{figure}
+\centerline{
+\psfig{figure=one_of_30pin_bb.ps,width=3.0in}
+}
+\caption{One pin of the thirty pin right angle connector}
+\label{one_of_30pin}
+\end{figure}
+
+\subsubsection{Photodetector}
+
+The example file {\tt msm.inp} shown in Figure~\ref{msm} is a
+metal-semiconductor-metal photodetector from NASA Langley Research
+Center and University of Virginia.  These devices consist of a set of
+closely spaced, interdigitated electrodes deposited on an optically
+active semiconductor layer.  Every other electrode is biased to the
+same potential, so that any two adjacent electrodes are at opposite
+electrostatic potentials.  Becuase the electrodes are closely spaced,
+the electric fields between them are quite strong with application of
+low to moderate bias voltages. As a result, any carriers generated by
+absorption of light between the fingers are transported to the
+electrodes extremely rapidly giving fast response to short pulses of
+light.
+
+\begin{figure}
+\centerline{
+\psfig{figure=msm.ps,width=4.0in}
+}
+\caption{Metal-semiconductor-metal Photodetector}
+\label{msm}
+\end{figure}
+
+\section{Running FastHenry}
+
+The basic form of the FastHenry program command line is
+\begin{quote}
+\begin{verbatim}
+fasthenry [<input file>] [<Options>]
+\end{verbatim}
+\end{quote}
+Usually only the {\tt input file} is specified.
+For example, the command
+\begin{quote}\tt
+fasthenry pin-connect.inp
+\end{quote}
+runs {\tt fasthenry} on the example pin connect structure.
+
+Information about the input file and other FastHenry information are
+sent to the standard output.  The impedance matrices for the
+frequencies specified in the input file will be placed in the text
+file {\tt Zc.mat}.  This file also lists the correspondence between
+columns in the impedance matrix and the ports specified in the input
+file.  The source file {\tt ReadOutput.c} described in
+Section~\ref{processing} is provided as a sample program for reading
+the output file for postprocessing.
+
+\subsection{Example Run}
+
+%With the release are example structures {\tt 30pin.inp}, {\tt
+%pin-connect.inp}, {\tt onebargp.inp}, {\tt hole.inp}, {\tt
+%broken.inp}, and {\tt together.inp}. 
+This section contains a sample run of FastHenry for the 30 pin
+connector example, {\tt 30pin.inp} shown in Figure~\ref{30pin}.  Comments
+describing the output appear along the right margin in addition to the
+{\tt FastHenry} command line option which would change the described
+setting.
+
+{\small
+\input{30pin.run.hilb}
+}
+
+\subsection{Processing the Output}
+\label{processing}
+
+\subsubsection{The impedance matrix}
+
+The file {\tt Zc.mat} is a text file containing the impedance matrices
+for the frequencies requested.  The file {\tt ReadOutput.c} in
+directory {\tt src/misc/} is an example program for reading the text
+file for whatever processing is necessary.  It contains the function
+{\tt ReadZc()} which reads from a file and returns a linked list of
+impedance matrices and their corresponding frequencies. See the source
+file for more details.  This function can be extracted and included in
+whatever program the user desires.
+
+The function {\tt main()} is provided as an example use of
+{\tt ReadZc()}.  For each of the matrices, it divides the
+imaginary part by the frequency to give the matrix $R + jL$ and then
+dumps the result to the standard output.
+
+{\tt ReadOutput.c} can be compiled by typing
+\begin{verbatim}
+cc -o ReadOutput ReadOutput.c
+\end{verbatim}
+
+Here is a sample of its output after processing {\tt Zc.mat} produced
+by running {\tt fasthenry} on example file {\tt onebargp.inp}:
+
+{\small
+\input{readit}
+}
+
+\subsubsection{Creating Equivalent Circuits}
+
+Two approaches for generating spice equivalent circuits are available:
+
+\vspace{0.1in}
+\noindent {\bf Approach 1: An equivalent circuit for a single frequency.}
+  \begin{itemize}
+    \item Run fasthenry for EXACTLY one frequency.
+    \item Compile (with some C compiler) the file MakeLcircuit.c in
+      the directory fasthenry-3.0/src/misc/ 
+    \begin{verbatim}
+      cc -o MakeLcircuit MakeLcircuit.c -lm
+    \end{verbatim}
+    \vspace{-0.1in}
+    \item Run MakeLcircuit on the Zc.mat produced by FastHenry
+    \begin{verbatim}
+      MakeLcircuit Zc.mat > my_circuit.spice
+    \end{verbatim}
+  \end{itemize}
+
+This produces a circuit where nodes 0 and 1 correspond to the plus and
+minus nodes of the first
+FastHenry port (also called .external).  2 and 3 correspond to the second port.
+4 and 5 the third, etc.
+
+\vspace{0.1in}
+\noindent {\bf Approach 2: A circuit which models the frequency
+  dependent resistances and   inductances}
+
+This approach generates a reduced order model for the system using the 
+   arguments ``-r n -M'' to FastHenry.  This gives an equivalent
+   circuit which is valid for a range of
+   frequencies.
+\begin{itemize}
+   \item Run FastHenry: {\tt fasthenry -r n -M myinput.inp}\\
+     Where ``n'' is replaced with the desired order, say 20.
+     This produces the file {\tt equiv\_circuitROM.spice} containing a single
+     spice subcircuit.  
+   \item Include the subcircuit in a spice input file and connect
+     devices to it.  
+  \end{itemize}
+
+The subcircuit will be named {\tt ROMequiv} and
+its port nodes are p0 and m0 for the plus and minus terminals of
+port 0, p1 and m1 for port 1, etc. See the header of the
+equiv\_circuitROM.spice file for more description.  Any suffix
+specified with ``-S'' will be appended to both the subcircuit
+name, {\tt ROMequiv}, and the subcircuit filename, {\tt
+  equiv\_circuitROM.spice}.
+
+Comments:  Approach 1 will not model frequency dependent resistance
+and inductance since it gives an R and L at the single specified
+frequency.  Approach 2 will model the full frequency dependent effects
+up to some frequency 
+where that frequency is higher for a higher chosen order, $n$.
+The reduced order model of Approach 2 is converted to a circuit from its
+state-space form through capacitors, resistors, and VCCSs so insight
+can only be gained by simulating the subcircuit in spice rather than
+looking inside the subcircuit file.  An example is provided below. For
+a description of reduced 
+order modeling for inductance computation see the paper {\tt
+tchmt-epep94.ps} in the {\tt pub/fasthenry} directory at
+the {\tt rle-vlsi.mit.edu} ftp site:
+
+\begin{quote}
+\noindent
+ L. Miguel Silveira and Mattan Kamon and Jacob K. White, ``Efficient
+ Reduced-Order Modeling of Frequency-Dependent Coupling Inductances
+ associated with 3-D Interconnect Structures'', {\em IEEE Transactions on 
+    Components, Hybrids, and Manufacturing Technology, Part B:
+    Advanced Packaging}, Vol. 19, No. 2, May 1996, pp. 
+    283-288. 
+\end{quote}
+
+\noindent {\bf An example of Approach 2}
+
+The file {\tt examples/pin-con7.inp} is 7 pins of a larger package
+shown in Figure~\ref{pin-connect}. Each conductor is discretized into
+filaments to capture skin and proximity effects up to around $10^{10}$
+Hz. One can
+generate an equivalent circuit via Approach 2 with
+\begin{verbatim}
+  fasthenry -r 20 -M pin-con7.inp -S_pin_con7_r20
+\end{verbatim}
+which produces the file {\tt equiv\_circuitROM\_pin\_con7\_r20.spice}
+which is an equivalent circuit for a 140th ($20*7$) order model. To test
+its accuracy, consider computing impedance matrices at many
+frequencies with
+\begin{verbatim}
+  fasthenry pin-con7.inp -S_pin_con7
+\end{verbatim}
+which produces {\tt Zc\_pin\_con7\_r20.mat} which is the impedance matrix 
+for frequencies $1, 10, 10^2, \ldots, 10^{12}$.  A spice file is
+included in the {\tt examples} directory to test this subcircuit and
+put the results in {\tt rom\_check\_con7\_r20.out}:
+\begin{verbatim}
+spice3 -b -o rom_check_con7_r20.out  rom_check_con7_r20.ckt
+\end{verbatim}
+
+The spice file in {\tt rom\_check\_con7\_r20.ckt} has a spice {\tt
+  .include} line to include the subcircuit of file {\tt
+  equiv\_circuitROM\_pin\_con7\_r20.spice}.  It then does an AC analysis
+of the response of the circuit when 1 Amp is applied to port 0 and 0
+Amp to the other ports.  The results correspond to column 1 of the
+impedance matrix, $Zc$. 
+
+A comparison of the accuracy of entry (1,1) of the impedance matrix is
+given in Figure~\ref{rom-fig} for both ``-r 7'' and
+``-r 20''. 
+
+\begin{figure}
+\centerline{
+\psfig{figure=res_rom.ps,width=3.0in}
+\psfig{figure=ind_rom.ps,width=3.0in}
+}
+\caption{Comparison of impedance computation done via explicit
+  solution at specified frequency points and reduced-order models}
+\label{rom-fig}
+\end{figure}
+
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{|r|r||r|r|}\hline
+%Frequency & \multicolumn{1}{c|}{Zc\_...mat} &\multicolumn{1}{c|}{``-r 7''} & \multicolumn{1}{c|}{``-r 20''} \\ \hline
+%   1.0000e+00  &  8.3303e-02  &  8.3303e-02 & 8.3303e-02\\ \hline
+%   1.0000e+01  &  8.3303e-02  &  8.3303e-02 & 8.3303e-02\\ \hline
+%   1.0000e+02   & 8.3303e-02   & 8.3303e-02  &8.3303e-02\\ \hline
+%   1.0000e+03  &  8.3303e-02  &  8.3303e-02 & 8.3303e-02\\ \hline
+%   1.0000e+04   & 8.3303e-02   & 8.3303e-02 & 8.3303e-02\\ \hline
+%   1.0000e+05   & 8.3304e-02  &  8.3304e-02 & 8.3304e-02\\ \hline
+%   1.0000e+06  &  8.3436e-02  &  8.3436e-02 & 8.3436e-02\\ \hline
+%   1.0000e+07   & 9.3334e-02   & 9.3353e-02  &9.3350e-02\\ \hline
+%   1.0000e+08   & 2.1694e-01  &  2.1018e-01 & 2.1692e-01\\ \hline
+%   1.0000e+09  &  4.6670e-01  &  2.8679e-01 & 4.6431e-01\\ \hline
+%   1.0000e+10   & 5.5362e-01   & 2.8836e-01  &5.3207e-01\\ \hline
+%   1.0000e+11  &  5.5519e-01    &2.8837e-01  &5.3306e-01\\ \hline
+%   1.0000e+12   & 5.5520e-01  &  2.8837e-01 & 5.3307e-01\\ \hline
+%\end{tabular}
+%\caption{Resistance as a function of frequency by computing it
+%  pointwise (Zc.mat) or simulating with a state-space equivalent
+%  circuit of order 7 and 20}
+%\label{Res_rom}
+%\end{center}
+%\end{table}
+
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{|r|r||r|r|}\hline
+%Frequency & \multicolumn{1}{c}{Zc\_...mat} &\multicolumn{1}{c}{``-r 7''} & \multicolumn{1}{c}{``-r 20''} \\ \hline
+%   1.0000e+00  & 5.7310e-08   & 5.7351e-08 & 5.7351e-08\\ \hline
+%   1.0000e+01   & 5.7310e-07  &  5.7351e-07 & 5.7351e-07\\ \hline
+%   1.0000e+02   & 5.7310e-06   & 5.7351e-06 & 5.7351e-06\\ \hline
+%   1.0000e+03   & 5.7310e-05   & 5.7351e-05  &5.7351e-05\\ \hline
+%   1.0000e+04  &  5.7310e-04   & 5.7351e-04  &5.7351e-04\\ \hline
+%   1.0000e+05   & 5.7310e-03    &5.7350e-03  &5.7350e-03\\ \hline
+%   1.0000e+06   & 5.7303e-02   & 5.7343e-02  &5.7343e-02\\ \hline
+%   1.0000e+07   & 5.6825e-01   & 5.6865e-01  &5.6864e-01\\ \hline
+%   1.0000e+08   & 5.4346e+00   & 5.4353e+00 & 5.4382e+00\\ \hline
+%   1.0000e+09   & 5.3167e+01    &5.3499e+01  &5.3202e+01\\ \hline 
+%   1.0000e+10   & 5.3038e+02   & 5.3483e+02 & 5.3083e+02\\ \hline
+%   1.0000e+11   & 5.3036e+03    &5.3483e+03  &5.3082e+03\\ \hline
+%   1.0000e+12   & 5.3036e+04   & 5.3483e+04  &5.3082e+04\\ \hline 
+%\end{tabular}
+%\caption{$\omega$ L as a function of frequency by computing it
+%  pointwise (Zc.mat) or simulating with a state-space equivalent
+%  circuit of order 7 and 20}
+%\label{Ind_rom}
+%\end{center}
+%\end{table}
+
+As can be seen in the figures, in the order 7 reduced-order model the
+resistance matches the directly computed values (Zc.mat) up to about
+$10^8$ Hz. The order 20 reduced-order model is more accurate, and
+represents the frequency-dependent resistance up to $10^{9}$ Hz. The
+inductance in the example chosen does not have a strong frequency
+dependence.
+
+Note that if Approach 1 were used, a single frequency would have to be
+chosen to generate an equivalent circuit. This would be less accurate
+but would probably reduce subsequent Spice simulation time.
+
+\subsection{Command Line Options}
+\label{clo}
+
+This section describes using the command line options to change the
+defaults settings.  All arguments are case insensitive. 
+
+{\tt -} (dash) Forces input to be read from the standard input.  
+
+\vspace{0.2in}
+{\tt -s \{ludecomp | iterative\}} - Specifies the matrix solution
+method used to solve the linear system arising from the
+discretization.  {\tt iterative} uses the GMRES iterative algorithm
+and {\tt ludecomp} uses LU decomposition with back substitution.  In
+general, GMRES is faster, however some speed up may be obtained using
+LU decomposition for problems with fewer than 1000 filaments.  {\tt
+iterative} is the default.
+
+\vspace{0.2in}
+{\tt -m \{direct | multi\} } - Specifies the method to use to perform
+the matrix-vector product for the iterative algorithm.  {\tt direct}
+forms the full matrix and performs the product directly.  {\tt multi}
+uses the multipole algorithm to approximate the matrix-vector product.
+For larger problems, the multipole algorithm can save both computation time and
+memory. {\tt multi} is the default.
+
+\vspace{0.2in}
+{\tt -p \{on | off | loc | posdef | cube | seg | diag | shells \}} -
+Specifies the method to precondition the matrix to accelerate
+iteration convergence. Two classes of preconditioners are implemented
+in FastHenry.  Local inversion preconditioners ({\tt loc} and {\tt
+posdef}) were used in prior releases and have been replaced by the
+sparsified-L preconditioners.  Three types of sparsified-L
+preconditioners are available, ({\tt cube}, {\tt seg}, and {\tt
+diag}).  {\tt cube} is the default and produces the best results,
+however under certain conditions can consume significantly more memory
+than {\tt diag}.  If there are multiple filaments in each segment,
+than {\tt seg} is a middle ground between {\tt diag} and {\tt cube},
+otherwise it is identical to {\tt diag}.  {\tt shells} uses a
+current shell idea described in
+
+\begin{quote}
+\noindent
+Mattan Kamon, Byron Krauter, Joel Phillips, Lawrence T. Pileggi, Jacob
+White, 
+``Two Optimizations to Accelerated
+     Method-of-Moments Algorithms for Signal Integrity Analysis of
+     Complicated 3-D Packages'', {\em Proceedings of the IEEE 4th
+     Topical Meeting on Electrical Performance of Electronic
+     Packaging}, Portland, OR, October 1995, pp. 213-216.
+\end{quote}
+
+The method is relatively new, and its performance is sensitive to the
+shell radius set by the {\tt -R} option described below.
+
+\vspace{0.2in}
+{\tt -o n} - Specifies $n$ as the order of multipole expansions.
+Default is 2.  Choosing values less than 2 result in faster execution
+at the expense of poorer accuracy.  Changes in the order of expansions
+should accompany changes in iteration error tolerance with the {\tt -t} option.
+
+\vspace{0.2in}
+{\tt -l \{n | auto\}} - Specifies $n$ as the number of partitioning
+levels for the multipole algorithm. {\tt auto} chooses the level
+automatically and is the default.  
+
+\vspace{0.2in}
+{\tt -f \{off | simple | refined | both | hierarchy \}} - Switches FastHenry to
+visualization mode only and specifies the type of FastCap generic file
+to make (for visualization ONLY!).  {\tt off} will produce no file and
+is the default.  {\tt simple} will produce a file named {\tt
+zbuffile} from the segments defined in the input file.  {\tt
+refined} produces a similar file, named {\tt zbuffile2}, but uses
+the segments after either user refinement specified with {\tt -i} or
+required refinement necessary for accuracy of the multipole algorithm
+({\tt -l} option).  {\tt both} produces both files.  One FastCap
+``panel'' is created for each of the four sides along the length of
+the each segment.  Reference planes are handled differently as
+described under the {\tt -g} option below.  See
+Section~\ref{postscript} for details on producing postscript.  FastHenry will
+exit after creating the visualization files. {\tt hierarchy} will dump
+a 2D representation of the nonuniform reference plane discretization
+hierarchy to the FIXED file {\tt hier.qui} which can also be processed
+like the {\tt zbuffile}.
+
+\vspace{0.2in}
+{\tt -g \{on | off | thin | thick\}} - controls appearance of the
+ground plane when using the {\tt -f} option. {\tt off} is the default
+and only four panels are produced for each plane, one for each of the
+edges.  Thus only the outline of each plane is drawn. This makes
+generation of the postscript image much faster and also makes the planes 
+transparent.  No holes are visible, however.  {\tt on} or {\tt thin}
+will draw all the overlapping segments of the ground plane as if
+infintely thin.  Note that using this option for a finely discretized
+plane may take a long time to generate a postscript image with
+{\tt zbuf}. {\tt thick} will completely draw the segments of the plane
+and will be even slower for generating postscript images.
+
+\vspace{0.2in}
+{\tt -a \{on | off\}} - {\tt on} allows the multipole algorithm to
+automatically refine the structure as is necessary to maintain
+accuracy in the approximation.  The structure will be refined whether
+or not the multipole algorithm is used.  {\tt off} prevents refinement
+and will produce a warning if the multipole algorithm is used and
+prevented from necessary refinement. {\tt on} is the default and is
+equivalent to {\tt -l auto}. 
+% {\tt off} is equivalent to using {\tt -l0}.
+Note that this is not refinement
+to reduce discretization error.  See the {\tt -i} option. 
+
+\vspace{0.2in}
+{\tt -i n} - Specifies $n$ as the level for initial refinement.  This
+option allows the user to refine the structure if the input file is
+too coarse.  It will divide each segment of the geometry into multiple
+segments so that no segment has a length greater than $ \frac{1}{2^n}
+$ times the length of the smallest cube which contains the whole
+structure.  The default is 0 (no refinement).  This option is rarely
+used since the multipole algorithm will refine as it needs and
+discretization errors of this sort are usually small.
+
+\vspace{0.2in}
+{\tt -d \{on | off | mrl | mzmt | grids | meshes | pre | a | m | rl |
+ls\}} \\ - dump certain internal matrices to files.  The format of some of
+the files can be specified with the {\tt -k} option.  {\tt on} dumps
+the $M, R, L, MZM^t$ and preconditioner matrices. {\tt off} dumps none
+and is the default.  {\tt mrl} dumps
+the M, R, and L matrices. {\tt mzmt} dumps the $ MZM^t$ matrix for $w
+= 1$.  {\tt grids} dumps matrices for viewing the current distribution
+inside each reference plane (only in matlab format).  
+{\tt meshes} is a matlab file for viewing
+the KVL meshes chosen by FastHenry.  {\tt pre} dumps the
+preconditioner in a sparse matrix text format. {\tt ls} dumps the
+sparsified $L$ matrix in sparse text format.  {\tt a} is the branch
+incidence matrix, $A$. {\tt m} can be used to dump only the mesh
+matrix $M$.  Similarly, only R and L can be dumped with {\tt rl}.
+The right-hand-side vector, $V_s$, is dumped to the file {\tt b.mat}
+whenever anything but {\tt off} is specified.
+
+\vspace{0.2in}
+{\tt -k \{matlab | text | both\}} - Specifies type of file to dump
+with the {\tt -d} option.  {\tt matlab} dumps the files as M.mat, MRL.mat,
+MZMt.mat, and A.mat in a format readable by matlab.  
+{\tt text} saves the files M.dat, L.dat, R.dat, MZMt.dat, and A.dat as text. 
+{\tt both} saves files in both formats.
+
+\vspace{0.2in}
+{\tt -t rtol, -b atol} - Specifies the tolerance for iteration error.
+FastHenry calculates each column of the impedance matrix separately.  The
+iterative algorithm will stop iterating when both the real and
+imaginary part of each element, $x_k$, of the
+current column being calculated satisfy
+\begin{equation}
+|x^{i - 1}_k - x^i_k| < rtol*(|x^i_k| + atol*(max_j|x_j^i|)  )
+\end{equation}
+where $ i $ is the iteration number.
+The defaults are $ rtol = 10^{-3} $ and $ atol = 10^{-2} $.
+In essence, this causes GMRES iterations to stop if every element of
+solution vector has changed by less than the fraction $rtol$ since the last
+iteration.  If, however, element $x_k$ is smaller than $atol$ times the
+largest element in the solution vector, then the stopping criteria is
+less stringent.  Note that real and imaginary parts are treated separately.
+
+%{\tt -e \{n | auto\}} - n = maximum # of filaments in a cube to be 
+%                                  considered exact. auto = (order+1)^2.
+
+\vspace{0.2in}
+{\tt -c n} - n = maximum number of iterations to perform for each
+solve (column).  Overrides the default of 200.  
+
+\vspace{0.2in}
+{\tt -D \{on | off\}} - Controls the printing of debugging information.
+{\tt off} is the default.  {\tt on} will cause FastHenry to print more
+detailed information about the automatic partitioning level selection,
+memory consumption, preconditioner calculation, and convergence of the
+iterates.  The Matlab file {\tt Ycond.mat} is also produced which contains the
+admittance matrices at each frequency and also the norm of the
+residual at each step of the GMRES algorithm.
+
+\vspace{0.2in}
+{\tt -x portname} - Specifies that only the column in the admittance
+matrix specified by {\tt portname} should be computed.  Multiple {\tt
+-x} specifications can be used.  In this case, the output file {\tt
+Zc.mat} will contain the requested columns of the admittance matrix
+instead of the impedance matrix.  The portname is specified in the
+input file with the {\tt .External} keyword.  The primary uses of this
+option are either to exploit symmetry or to compute single columns for
+observing current distribution.  For instance, if a 10 pin package is
+symmetric about some axis, then only five columns need be computed.
+The user is then responsible for forming the $10\times 10$ impedance
+matrix from the $10 \times 5$ result.  Also, if the {\tt -d grids}
+option is used, the port which is the source of current would be
+specified with this option.
+
+\vspace{0.2in}
+{\tt -S suffix} - This adds the string {\tt suffix} to all filenames
+for this run.  For instance, {\tt -S \_blah} will produce the output file
+{\tt Zc\_blah.mat}.
+
+\vspace{0.2in}
+{\tt -r order} - Specifies a reduced order model of the system as
+output.  The size of the model will be {\tt order}*number-of-ports. A
+matlab file {\tt rom.m} will contain the A,B,C,D matrices representing
+the state-space reduced order model. More useful is the file {\tt
+  equiv\_circuitROM.spice} which is a spice3 compatible subcircuit
+which can be included for circuit simulation.
+
+\vspace{0.2in}
+{\tt -M} - If {\tt -r} is specified with a nonzero order, then this
+option will cause FastHenry to exit after generating a reduced order
+model.
+
+\vspace{0.2in}
+{\tt -R radius} - If {\tt -p shells} is specified, then this specifies the
+radius of the shells to use.
+
+\vspace{0.2in}
+{\tt -v} - Regurgitate internal representation of the geometry to
+stdout in the input file format.  
+Good for debugging. User can compare output to the original input
+file.  Also, by altering the file {\tt regurgitate.c}, the user can
+also call functions to translate and reflect the geometry for use as
+another input file.
+
+\subsection{Discretization Error Analysis}
+\label{discret}
+
+%A common question is how many filaments per segment should be used.
+This section gives some guidelines and describes an experimental
+approach to determining an appropriate discretization to model skin
+and proximity effects in long, thin condutors defined with
+FastHenry segments.  (For a description of discretization for reference
+planes, see ``nonuniform\_manual.ps''.)
+
+To begin, assume it is desired to compute the impedance matrix for the pin
+connect structure of Figure~\ref{pin-connect} for frequencies up to
+$10^8$ Hz. 
+
+\subsubsection{The DC case}
+\label{DC}
+
+If only the DC case were of desired, it could be computed rapidly
+since there is no skin effect.  The number of filaments per segment
+for the entire structure is set to one by setting {\tt nhinc=1} and
+{\tt nwinc=1} with the line
+\begin{verbatim}
+.DEFAULT Z=85. H=8.5 W=24. nhinc=1 nwinc=1
+\end{verbatim}
+
+In order to extract a nonzero value for the inductance, the frequency
+is set small, but nonzero
+\begin{verbatim}
+.freq fmin=1e0 fmax=1e0 ndec=1
+\end{verbatim}
+
+Since there are only a few hundred filaments, there is no advantage to
+the multipole algorithm so LU decomposition can be used to save a few
+seconds:
+\begin{verbatim}
+fasthenry pin-connect.inp -sludecomp -S _DC
+\end{verbatim}
+The output will be in file {\tt Zc\_DC.mat}
+
+\subsubsection{The highest frequency case}
+
+Next, consider deciding how many filaments are needed to accurately
+compute the resistance and inductance at the highest frequency point
+of interest, $f = 10^8$ Hz.  A good rule of thumb is to choose the
+discretization such that the width of the smallest filament is roughly
+equal to the skin depth.  For this geometry,  $\rho = 0.0238$~ohm-mil
+or $\sigma = 1.641 \times 10^6$~mho/m 
+giving a skin depth of
+\begin{equation}
+ \delta = \sqrt{\frac{1}{\pi f \mu \sigma}} = 1.55\; {\rm mils}.
+\end{equation}
+To observe the error involved with various discretizations, we will
+look at the impedance matrix for two typical adjacent segments from the {\tt
+pin-connect.inp} example:
+
+\vspace{0.3in}
+\listing{/u0/matt/induct/examples/pin_expers/3pin/pin-con2seg.inp}
+
+The result will be a $2 \times 2$ complex matrix for each frequency point,
+\begin{equation}
+{\bf Z}(\omega) = \left[ 
+\begin{array}{cc}
+  R_{11}(\omega) + j\omega L_{11}(\omega) &  R_{12}(\omega) + j\omega L_{12}(\omega)  \\
+  R_{21}(\omega) + j\omega L_{21}(\omega) &  R_{22} (\omega) + j\omega L_{22}(\omega) 
+\end{array}
+\right]
+\end{equation}
+
+If we choose $nhinc = 3$ and $nwinc = 5$ with a default ratio of
+adjacent filaments equal to 2 ($rh = rw = 2$), then the width of the
+smallest filament on the right and left of the segment will be 1/10
+the width ($(1 + 2 + 4 + 2 + 1)^{-1}$), or $2.4$~mils.  The thickness
+of the filaments on the top and bottom of the segment will be 1/4 of
+the height ($(1 + 2 + 1)^{-1}$) or $2.1$ mils.  
+
+To run fasthenry, 
+\begin{verbatim}
+fasthenry pin-con2seg.inp -sludecomp -aoff -S _3x5_2
+\end{verbatim}
+In this case, since there are so few filaments, LU decomposition is
+slightly faster.  Also, automatic refinement is prevented with the
+{\tt -aoff} option since the multipole algorithm is not being used
+and this problem is essentially two-dimensional.
+
+The smallest filaments are slightly above the skin depth and thus the
+results are inaccurate at $f = 10^8$ as shown by the dotted lines in
+Figure~\ref{fig:twoseg}.  The next logical step might be to increase
+the discretization to $nhinc \times nwinc = 4 \times 6$ however using
+even numbers of filaments is not efficient since the center of the
+segment, where current is relatively constant, will be divided into 4
+separate filaments.  For the odd case, the center is modeled by only
+one filament.  Instead, consider changing the ratio of adjacent
+segments to $rh = 4$, $rw = 3$.  Now, the width of the smallest
+filament on the left and right sides of the segment will be 1/17 of
+the total width ($(1 + 3 + 9 + 3 + 1)^{-1}$) or $1.41$~mils and the
+thickness of the smallest filament on the top and bottom, $1.42$~mils.
+This is much closer to the skin depth and gives better results as
+shown by the dash-dot lines in Figure~\ref{fig:twoseg}.
+
+Another possibility is to reduce the number of filaments below $3
+\times 5$ but further increase the ratio of adjacent filaments.  This
+change would result in faster execution since there would be fewer
+filaments, however some accuracy at midrange frequencies would be
+sacrificed.  For instance, consider maintaining the width of the
+smallest filaments by changing the discretization above to $3 \times
+3$ with $rh = 4$, $rw = 15$.  In this case there are too few filaments
+to model the decay of current density from the outside edge to center
+for $f \in [10^6,10^8]$ as shown by the dashed line 
+in Figure~\ref{fig:twoseg}.
+
+\begin{figure}
+\begin{minipage}{0.49\textwidth}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/R11.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/R12.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/L11.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/L12.ps,width=3.0in}}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/R11e.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/R12e.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/L11e.ps,width=3.0in}}
+\centerline{\psfig{figure=/u0/matt/induct/examples/pin_expers/3pin/L12e.ps,width=3.0in}}
+\end{minipage}
+\caption{Values and errors for the impedance matrix as a function of frequency 
+for the 2 segment experiment}
+\label{fig:twoseg}
+\end{figure}
+
+After the user has decided which error for the above cases is tolerable
+for a given problem,
+the discretization can then be used for the full {\tt pin-connect.inp}
+example.  The default $nhinc$ and $nwinc$ must be set with
+\begin{verbatim}
+.DEFAULT Z=85. H=8.5 W=24. nhinc=3 nwinc=5 rh=4 rw=3
+\end{verbatim}
+and the frequencies of interest with
+\begin{verbatim}
+.freq fmin=1e0 fmax=1e12 ndec=3
+\end{verbatim}
+
+The frequency setting above was used to generate
+Figure~\ref{fig:twoseg}.  Note that with the sparsified-L preconditioner,
+used by default, the low frequency impedance matrix is
+computed in very few iterations.  Thus, while the low frequency case
+could have been computed with a coarser discretization as in
+Section~\ref{DC}, there is not much added execution time in computing it 
+at a finer discretization.
+
+The exact values in Figure~\ref{fig:twoseg} were generated using a
+$21 \times 25$ discretization with $rh = rw = 2$.  It was run with
+\begin{verbatim}
+fasthenry pin-con2seg.inp -aoff -mdirect
+\end{verbatim}
+%fasthenry pin-con2seg.inp -l0 -mdirect -pdiag -S _21x25_2
+The multipole algorithm would require space be divided, and thus the
+filaments also be divided, tripling the number of filaments in this
+case.  Since the original number of filaments is small and, again,
+this is essentially a two-dimensional problem, we can avoid both
+dividing space ({\tt -aoff}) and using the multipole algorithm ({\tt
+-mdirect}). The problem is small enough to fit in memory with all the
+matrices formed directly however is large enough to warrant using the
+iterative algorithm instead of LU decomposition.
+%Since space is not divided, the cube block preconditioner would invert
+%the entire problem and thus the diagonal preconditioner must be
+%pecified with the {\tt -pdiag}.  
+
+For the $21 \times 25$ problem, the time spent forming the
+preconditioner is significant.  The {\tt -pdiag} option could have
+been used to reduce the preconditioner time, however this would come
+at the expense of slower convergence especially at the higher
+frequencies.
+
+\section{Geometry Postscript Pictures}
+\label{postscript}
+
+The ability to see the geometry under analysis is an important tool for
+debugging input files.  This section describes how to generate
+postscript files for visualizing the three dimensional structures
+defined by a given input file.  The process involves first running
+FastHenry to generate a file of ``panels'' and then running {\tt zbuf}
+to generate the postscript file.
+
+\subsection{Creating the panel file}
+
+When FastHenry is given the {\tt -f} option, it changes from
+calculation to visualization mode.  It will produce a file of
+panels readable by the {\tt zbuf} program.  Each panel is a
+quadrilateral representing one of the faces of a segment in the input
+geometry.  This file of panels can either be formed from the segments
+of the geometry before FastHenry's refinement 
+with the {\tt simple} argument, or after refinement with the
+{\tt refined} argument.  The basenames for the
+files produced are {\tt zbuffile} for simple geometry and 
+{\tt zbuffile2} for refined unless the {\tt -S} is used.  
+
+In addition, the file {\tt zbuffile\_shadings} 
+%(if no suffix is specified) 
+or {\tt zbuffile2\_shadings} is produced which specifies
+a shade of gray to assign to each of the panels.  {\tt
+zbuffile\_shadings} is produced for {\tt -f simple} and shades each
+of the reference planes (if drawn with {\tt -g on}) of the structure
+differently, and leaves all other structures white.  {\tt
+zbuffile2\_shadings}, produced with {\tt -f refined}, does the same,
+however it attempts to shade differently each of the conductors specified
+with a {\tt .external} statement.
+
+\subsection{Creating the postscript file}
+
+The panel file described in the previous section can be rendered in
+postsciprt with the {\tt zbuf} program.  This program is a modified
+version of the algorithms used for visualization in the capacitance
+extraction program, FastCap, developed by Keith Nabors.
+
+\begin{minipage}{\textwidth}
+The complete command line format of the {\tt zbuf} program is
+\begin{verbatim}
+zbuf [-a<azimuth>] [-e<elevation>] [<input-file>]
+        [-r<rotation>] [-h<distance>] [-s<scale>] [-w<linewidth>]
+        [-u<upaxis>] [-q] [-x<axeslength>]
+        [-b<.figfile>] [-c] [-v] [-n] [-f] [-g] [-m]
+\end{verbatim}
+\end{minipage}
+
+Table~\ref{quiref} itemizes the options and Table~\ref{dashmuse} gives
+several examples of their use.
+
+Usually the default settings
+produce an acceptable plot, but many adjustments are possible,
+the most important being the  view angles (relative to a coordinate
+system parallel to the input coordinates and centered on the 
+center of the object) which are adjusted using the
+{\tt -a} and {\tt -e} options.  Other options control view distance
+({\tt -h}), two-dimensional projection scale ({\tt -s}), rotation
+({\tt -r} and {\tt -u}) and line width ({\tt -w}). Axes of any length
+may be included  with the {\tt -x} option and lines, arrows and dots may be
+added using {\tt -b}.  Shading can be accomplished with the {\tt -q} option.
+Table~\ref{dashmuse} gives the commands used to produce the line
+drawings in this guide as examples. 
+
+In version 3.0, the {\tt zbuf} program now takes the ``-m'' argument
+to produce a 
+Matlab file for faster visualization in matlab.  This is very beneficial for
+large files since producing the postscript file with {\tt zbuf} can
+take $n^2$ time. 
+The matlab file can be viewed within matlab with the
+fasthenry-3.0/bin/plotfastH.m matlab function.  The file {\tt
+  zbuffile.mat} would be produced with ``zbuf -m zbuffile'' which can
+then be viewed in matlab with ``plotfastH('zbuffile.mat')''.
+Also, you can modify the file {\tt src/zbuf/dump\_struct.c} to output
+in YOUR own 
+format instead of matlab.
+
+\subsection{Tricks}
+For Figure~\ref{holey}, the shading of the trace and ground plane were
+swapped by negating all the shading values with the {\tt awk} file
+{\tt invert.awk} provided in the {\tt zbuf} source directory.  Also,
+Figure~\ref{one_of_30pin}, since it is only one pin, would normally
+appear white and all panels would have shade $0$ in the shading file.
+By randomly changing one panel to $-5$ and another to $10$, then $-5$
+becomes white, $10$ becomes black, and $0$, a shade of gray.
+The single black panel is seen on the left end of the figure and the
+white panel is obscured by other panels.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{cl}\hline
+\multicolumn{1}{c}{Figure} & \multicolumn{1}{c}{{\tt FastHenry/Zbuf} Usage} \\ \hline
+\protect\ref{gpexamp_copper} & \tt fasthenry gpexamp\_copper.inp -f simple -S \_pcb \\
+& {\tt zbuf zbuffile\_pcb} \\
+\hline
+\protect\ref{vias} & {\tt fasthenry vias.inp -f refined -g on} \\
+& {\tt zbuf -a60 -e60 zbuffile2 -q} \\
+\hline
+\protect\ref{holey} & {\tt fasthenry holey\_gp.inp -f simple -g on} \\
+& {\tt mv zbuffile holey\_gp} \\
+& {\tt awk -f src/zbuf/invert.awk zbuffile\_shadings > holey\_gp\_shadings} \\
+& {\tt zbuf holey\_gp -e0 -q -uy} \\
+\hline
+\protect\ref{pin-connect} & {\tt fasthenry pin-connect.inp -f simple -S pin} \\
+& {\tt zbuf zbuffilepin -a25} \\
+\hline
+\protect\ref{30pin} & {\tt fasthenry 30pin -f refined} \\
+& {\tt zbuf zbuffile -a30 -q} \\
+\hline
+\protect\ref{one_of_30pin} & {\tt fasthenry one\_of\_30pin -f simple} \\
+& {\tt zbuf zbuffile -q -e20 -a0} \\
+\hline
+\end{tabular}
+\caption{Commands used to generate some representative figures in this guide.}
+\label{dashmuse}
+\end{center}
+\end{table}
+
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ccll}
+\multicolumn{4}{c}{\mbox{\tt zbuf} Options}\\\hline
+\multicolumn{1}{c}{Option}&\multicolumn{1}{c}{Default}&
+\multicolumn{1}{c}{Range}&
+\multicolumn{1}{c}{Function}\\\hline
+\mbox{\tt -a}& \mbox{\tt 50.0} & \dag
+&Specifies azimuth view angle in degrees.\\
+\mbox{\tt -e}& \mbox{\tt 50.0} & \dag
+&Specifies elevation view angle in degrees.\\
+\mbox{\tt -r}& \mbox{\tt 0.0} & \dag
+&Specifies final rotation of 2-D image in degrees.\\
+\mbox{\tt -h}& \mbox{\tt 2.0} & $\geq$ \mbox{\tt 0.0}
+&Specifies distance from surface of object in object radii.\\
+\mbox{\tt -s}& \mbox{\tt 1.0} & $>$ \mbox{\tt 0.0}
+&Specifies final scaling of 2-D image.\\
+\mbox{\tt -w}& \mbox{\tt 1.0} & $\geq$ \mbox{\tt 0.0}
+&Specifies postscript file line width.\\
+\mbox{\tt -u}& \mbox{\tt z} & \mbox{\tt x}, \mbox{\tt y}, or \mbox{\tt z}
+&Specifies which 3-D axis is mapped to y-axis in 2-D image.\\
+\mbox{\tt -q}& --- & ---
+&\parbox{4in}{Uses zbuffile\_shading shadings file to give grayscale shading to conductors.}\\
+\mbox{\tt -x}& \mbox{\tt 1.0} & $>$ \mbox{\tt 0.0}
+&Includes axes of length \mbox{\tt axeslength} in picture.\\
+\mbox{\tt -b}& $\diamond $ & $\diamond $
+&Specifies lines, dots and arrows to superimpose on picture.\\
+\mbox{\tt -c}& --- & ---
+&Puts the command line in postscript file pictures.\\
+\mbox{\tt -v}& --- & ---
+&Removes {\tt showpage} from postscript file.\\
+\mbox{\tt -n}& --- & ---
+&Numbers faces in order input.\\
+\mbox{\tt -f}& --- & ---
+&Suppresses hidden line removal.\\
+\mbox{\tt -g}& --- & ---
+&Prints the graph used to order the panels in postscript file.\\
+\mbox{\tt -m}& --- & ---
+&Produces a matlab file rather than a postscript file\\
+\hline
+\end{tabular}
+\caption{Zbuf Options}
+\label{quiref}
+\end{center}
+\noindent\dag Range is unrestricted. \\
+\noindent$\diamond $ See function {\tt readLines()} in {\tt src/zbuf/zbufInOut.c}
+for a description of the {\tt .fig} file format.
+\end{table}
+
+\subsection{Visualization artifacts}
+
+This section discribes possible problems with producing pictures.
+Many of the listed items come directly from the FastCap documentation.
+
+\begin{enumerate}
+\item To minimize the number of panels that {\tt zbuf} must deal with,
+FastHenry does not output panels for the end faces of a segment.
+Thus, segments often appear hollow.  Uncomment the appropriate
+regions in {\tt writefastcap.c} to change this. 
+\item {\tt zbuf} sometimes produces panel ordering errors (and
+usually print warning messages) when panels intersect. However, often
+the postscript file is correct.
+\item Occasionally the postscript pictures are incorrect even
+for legal discretizations. There are two known bugs leading
+to this problem.  The first is often avoided by changing
+the view angle slightly. The second is caused by problems with
+dimensions on the order of $10^{-4}$ or less. This problem can
+only be avoided by rescaling the input by changing the {\tt .Units}
+to {\tt km}.
+\item The panel sorting algorithm used to write out the postscript files
+takes time proportional to the number of panels squared.  This limits
+its usefulness to problems with fewer than a few thousand panels. 
+%For
+%larger problems the paneling should be done hierarchically so that
+%a coarser discretization can be used for pictures. For problems built
+%using the generic input file generators, the {\tt -d} option provides
+%this function.
+\item The shading algorithm uses one shade of gray to shade 
+all the segments along only one path between the two nodes of a {\tt
+.external} statement. Thus, if there are multiple paths, such as in
+Figure~\ref{30pin}, the other paths will appear white.
+\item When axes are included in postscript files using the
+{\tt -x<axes length>} option, the axes' two-dimensional projections
+appear in the postscript file before the panel fills. This means
+that the object should be between the view point and the axes, otherwise
+the axes can be obscured strangely. 
+Thus
+the option works best when viewing objects that lie entirely in
+the positive orthant from a view point in the positive orthant.
+
+\end{enumerate}
+
+
+\section{Reference Plane Current Visualization}
+\label{viewcur}
+
+When FastHenry is given the {\tt -d grids} option, it dumps Matlab
+readable files of the current distribution in each reference plane of
+the geometry under analysis.  One file is dumped for each of the
+columns computed for the admittance matrix.  The file holds the
+current distribution produced by setting the source across the port
+corresponding to the current column to one volt and all others ports
+to zero.  This process is then repeated for each freqeuncy point.
+
+{\bf Note:} For nonuniformly discretized planes, the filename is the
+same, but the file format is very different. See {\tt
+  nonuniform\_manual.ps}. This document also describes viewing the current
+distribution in other than reference planes.
+
+\subsection{Current Files}
+The files are named according to the column in {\tt Zc.mat} and frequency
+point.  They have the form Grid$n$\_$m$.mat where $n$ is the column
+(and row) in {\tt Zc.mat} of the port which has the one volt source
+and $m$ is the frequency point number.  The frequency points start at
+$0$ and increment by one for each new frequency.
+
+Inside each file are matrices for each reference plane named {\tt
+grid1g<name>} and \\ 
+{\tt grid2g<name>} where {\em name} is the name of
+the reference plane defined in the input file.  Each entry in {\tt
+grid1g<name>} is the complex valued current phasor for a filament in
+the {\tt seg1} direction.  {\tt grid2g<name>} corresponds to filament
+currents in the {\tt seg2} direction.  In general it is difficult to
+visualize complex current, but when the current is purely real (DC) or
+purely imaginary (high frequency), these two matrices can be thought
+of as the current in two orthogonal directions.
+
+\begin{figure}
+\centerline{
+\psfig{figure=together.ps,width=4.0in}
+}
+\caption{Two traces over a ground plane}
+\label{together}
+\end{figure}
+
+\subsection{Examples}
+        
+\subsubsection{Traces over a solid plane}
+Consider the example file {\tt together.inp} shown in
+Figure~\ref{together}.  This structure is simply two traces passing
+over a ground plane with one end of each trace shorted to the plane.
+Thus, when one volt is applied to the other end of one of the traces,
+current travels down the trace and returns through the plane.  To
+generate the current distribution files:
+\begin{verbatim}
+fasthenry together.inp -d grids -x trace1
+\end{verbatim}
+The files {\tt Grid1\_0.mat} and {\tt Grid1\_1.mat} are produced in
+addition to FastHenry's normal output files. By
+default, FastHenry would compute the current distribution for the
+source voltage placed one trace and then again for the other trace.
+Since the current distribution is nearly identical for both cases, we
+need only compute one of these cases and thus the {\tt -x} option is
+used to specify that only the column of the admittance matrix
+corresponding to port {\tt trace1} is to be computed (see input file).
+Also, since visualization is the goal, {\tt together.inp} specifies
+that only a low frequency case, $f = 10^{-1} Hz$, and a high frequency
+case, $f = 10^{19} Hz$ are to be computed. In this example, the
+discretization of the plane is coarse for visualization purposes.  
+
+\begin{figure}
+\centerline{
+\psfig{figure=together_DC.ps,width=4.0in}
+}
+\caption{}
+\label{together_DC}
+\end{figure}
+
+\begin{figure}
+\centerline{
+\psfig{figure=together_highf.ps,width=4.0in}
+}
+\caption{}
+\label{together_highf}
+\end{figure}
+
+The current distribution can then be viewed using the following
+Matlab commands to produce Figures~\ref{together_DC} and
+\ref{together_highf}.
+\begin{verbatim}
+
+                            < M A T L A B (R) >
+                (c) Copyright 1984-93 The MathWorks, Inc.
+                            All Rights Reserved
+                                Version 4.1
+                                Jun 15 1993
+
+Commands to get started: intro, demo, help help
+Commands for more information: help, whatsnew, info, subscribe
+
+>> load Grid1_0.mat
+>> who
+
+Your variables are:
+
+grid1g1   grid2g1
+
+>> quiver(real(grid1g1),real(grid2g1),2)
+>> title('DC current distribution for together.inp')
+>> print together_DC.ps
+>> load Grid1_1.mat
+>> who
+
+Your variables are:
+
+grid1g1   grid2g1
+
+>> quiver(imag(grid1g1),imag(grid2g1),2)
+>> title('High Frequency current distribution for together.inp')
+>> print together_highf.ps
+
+\end{verbatim}
+
+Note that for the DC case in Figure~\ref{together_DC} the current
+spreads across the plane as it travels from its source to sink points
+but at high frequency the current is focused underneath the trace.
+Note also that the high frequency current travels in the 
+opposite direction as the current at DC since $I = V/(j w L) = - j V/(w L)$.
+
+\subsubsection{Traces over a divided plane}
+Next consider the example file {\tt broken.inp} shown in
+Figure~\ref{broken}.  This is identical to {\tt together.inp} except
+that the plane is now broken in two pieces and connected by copper
+``tethers'' as shown.  
+
+\begin{figure}
+\centerline{
+\psfig{figure=broken.ps,width=4.0in}
+}
+\caption{Two traces over a divided ground plane}
+\label{broken}
+\end{figure}
+
+\begin{figure}
+\centerline{
+\psfig{figure=broken_DC.ps,width=4.0in}
+}
+\caption{}
+\label{broken_DC}
+\end{figure}
+
+\begin{figure}
+\centerline{
+\psfig{figure=broken_highf.ps,width=4.0in}
+}
+\caption{}
+\label{broken_highf}
+\end{figure}
+
+After running FastHenry with
+\begin{verbatim}
+fasthenry broken.inp -d grids -x trace1
+\end{verbatim}
+the two matrices can be concatenated in matlab to produce
+Figures~\ref{broken_DC} and \ref{broken_highf} with the following
+commands:
+\begin{verbatim}
+>> load Grid1_0
+>> who
+
+Your variables are:
+
+grid1g_one     grid2g_one
+grid1g_two     grid2g_two
+
+>> size(grid1g_one)
+
+ans =
+
+    11    11
+
+>> space = zeros(11,3);
+>> new1 = [-grid1g_two(:,11:-1:1) space grid1g_one];
+>> new2 = [grid2g_two(:,11:-1:1) space grid2g_one];
+>> quiver(real(new1),real(new2),2);
+
+(similarly for Grid1_1.mat)
+\end{verbatim}
+
+Note that some difficulty is involved in combining the matrices
+because the {\tt seg1} direction in space is different for the two
+planes since the corners of the plane are defined in counter-clockwise
+order for one plane, and clockwise for the other.
+
+From Figure~\ref{broken_DC} it may seem unusual that current can point
+into the empty space between the planes.  This, however, is only an
+artifact of the method of visualization
+since the current vectors do not precisely represent the
+current flow at a particular point.  Since the ground plane is
+discretized as a grid of segments (see Figure~\ref{gp}), one could
+attempt to represent the current as that passing through each node.
+But each node on the plane has four segments attached to it while only
+two are needed to define a vector direction.  FastHenry consistently
+picks the segments with the smaller indices.  This choice can be altered in
+the function {\tt makegrids()} in {\tt fillM.c} if the user
+wishes to average the currents, for instance.
+
+\begin{figure}
+\centerline{
+\psfig{figure=holey_gp_highf.ps,width=4.0in}
+}
+\caption{}
+\label{holey_gp_highf}
+\end{figure}
+
+\subsubsection{Trace over a plane with holes}
+As a final, more interesting example, consider observing the current for
+example file {\tt holey\_gp.inp} shown previously in
+Figure~\ref{holey}.  To produce Figure~\ref{holey_gp_highf},
+\begin{verbatim}
+fasthenry holey_gp.inp -d grids
+\end{verbatim}
+and then in Matlab,
+\begin{verbatim}
+>> load Grid1_1
+>> quiver(imag(grid1g1),imag(grid2g1),3)
+\end{verbatim}
+
+Again in this high frequency case, the current is observed to try its
+best to stay underneath the trace, outlining the holes it must circumvent.
+
+
+\appendix
+
+\input{compile_}
+
+%\appendix 
+
+\section{Changes in Version 3.0}
+\label{changes}
+
+\begin{itemize}
+
+\item Specify a nonuniform discretization of a reference plane to
+  capture small features in fewer elements.
+
+\item
+Two approaches for generating spice equivalent circuits are available:
+
+1. An equivalent circuit for a single frequency.
+
+2. A circuit which models the frequency
+  dependent resistances and   inductances through a reduced state-space
+  representation
+
+ Comments:  Method 1 will not model frequency dependent resistance
+ and inductance since it gives and R and L at the single specified
+ frequency.  Method 2 will model the full effects up to some frequency.
+
+\item Major Bug fix:
+  For reference planes which form segments with different
+  widths in the x-direction versus the y-direction, the sizes weren't
+  computed correctly in version 2.0 and later.  This has been fixed.
+
+\item
+The {\tt zbuf} program now takes the ``-m'' argument to produce a
+Matlab file for faster visualization in matlab.  This is very beneficial for
+large files since producing the postscript file can take $n^2$ time.
+The matlab file can be viewed within matlab with the
+fasthenry-3.0/bin/plotfastH.m matlab function.  The file {\tt
+  zbuffile.mat} would be produced with ``zbuf -m zbuffile'' which can
+then be viewed in matlab with ``{\tt >> plotfastH('zbuffile.mat')}''.
+Also, you can modify the file \\
+{\tt src/zbuf/dump\_struct.c} to output in YOUR own
+format instead of matlab.
+\item Sparse preconditioner.  Specify {\tt -p shells} to use a
+  preconditioner based on current shell sparsification.
+\item Regurgitate the input file with {\tt -v} to see what FastHenry
+  thinks it has read.  Also can translate and reflect geometry before output.
+\end{itemize}
+
+\end{document}
+
+

@@ -1,0 +1,68 @@
+* Meshed ground plane with three vias
+*
+.units m
+.default sigma = 3.5e7
+.default nhinc =2
+.default nwinc =2 
+*
+* ground plane
+*
+g1 x1=0 y1=0 z1=0 x2=5 y2=0 z2=0 x3=5 y3=5 z3=0 thick=0.025 seg1=10 seg2=10 segwid1=0.1 segwid2=0.1
++   nodein (1,1)
++   nodeout (1,4)
++   nBin  (1,1)
++   nBout (1,4)
+*
+* bar 
+*
+NB1 x=1 y=1 z=0.4 
+NB2 x=1 y=4 z=0.4
+eBseg1 NB1 NB2 w=0.1 h=0.025
+
+nc1 x=0.75 y=4.25 z=0.4
+nc2 x=0.75 y=4.25 z=-0.4
+nc3 x=1 y=4.5 z=-0.4
+nc4 x=4 y=4.5 z=-0.4
+
+ec1 nb2 nc1 w=0.1 h=0.025
+ec2 nc1 nc2 w=0.15 h=0.15
+*ec2 nc1 nc2 w=0.05 h=0.05
+ec3 nc2 nc3 w=0.1 h=0.025
+ec4 nc3 nc4 w=0.1 h=0.025
+*****
+Nd1 x=1.5 y=1 z=0.4 
+Nd2 x=1.5 y=3.5 z=0.4
+edseg1 Nd1 Nd2 w=0.1 h=0.025
+
+ne1 x=1.25 y=3.75 z=0.4
+ne2 x=1.25 y=3.75 z=-0.4
+ne3 x=1.5 y=4 z=-0.4
+ne4 x=4 y=4 z=-0.4
+
+ee1 nd2 ne1 w=0.1 h=0.025
+ee2 ne1 ne2 w=0.15 h=0.15
+ee3 ne2 ne3 w=0.1 h=0.025
+ee4 ne3 ne4 w=0.1 h=0.025
+******
+Nf1 x=2 y=1 z=0.4 
+Nf2 x=2 y=3 z=0.4
+efseg1 Nf1 Nf2 w=0.1 h=0.025
+
+ng1 x=1.75 y=3.25 z=0.4
+ng2 x=1.75 y=3.25 z=-0.4
+ng3 x=2 y=3.5 z=-0.4
+ng4 x=4 y=3.5 z=-0.4
+
+eg1 nf2 ng1 w=0.1 h=0.025
+eg2 ng1 ng2 w=0.15 h=0.15
+eg3 ng2 ng3 w=0.1 h=0.025
+eg4 ng3 ng4 w=0.1 h=0.025
+
+.external nb1 nc4
+.external nd1 ne4
+.external nf1 ng4
+.external nodein nodeout
+*
+*
+.freq fmin=1e2 fmax=1e18 ndec=0.125
+.end

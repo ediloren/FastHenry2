@@ -1,0 +1,81 @@
+* A set of bending traces sandwiched between meshed planes
+*  Units of microns 
+.units um
+
+* default dimensions of traces
+.default w=150 h=10
+
+* do nodes on portion running along x-direction* starting x value is fixed for all the traces along x 
+.default x = -3700 z = 86
+
+nx0start y=0
+
+.default x = -1700 z = 86
+nx0end y=0
+
+* we've done nodes, now make metal between them
+ex0 nx0start nx0end
+
+* Do something similar for traces running in y direction
+.default y = 1700 z = 86
+ny0start x=0
+
+.default y = 8800 z = 86
+ny0end x=0
+
+ex0 ny0start ny0end
+
+* Now do diagonal portion connecting x traces to y traces
+exy0 nx0end ny0start
+
+*The meshed plane on top
+gpower x1=-5700 y1=-2666 z1=110 x2=2800 y2=-2666 z2=110
++      x3=2800 y3=10834 z3=110 thick=10 file=NONE
+*
+* do contacts to plane
++ contact connection nx_power0_1 (-3700,0,110,30,30,2.5)        
++ contact connection ny_power0_1 (0,8800,110,30,30,2.5)        
+*
+* Define initial meshed grid
++ contact initial_mesh_grid (34, 54)
+*
+* refinement under the signal traces for high freq
+* the x-directed traces
++ contact trace (-3700,0,110,-1700,0,110,30,1)
+* the y-directed traces
++ contact trace (0,1700,110,0,8800,110,30,1)
+* the diagonal trace
++ contact trace (-1700,0,110,0,1700,110,30,5)
+
+
+*The meshed plane on bottom
+gground x1=-5700 y1=-2666 z1=0 x2=2800 y2=-2666 z2=0
++      x3=2800 y3=10834 z3=0 thick=13 file=NONE
+*
+* do contacts to plane
++ contact connection nx_ground0_1 (-3700,0,0,30,30,2.5)        
++ contact connection ny_ground0_1 (0,8800,0,30,30,2.5)        
+*
+* Define initial meshed grid
++ contact initial_mesh_grid (34, 54)
+*
+* refinement under the signal traces for high freq
+* the x-directed traces
++ contact trace (-3700,0,0,-1700,0,0,30,1)
+* the y-directed traces
++ contact trace (0,1700,0,0,8800,0,30,1)
+* the diagonal trace
++ contact trace (-1700,0,0,0,1700,0,30,5)
+
+
+* Define the ports
+* The signal traces
+.external nx0start ny0end signal_trace_0
+
+* The power and ground paths
+.external nx_power0_1 ny_power0_1 power_path_for_trace_0_and_1
+.external nx_ground0_1 ny_ground0_1 ground_path_for_trace_0_and_1
+
+* start at 125MHz and go up by factor of 2  (10^(0.3) ~= 2)
+.freq fmin=125e6 fmax=500e6 ndec=3
+.end

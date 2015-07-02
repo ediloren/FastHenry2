@@ -1,0 +1,32 @@
+This manual describes FastHenry, a three-dimensional inductance
+extraction program.  FastHenry computes the frequency dependent self
+and mutual inductances and resistances between conductors of complex
+shape.  The algorithm used in FastHenry is an acceleration of the mesh
+formulation approach.  The linear system resulting from the mesh
+formulation is solved using a generalized minimal residual algorithm
+with a fast multipole algorithm to efficiently compute the
+iterates. See Appendix~\ref{comfas} for references.
+
+This manual is divided into four sections.  The first section explains
+the syntax for preparing input files for FastHenry.  The input files contain the
+description of the conductor geometries.
+The second section describes how to run the program and process the output.
+The third section describes the generation of postscript images to
+visualize the three dimensional geometries defined in the input file.
+The fourth section shows how to use Matlab to observe current
+distribution in reference plances.
+
+The files ``nonuniform\_manual\_*.ps'' constitute  an important
+supplement to this 
+manual and describe the new routines for specifying a nonuniformly
+discretized reference plane.
+
+Information on compiling FastHenry, obtaining the FastHenry source
+code, producing this document, and 
+corresponding about FastHenry is given in
+Appendix~\ref{comfas}. 
+
+Appendix~\ref{changes} summarizes most of the  changes in this
+version, 3.0, over the previous version, 2.5.
+
+

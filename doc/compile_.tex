@@ -1,0 +1,114 @@
+%
+% Description of output compile flag effects and compile procedure
+%
+\section{Compiling FastHenry}
+\label{comfas}
+
+%\noindent{\sc Check particulars w/Miguel.}
+
+A tar file containing the source files for {\tt fasthenry} and this
+guide may be obtained on tape by sending a written request to
+\begin{quote}
+Prof.\ Jacob White\\
+Massachusetts Institute of Technology\\
+Department of Electrical Engineering and Computer Science\\
+Room 36-880\\
+Cambridge, MA 02139 U.S.A.
+\end{quote}
+This address may also be used for  general correspondence regarding 
+{\tt fasthenry}, although electronic mail may be sent to
+{\tt fasthenry-bug@rle-vlsi.mit.edu}, 
+for bug reports, and to {\tt fasthenry@rle-vlsi.mit.edu}, for
+questions or comments, if it is more convenient.  Comments on
+FastHenry are encouraged as well as comments on unclear portions of
+this manual.
+
+The tar file has the form
+\begin{quote}
+\begin{verbatim}
+fasthenry-3.0-9Oct96.tar.Z
+\end{verbatim}
+\end{quote}
+and yields a one level directory when untarred with the commands
+\begin{quote}
+\begin{verbatim}
+uncompress fasthenry-3.0-9Oct96.tar.Z
+tar xvf fasthenry-3.0-9Oct96.tar
+\end{verbatim}
+\end{quote}
+It will create a directory tree underneath {\tt fasthenry-3.0} which 
+contains all the C source files underneath {\tt src/}, this manual in
+{\tt doc/}, and the example files in {\tt examples/}.
+
+The tar files may
+also be obtained via anonymous ftp to {\tt rle-vlsi.mit.edu}.  Use
+username {\tt anonymous} with your email address as the password.  The
+FastHenry tar files are contained in directory {\tt pub/fasthenry}.
+This directory also contains various publications on multiplole
+accelerated inductance extraction.  The most complete description is 
+the compressed postscript file {\tt ms\_thesis.ps.Z}:
+
+\begin{quote}
+\noindent
+Mattan Kamon, {\em Efficient Techniques for Inductance Extraction of
+Complex 3-D Geometries}, M.S. thesis, Massachusetts Institute of
+Technology, Cambridge, MA., February 1994.
+\end{quote}
+
+\noindent {\tt mtt.ps.Z} is a preprint of 
+
+\begin{quote}
+\noindent
+M. Kamon, M.J. Tsuk, and J. White, ``FASTHENRY: A
+Multipole-Accelerated 3-D Inductance Extraction Program'', {\em IEEE
+Transactions on Microwave Theory and Techniques}, Vol.~42, 
+September 1994.
+\end{quote}
+
+\noindent See the {\tt README} file at the ftp site for update information on
+releases, manuals, publications.
+
+\subsection{Compilation Procedure}
+
+FastHenry is compiled by changing to the {\tt fasthenry-3.0} directory, 
+and typing
+\begin{quote}
+\begin{verbatim}
+make all
+\end{verbatim}
+\end{quote}
+to create the executables {\tt fasthenry} and {\tt zbuf} in the {\tt
+bin/} directory.
+%This will use the file {\tt Makefile} to make {\tt fasthenry}. 
+
+If you are compiling on a DEC 5000, DEC 3000 (Alpha), SGI, or a system
+running System V (HP and Suns running Solaris, perhaps), 
+other flags are required for compilation.  In this
+case, before compilation as instructed above, give the command:
+\begin{quote}
+\begin{verbatim}
+config <name>
+\end{verbatim}
+\end{quote}
+where {\tt <name>} is one of {\tt dec}, {\tt alpha}, or {\tt sgi}, or
+{\tt solaris} for
+compilation on a DEC 5000, DEC 3000 (Alpha), and Silicon Graphics
+workstation, respectively.  Additional steps for compiling on an SGI
+are given in the file {\tt README.sgi} in the {\tt fasthenry-3.0}
+directory. {\tt config sysV} is also provided for
+compilation on HP-UX, and other machines running System V,
+but has not been thoroughly tested.  For more details on compilation,
+see the {\tt fasthenry-3.0/README} file.
+
+\subsection{Producing this Guide}
+
+This guide is available in postscript as three separate files: {\tt
+manual\_001.ps, manual\_002.ps}, and {\tt manual\_003.ps} in
+the {\tt doc/} directory.  {\tt manual\_001.ps} contains up through
+page 13, {\tt manual\_002.ps} is pages 14--31, and {\tt manual\_003.ps}
+is pages 32--36.  Note that these files contain many detailed
+postscript images and may take significant time to print.  The
+\LaTeX\ version of the manual without the figures is also available.
+
+Also, the nonuniform plane discretization manual is in the files {\tt
+  nonuniform\_manual\_1.ps} and {\tt nonuniform\_manual\_2.ps }

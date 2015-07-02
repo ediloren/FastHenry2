@@ -1,0 +1,10 @@
+
+Print the three files:  manual_001.ps, manual_002.ps, and manual_003.ps
+  to get the complete manual.  
+
+The LaTex files are provided for a text version of the manual but
+the associated figures are not included so LaTex will fail on these files.
+
+For the documentation on nonuniformly discretized planes, print the two parts
+nonuniform_manual_1.ps
+nonuniform_manual_2.ps

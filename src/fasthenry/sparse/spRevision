@@ -1,0 +1,124 @@
+
+/*
+ *  REVISION HISTORY
+ *
+ *  Author:
+ *      Kenneth S. Kundert
+ *      University of California at Berkeley
+ *      College of Engineering
+ *      Department of Electrical Engineering and Computer Science
+ *
+ *  Advising professor:
+ *      Alberto Sangiovanni-Vincentelli
+ *
+ *
+ *       Sparse is available for a $150.00 charge.  The package includes the 
+ *  source code on tape, the user's guide and a paper that discusses techniques
+ *  for solving sparse systems of equations [1].  To obtain a copy of Sparse, 
+ *  send a check or money order payable to the Regents of the University of 
+ *  California to:
+ *
+ *      EECS Industrial Liaison Program
+ *      Cindy Manly
+ *      University of California
+ *      Berkeley, CA 94720
+ *
+ *  Please allow four weeks for delivery.
+ *
+ *       The University often does not have the resources to consult with 
+ *  users on how to use or modify these programs.  We would, however, like 
+ *  to be notified of any problems or errors in the material provided and 
+ *  appreciate copies on tape of any troublesome matrices.  If the program 
+ *  is enhanced or converted to run on other systems, we would like to receive
+ *  copies of the modified program so that it can be made available to the 
+ *  public.
+ *
+ *  References
+ *  [1] Kenneth S. Kundert.  Sparse matrix techniques.  In "Circuit Analysis,
+ *      Simulation and Design," vol. 3, pt. 1, Albert E. Ruehli (editor).
+ *      North-Holland, 1986.
+ */
+
+/*
+ *  Copyright information.
+ *
+ *  Copyright (c) 1985,86,87,88
+ *  by Kenneth S. Kundert and the University of California.
+ *
+ *  Permission to use, copy, modify, and distribute this software and its
+ *  documentation for any purpose and without fee is hereby granted, provided
+ *  that the above copyright notice appear in all copies and supporting
+ *  documentation and that the authors and the University of California
+ *  are properly credited.  The authors and the University of California
+ *  make no representations as to the suitability of this software for
+ *  any purpose.  It is provided `as is', without express or implied warranty.
+ */
+
+/*
+ *  >>> Current revision information:
+ *  $Author: kundert $
+ *  $Date: 85/12/10 21:03:02 $
+ *  $Revision: 2.2 $
+ */
+
+
+
+
+
+
+/*
+ *  >>> History:
+ *  Revision 1.1  January 1985
+ *      Initial release.
+ *
+ *  Revision 1.1a  20 March 1985
+ *      Modified DecomposeMatrix() and OrderAndDecomposeMatrix() so that
+ *      the parameters Growth, PseudoCondition and LargestElement may be 
+ *      given as NULL.
+ *
+ *  Revision 1.1b  28 March 1985
+ *      Corrected a bug that caused OrderAndDecomposeMatrix() to reorder
+ *      the matrix every time it was called.  Also made many of the global
+ *      variables defined in MtrxDecom.c static.
+ *
+ *  Revision 1.2  October 1985
+ *      This new version of Sparse is meant to make it more compatible
+ *      with interactive circuit simulators.  In it the TRANSLATE
+ *      option was added, along with the ability to access the matrix
+ *      with AddElementToMatrix() and AddAdmittanceToMatrix() after it
+ *      has been reordered.  Also added were the DeleteRowAndColFromMatrix(),
+ *      CleanMatrix(), GetMatrixSize(), SetMatrixReal() and SetMatrixComplex()
+ *      routines.
+ *
+ *  Revision 1.2a  April 1986
+ *      Fixed a bug that caused the matrix frame to get freed twice and one
+ *      in the test program that caused sparse to crash when a complex matrix
+ *      with no source vector was attempted.
+ *
+ *  Revision 1.2b  July 1986
+ *      Modified the test routine so that it allocates vectors from the heap
+ *      rather than the stack.
+ *
+ *  Revision 1.2c  February 1987
+ *      Fixed off-by-one error in PreorderForModifiedNodal().
+ *
+ *  Revision 1.2d
+ *      Modified the pivot selection algorithm so that singletons also meet
+ *      numerical threshold criterion.  Deleted some global variables.  Modified
+ *      test program to add command line options among other things.  Made 
+ *      thresholds sticky, so that once a valid threshold has been specified
+ *      for a particular matrix, it becomes the new default.
+ *
+ *  Revision 1.3a  July 1988
+ *      Made numerous changes.  Highlights are:
+ *      Routine names shortened and made unique to 8 characters.
+ *      Unordering factorization is faster.
+ *      Added self initialization feature.
+ *      Sparse now aborts on errors that should not occur.
+ *      Cleaned up test program.
+ *      Separated growth and pseudocondition calculations from factorization.
+ *      Added LINPACK condition number estimator.
+ *      Rewrote spMNA_Preorder, algorithm extended to fix inadequacies.
+ *      Eliminated all global variables.
+ *      Added DIAGONAL_PIVOTING option (only diagonal pivoting before).
+ */

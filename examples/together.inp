@@ -1,0 +1,39 @@
+*Solid plane with two traces above it
+*  Example presented at DAC '93  (compare mutual inductances with broken.inp)
+*
+.units mils
+.default nwinc=1 nhinc=1 h=1 w=8
+*****.default sigma=1.49e3
+.default z=8
+*
+*ground plane definition
+*
+g1 x1=-1000 y1=-500 z1=0.0
++  x2=1000 y2=-500 z2=0
++  x3=1000 y3=500 z3=0
++  thick=1 seg1=20 seg2=10
++  nhinc=1
++ nAin (-500,16,0)
++ nBin (-500,-16,0)
++ nAout (500,16,0)
++ nBout (500,-16,0)
+*
+
+nA1 x=-500 y=16
+nA2 x=500 y=16
+EA1 nA1 nA2
+
+nB1 x=-500 y=-16
+nB2 x=500 y=-16
+EB1 nB1 nB2
+
+*  3 loops
+.external nA1 nAin trace1
+.equiv nA2 nAout
+.external nB1 nBin trace2
+.equiv nB2 nBout
+
+.freq fmin=1e-1 fmax=1e19 ndec=0.05
+.end
+
+

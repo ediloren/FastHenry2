@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if test $1 
+then 
+  name=$1 
+else  
+  name="default"
+fi
+
+if test "$name" != "default" -a "$name" != "alpha" -a "$name" != "dec" -a "$name" != "sgi" -a "$name" != "sysV" -a "$name" != "solaris"
+then
+  echo config: Unknown type: $1.  Choose one of: default, alpha, dec, sgi, sysV, solaris
+else
+  /bin/cp src/fasthenry/Makefile.$name src/fasthenry/Makefile
+  /bin/cp src/zbuf/Makefile.$name src/zbuf/Makefile
+fi

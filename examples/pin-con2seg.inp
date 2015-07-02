@@ -1,0 +1,25 @@
+***Two segments from:  PACKAGE INDUCTANCE - 35 of 68 pins***
+*    For experimenting with skin/proximity effect modeling
+*
+.UNITS MILS
+.DEFAULT RHO=.0238
+.DEFAULT Z=85. H=8.5 W=24. nhinc=3 nwinc=5 rh=2 rw=2
+*
+* BEAM 16
+*
+N16B Y=100. X=387.5
+N16C Y=100. X=493.
+E16C N16B N16C
+.EXTERNAL N16B N16C port16
+*
+* BEAM 17
+*
+N17B Y=50. X=387.5
+N17C Y=50. X=493.
+E17C N17B N17C
+.EXTERNAL N17B N17C port17
+*
+.freq fmin=1e1 fmax=1e12 ndec=3
+
+.END
+

@@ -1,0 +1,220 @@
+Comparisons for using the "contact trace" utility
+
+This gives results verifying the "contact trace" and "contact connection"
+utilities.  
+
+We wish to use the trace and connection utilities
+to match known results.  Particularly, we want to see if defining a diagonal
+trace maintains the good results.
+
+Each section below gives the modifications to the original input file
+given at the bottom of this document.
+
+A. using decay_rect for everything (as in Summer96/comparision/3d_example2.inp)
+                            (4884 elements, 135 sec (level 5) on alpha/ocelot))
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.75027      +3.16843j 
+
+B. Using the trace utility for the trace:  
+   (3690 elements, 242 secs (level 4) on Alpha)
+
+  *+ contact decay_rect (0,0,0,50,2000,13,3000,500,3000)
+  + contact trace (0,-1000,0,0,1000,0,26,1)
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.74841      +3.16417j 
+
+C. Using the connection utility also:
+       (2604 elements, 76 seconds)
+  *+ contact decay_rect (0,-1000,0,30,30,10,10,3000,3000)
+  *+ contact decay_rect (0, 1000,0,30,30,10,10,3000,3000)
+  + contact connection np1 (0,-1000,0,30,30,2.5)
+  + contact connection np2 (0, 1000,0,30,30,2.5)
+  *+  np1 (0,-1000,0)
+  *+  np2 (0,1000,0)
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.63203      +3.16448j 
+
+Resistance has dropped as expected since we are now forcing all
+        nodes under the connection to be at the same potential.
+  
+D. More accurately trying to capture contact:
+        3714 elements, level 4, 244 secs
+
+  + contact connection np1 (0,-1000,0,26,26,3)
+  + contact connection np2 (0, 1000,0,26,26,3)
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.62884      +3.16465j 
+
+
+E. Let's try a diagonal trace of same dimension (note ratio=2.5 for this one)
+   9790 filaments, level 7!, 110 seconds
+
+   A diagonal trace takes many more elements since we can't exploit
+   the slow change in current along the direction of current flow
+   since its not along the x or y axis.
+
+  + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,1)
+  + contact connection np1 (-707.1,-707.1,0,26,26,2.5)
+  + contact connection np2 (707.1, 707.1,0,26,26,2.5)
+
+  NS1 x=-707.1 y=-707.1 z=223.5
+  NS2 x=707.1 y=707.1 z=223.5
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.64035      +3.18872j 
+
+  Hmm, accuracy could be because multipole went down to level 7 for some
+        reason.
+
+F. Let;s try same as E above, but manually ask for a coarser discretization
+        below trace at 45 degrees
+
+  + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,10)
+
+        2736 elements, level 4, 123 secs
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+          3.6437      +3.16781j 
+
+  Odd, quite accurate.  Perhaps we are lucky.  See trial H.
+
+G. Let's do E, but run it with "-l 5" to force level 5
+  9484 fils, 426 sec
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.64923      +3.18364j 
+
+  Not much different from E
+
+H. How much can we play with the scale factor before this makes
+        a difference  (scale factor = 20)
+
+   + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,20)
+
+   2308 fils, 115 seconds level 4
+
+   Row 1:  ns1  to  np1
+   Impedance matrix for frequency = 3.3e+08 1 x 1
+       3.63131      +3.17088j 
+
+   Ok, so it's gone back up again, so it is probably luck that F was accurate.
+   Still a surprisingly
+   small effect, probably because Si is so resistive and 330MHz isn't
+        that high a frequency.  Let's pick a higher frequency. 33 GHz:
+
+I. do the above comparisions for f=33GHz
+   133 secs.
+
+   .freq fmin=3.3e10 fmax=3.3e10 ndec=1
+
+ I1. For trial D, with ratio=2.5  (scale = 1, trace in y direction)
+   2946 fils, 157 secs
+
+   + contact trace (0,-1000,0,0,1000,0,26,1)
+   + contact connection np1 (0,-1000,0,26,26,2.5)
+   + contact connection np2 (0, 1000,0,26,26,2.5)
+   NS1 x=0 y=-1000 z=223.5
+   NS2 x=0 y=1000 z=223.5
+   *NS1 x=-707.1 y=-707.1 z=223.5
+   *NS2 x=707.1 y=707.1 z=223.5
+
+  Row 1:  ns1  to  np1
+  Impedance matrix for frequency = 3.3e+10 1 x 1
+       12.7711      +205.346j 
+
+ I2.Trying the above with some extra discretization along length  (decay_rect)
+    + contact decay_rect (0,0,0,26,2000,13,100,500,3000)    
+    *+ contact trace (0,-1000,0,0,1000,0,26,1)
+
+    Row 1:  ns1  to  np1
+    Impedance matrix for frequency = 3.3e+10 1 x 1
+       12.7465       +205.59j 
+ 
+    Seems to be good results.
+
+
+ I3. Diagonal trace: For scale=20  (trial H at 33GHz, (trace diagonal))
+
+   + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,20)
+
+   Row 1:  ns1  to  np1
+   Impedance matrix for frequency = 3.3e+10 1 x 1
+       11.1734      +213.896j 
+
+ I4.For scale=10  (trial F at 33GHz)
+   145 secs
+
+   + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,10)
+
+   Row 1:  ns1  to  np1
+   Impedance matrix for frequency = 3.3e+10 1 x 1
+       12.5388      +207.403j 
+
+ I5.For scale=1  (trial E)
+   314 sec, 60 iters, level 7
+
+   + contact trace (-707.1,-707.1,0,707.1,707.1,0,26,1)
+
+   Row 1:  ns1  to  np1
+   Impedance matrix for frequency = 3.3e+10 1 x 1
+       9.77926      +217.875j 
+
+
+************************************************************
+**  So big question:  Why does the diagonal trace give better results
+**     when the scale factor is 10 rather than 1???
+**  (compare I1 to I5 vs. I1 to I4 for f=33GHz and 
+**   B to E vs B to F for f=330MHz)  
+** The higher scale factor is enlarging elements which should lead to less
+** accurate results.  However when
+** the scale factor goes to 20, results seem to deviate again.
+************************************************************
+
+
+* same as Summer96/comparison/3d_example2.inp but using the "contact trace"
+*
+* a M5 line (26um wide, 1um thick) over Si substrate 8um below, sigma=2.6e7
+* 430um thick substrate, sigma=1.5e4 1/(ohm*m)
+* line length=1000um
+.units uM
+*
+* Define substrate, sigma=1.5e4 1/(m*ohm)= 0.015 1/(um*ohm)
+g1 x1 = -1500 y1 = -1500 z1 = 0
++  x2 = 1500  y2 = -1500 z2 = 0
++  x3 = 1500  y3 = 1500  z3 = 0
++  thick = 430  sigma= 0.015
+*+  seg1 = 100 seg2 = 100
++ file=NONE 
+*  under the trace
+*+ contact decay_rect (0,0,0,50,2000,13,3000,500,3000)
++ contact trace (0,-1000,0,0,1000,0,26,1)
+*  the contacts
++ contact decay_rect (0,-1000,0,30,30,10,10,3000,3000)
++ contact decay_rect (0, 1000,0,30,30,10,10,3000,3000)
++
++  nhinc = 3 rh=2
+*     nodes to reference later:
++  np1 (0,-1000,0)
++  np2 (0,1000,0)
+*
+* line width=26um
+* thick h=1um sigma=2.6e7 1/(m*ohm)=26 1/(um*ohm)
+*
+NS1 x=0 y=-1000 z=223.5
+NS2 x=0 y=1000 z=223.5
+EM5 NS1 NS2 w=26 h=1 sigma=26 nwinc=4 nhinc=1
+.equiv NS2 np2 
+.external NS1 np1
+*
+.freq fmin=3.3e8 fmax=3.3e8 ndec=1
+.end
