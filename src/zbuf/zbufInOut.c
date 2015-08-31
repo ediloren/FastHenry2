@@ -37,13 +37,34 @@ of this software.
 
 double black, white;		/* densities corresponding to shades */
 
+/* SRW */
+void setupLine(double***, int, double, double, double, double, double,
+    double);
+void figure_grey_levels(face**, double*, charge*, int);
+void get_charge_densities(double*, char*, int);
+void getAbsCoord(double*, charge*, int);
+face **fastcap2faces(int*, charge*, double*, int);
+void readLines(FILE*, line**, line**, int*);
+line **getLines(char*, int*);
+void getBndingBox(face**, int, line**, int, int*, int*, FILE*, double***);
+void dumpAxes(double***, FILE*);
+void copyBody(FILE*);
+void numberFaces(face**, int, FILE*);
+void numberFace(face*, FILE*);
+void dumpAdjGraph(face**, int, FILE*);
+void dumpFaceText(face**, int, FILE*);
+void dump_line_as_ps(FILE*, char*, double, double, double);
+void dump_shading_key(FILE*, int, int, double, int);
+void numberLines(line**, int, FILE*);
+void dumpLines(FILE*, line**, int);
+void dumpPs(face**, int, line**, int, FILE*, char**, int, int);
+
+
 /*
   loads axes' lines
 */
-void setupLine(axi, index, x1, y1, z1, x2, y2, z2)
-double x1, y1, z1, x2, y2, z2;
-double ***axi;
-int index;
+void setupLine(double ***axi, int index, double x1, double y1, double z1,
+    double x2, double y2, double z2)
 {
   axi[index][0][0] = x1;
   axi[index][0][1] = y1;
@@ -59,7 +80,7 @@ int index;
   to be dispalyed
   - requires minor mods to main in patran.c
 */
-charge *make_charges_from_patches()
+charge *make_charges_from_patches(void)
 {
   int i, j, k;
   PATCH *patch_pntr;
@@ -133,11 +154,8 @@ charge *make_charges_from_patches()
   - levels are scaled to match the range of densities present
   - sets the values of the extremal densities (`black' and `white')
 */
-void figure_grey_levels(face_list, chgs, chglist, use_density)
-double *chgs;
-charge *chglist;
-face **face_list;
-int use_density;
+void figure_grey_levels(face **face_list, double *chgs, charge *chglist,
+    int use_density)
 {
   int first, i;
   double dif;
@@ -217,15 +235,12 @@ int use_density;
   CHARGE DENSITIES ARE NOW READ DIRECTLY FROM VECTORS IN SYSTEM STRUCTS
   THIS FUNCTION IS NOT USED
 */
-void get_charge_densities(q, file, iter)
-double *q;
-char *file;
-int iter;
+void get_charge_densities(double *q, char *file, int iter)
 {
   int index, linecnt, header_found, type;
   char str1[BUFSIZ], str2[BUFSIZ], str3[BUFSIZ], linein[BUFSIZ];
   double density;
-  FILE *fp, *fopen();
+  FILE *fp;
 
   if((fp = fopen(file, "r")) == NULL) {
     fprintf(stderr, 
@@ -283,10 +298,7 @@ int iter;
 /*
   figures the corner coordinates in absolute coordinates
 */
-void getAbsCoord(vec, panel, num)
-double *vec;
-charge *panel;
-int num;
+void getAbsCoord(double *vec, charge *panel, int num)
 {
   double *cor = panel->corner[num];
   double *x = panel->X, *y = panel->Y, *z = panel->Z;
@@ -301,15 +313,14 @@ int num;
 /*
   transfer fastcap panel info to face structs
 */
-face **fastcap2faces(numfaces, chglist, q, use_density)
-int *numfaces, use_density;	/* use_density = TRUE => use q/A not q */
-charge *chglist;
-double *q;
+face **fastcap2faces(int *numfaces, charge *chglist, double *q,
+    int use_density)
+/* use_density;	use_density = TRUE => use q/A not q */
 {
   int i, j, dummy;
   int autmom, autlev, numMom, numLev;
   char infile[BUFSIZ];
-  double dot(), getPlane(), relperm;
+  double relperm;
   charge *chgp;
   face *head, *tail, **faces;
   extern int x_, k_, q_iter, q_, rc_, rd_, rb_;
@@ -317,7 +328,7 @@ double *q;
   extern double axeslen;
   extern char *q_file;
   extern double black, white, linewd;
-  surface *surf_list, *input_surfaces();
+  surface *surf_list;
   ssystem *sys;
   int qindex=1, cindex=1;
   double tavg[3], lavg[3];
@@ -424,18 +435,15 @@ double *q;
 	      dot size 2.0
   to get just a dot, put in tiny length line and arrow size
 */
-void readLines(fp, head, tail, numlines)
-line **head, **tail;
-int *numlines;
-FILE *fp;
+void readLines(FILE *fp, line **head, line **tail, int *numlines)
 {
   int flines = 0, falin = 0, fflag = 1, faflag = 1, getlines = 1, i, j;
   int f_;		/* f_ == 1 => ignore face and fill info */
-  char linein[BUFSIZ], **chkp, *chk, *strtok(), *cp;
+  char linein[BUFSIZ], **chkp, *chk, *cp;
   char readfile[BUFSIZ], tempc[BUFSIZ];
   double arrowsize, dotsize;
   int temp, linewd;
-  FILE *fpin, *fopen();
+  FILE *fpin;
 
   f_ = 1;			/* hardwire to take fill/face info as
 				   equivalent to end of file */
@@ -542,9 +550,7 @@ FILE *fp;
 /*
   opens a .fig file and reads only lines from it - closes if faces/fills found
 */
-line **getLines(line_file, numlines)
-int *numlines;
-char *line_file;
+line **getLines(char *line_file, int *numlines)
 {
   int i;
   FILE *fp;
@@ -575,12 +581,8 @@ char *line_file;
 /*
   figure the bounding box and write ps file line
 */
-void getBndingBox(faces, numfaces, lines, numlines, lowx, lowy, fp, axes)
-face **faces;
-line **lines;
-double ***axes;
-int numfaces, numlines, *lowx, *lowy;
-FILE *fp;
+void getBndingBox(face **faces, int numfaces, line **lines, int numlines,
+    int *lowx, int *lowy, FILE *fp, double ***axes)
 {
   int upx, upy;
   double xmax, ymax, minx, miny;
@@ -644,9 +646,7 @@ FILE *fp;
 /*
   dump axes to ps file
 */
-void dumpAxes(axi, fp)
-double ***axi;
-FILE *fp;
+void dumpAxes(double ***axi, FILE *fp)
 {
   int i;
 
@@ -664,8 +664,7 @@ FILE *fp;
 /*
   copy the body of the header to the output file
 */
-void copyBody(fp)
-FILE *fp;
+void copyBody(FILE *fp)
 {
   static char str[] = "\
 %%%%DocumentProcSets: FreeHand_header 2 0 \n\
@@ -908,10 +907,7 @@ fprintf(fp, "%s%s%s%s%s", str, str2, str3, str4, str5);
 /*
   numbers the faces for checking 
 */
-void numberFaces(faces, numfaces, fp)
-face **faces;
-int numfaces;
-FILE *fp;
+void numberFaces(face **faces, int numfaces, FILE *fp)
 {
   int i, j, mid[2];
   double cent[2];
@@ -938,9 +934,7 @@ FILE *fp;
 /*
   number a face for checking - used to cover up obscured faces' numbers
 */
-void numberFace(fac, fp)
-face *fac;
-FILE *fp;
+void numberFace(face *fac, FILE *fp)
 {
   int j, mid[2];
   double cent[2];
@@ -965,10 +959,7 @@ FILE *fp;
 /*
   dumps adjacency graph as a ps file - uses both input order and graph order
 */
-void dumpAdjGraph(faces, numfaces, fp)
-face **faces;
-int numfaces;
-FILE *fp;
+void dumpAdjGraph(face **faces, int numfaces, FILE *fp)
 {
   int f, i;
   double x, y;			/* current point in plot */
@@ -1012,7 +1003,7 @@ FILE *fp;
   fprintf(fp, "0 0 32 0 0 (Input Ordering) ts\n}\n");
   fprintf(fp, "[0 0 0 1]\nsts\nvmrs\n"); */
 
-  /* y += (numfaces*stepy + 3*FONT);	/* offset 2nd array */
+  /* y += (numfaces*stepy + 3*FONT); */	/* offset 2nd array */
 
   /* number each row and fill it in - graph ordering */
   for(f = 0; f < numfaces; f++) {
@@ -1038,10 +1029,7 @@ FILE *fp;
 /*
   dump face graph as a text file
 */
-void dumpFaceText(faces, numfaces, fp)
-face **faces;
-int numfaces;
-FILE *fp;
+void dumpFaceText(face **faces, int numfaces, FILE *fp)
 {
   int f, i, first = 0, k;
 
@@ -1081,10 +1069,8 @@ FILE *fp;
 /*
   dumps a line of chars in the Aldus FreeHand ps format
 */
-void dump_line_as_ps(fp, psline, x_position, y_position, font_size)
-char *psline;
-double x_position, y_position, font_size;
-FILE *fp;
+void dump_line_as_ps(FILE *fp, char *psline, double x_position,
+    double y_position, double font_size)
 {
   fprintf(fp, "%%%%IncludeFont: Times-Roman\n");
   fprintf(fp, "/f1 /|______Times-Roman dup RF findfont def\n{\n");
@@ -1097,10 +1083,8 @@ FILE *fp;
 /*
   dump nblocks blocks with shades between white and black, labeled with density
 */
-void dump_shading_key(fp, nblocks, precision, font_size, use_density)
-int nblocks, precision, use_density;
-double font_size;
-FILE *fp;
+void dump_shading_key(FILE *fp, int nblocks, int precision, double font_size,
+    int use_density)
 {
   int i;
   double x_right, y_top, block_hgt, block_x, block_y, string_x, diddle_x;
@@ -1180,10 +1164,7 @@ FILE *fp;
 /*
   numbers the lines for checking 
 */
-void numberLines(lines, numlines, fp)
-line **lines;
-int numlines;
-FILE *fp;
+void numberLines(line **lines, int numlines, FILE *fp)
 {
   int i, mid[2];
 
@@ -1195,7 +1176,7 @@ FILE *fp;
     /* dump a label with associated garbage */
     fprintf(fp, "%%%%IncludeFont: Times-Roman\n");
     fprintf(fp, "/f1 /|______Times-Roman dup RF findfont def\n{\n");
-    fprintf(fp, "f1 [%d 0 0 %d 0 0] makesetfont\n", FONT, FONT);
+    fprintf(fp, "f1 [%g 0 0 %g 0 0] makesetfont\n", FONT, FONT);
     fprintf(fp, "%d %d moveto\n", mid[0], mid[1]);
     fprintf(fp, "0 0 32 0 0 (%d) ts\n}\n", lines[i]->index);
     fprintf(fp, "[0 0 0 1]\nsts\nvmrs\n");
@@ -1205,10 +1186,7 @@ FILE *fp;
 /*
   lobotomized version of dumpPs in orthoPs.c - dumps lines/arrows
 */
-void dumpLines(fp, lines, numlines)
-line **lines;
-int numlines;
-FILE *fp;
+void dumpLines(FILE *fp, line **lines, int numlines)
 {
   int i, j, w_;
   double temp[3], temp1[3], x, y;
@@ -1286,19 +1264,15 @@ FILE *fp;
 /*
   dump faces in ps Aldus FreeHand format - assumes header body in afhpsheader
 */
-void dumpPs(faces, numfaces, lines, numlines, fp, argv, argc, use_density)
-face **faces;
-line **lines;
-char **argv;
-int numfaces, numlines, argc, use_density;
-FILE *fp; 
+void dumpPs(face **faces, int numfaces, line **lines, int numlines, FILE *fp,
+    char **argv, int argc, int use_density)
 {
   int i, j, f, lowx, lowy;
   extern int s_, n_, g_, c_, x_, q_, rk_, f_, m_; /* command line flags */
   extern double ***axes;
   extern double black, white;
   char linein[BUFSIZ];
-  double dot(), len, temp[2], xc, yc;
+  double len, temp[2], xc, yc;
   double x, y;
   
   /* print the lines before the bounding box */

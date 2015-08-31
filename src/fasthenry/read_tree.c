@@ -2,18 +2,82 @@
 /* reads a tree from the standard input and fills the gcell structure */
 
 #include <stdio.h>
-#include "gp.h"
+#include <string.h>
 #include "induct.h"
+#include "gp.h"
 
 #define GP_DEBUG FALSE
 
   
 #define MAXLINE 1000
 
-process_plane(grndp, fp, indsys)
-     GROUNDPLANE *grndp;
-     FILE *fp;
-     SYS *indsys;
+/* SRW */
+int process_plane(GROUNDPLANE*, FILE*, SYS*);
+void set_gp_coord_system(GROUNDPLANE*, Nonuni_gp*);
+void get_nonuni_coords(double, double, double, Nonuni_gp*, double*, double*,
+    double*);
+void get_global_coords(double, double, double, Nonuni_gp*, double*, double*,
+    double*);
+void get_global_vec(double, double, double, Nonuni_gp*, double*, double*,
+    double*);
+int readTree(FILE*, Nonuni_gp*);
+void set_cell_coords(Gcell*, double, double, double, double);
+void set_bi_coords(Bi*, double, double, double, double);
+void set_grid_coords(Grid_2d*, double, double, double, double);
+void process_tree(Nonuni_gp*);
+void resolve_nodes(Gcell*, Info*);
+void make_nodes(Gcell*, Info*);
+G_nodes *add_to_gnodelist(G_nodes*, G_nodes*);
+void resolve_bi_children(Gcell*, Info*);
+G_edges *make_one_edge(Gcell*, Gcell*, char);
+G_edges *make_two_edge(Gcell*, Gcell*, Gcell*, char);
+Gcell *new_Gcells(int, int);
+Gcell *new_Gcell(int);
+void init_Gcell(Gcell*);
+G_nodes *new_Gnode(int);
+G_nodes *make_new_node(double, double, int, Gcell*, int);
+void *gp_malloc(int);
+void Combine_edges(Gcell*, char, Gcell*, char);
+void combine_node_info(Gcell*, char, Gcell*, char);
+void give_cell_adjaceny(Gcell*, char, Gcell*, char, G_nodes**, G_nodes**);
+void combine_nodes(Gcell*, char, G_nodes*, G_nodes*);
+void replace_node(G_nodes*, G_nodes*);
+void kill_node(G_nodes*);
+void delete_first_node(Nonuni_gp*);
+void delete_dead_nodes(Nonuni_gp*);
+void remove_and_free(G_nodes*);
+void free_g_node(G_nodes*);
+void determine_adjaceny(G_nodes*);
+G_nodes *get_adjacent_node(G_nodes*, Gcell*, char, char, Gcell*, char, char);
+G_nodes *get_other_gnode(Gcell*, char, char);
+void compute_z_fils(Nonuni_gp*);
+void generate_segs(Nonuni_gp*, SYS*);
+void get_width_and_shift(char, G_nodes*, Gcell*, Gcell*, double*, double*);
+void get_x_cell_vals(Gcell*, G_nodes*, Gcell*, double*, double*);
+void get_y_cell_vals(Gcell*, G_nodes*, Gcell*, double*, double*);
+void make_segs(char, G_nodes*, G_nodes*, double, double, double, Nonuni_gp*,
+    SYS*);
+SEGMENT *make_one_seg(double, double, double, double, double, double, double,
+    double, double, double, double, Nonuni_gp*, SYS*, NODES**, NODES**);
+void draw_one_seg(char, double, double, double, double, double, double, double,
+    double, double, double, double, double, double, double, int, Nonuni_gp*);
+void print_cell_and_kids(Gcell*);
+void fprint_cell_and_kids(Gcell*, FILE*);
+void fprint_bi_kids(Bi*, FILE*);
+void dump_cell(Gcell*, FILE*);
+void print_bi_addresses(Bi*, FILE*);
+void print_node_list(G_nodes*);
+void fprint_node_list(G_nodes*, FILE*);
+void dump_node(G_nodes*,FILE*);
+void dump_leaf_cells_to_file(Gcell*, char*);
+void dump_leaf_cells(Gcell*, FILE*);
+void dump_grid_leaf_cells(Grid_2d*, FILE*);
+void print_leaf_cell(Gcell*, FILE*);
+void dump_nonuni_plane_currents(Nonuni_gp*, CX*, FILE*);
+double get_perimeter(G_nodes*);
+
+
+int process_plane(GROUNDPLANE *grndp, FILE *fp, SYS *indsys)
 {
   Nonuni_gp *gp;
   FILE *fp2;
@@ -103,9 +167,7 @@ process_plane(grndp, fp, indsys)
    the edges and z in the thickness.  Let's set up a relative coord
    to global */
 
-set_gp_coord_system(grndp, gp)
-     GROUNDPLANE *grndp;
-     Nonuni_gp *gp;
+void set_gp_coord_system(GROUNDPLANE *grndp, Nonuni_gp *gp)
 {
   double dx,dy,dz;
   double magx, magy;
@@ -152,9 +214,8 @@ set_gp_coord_system(grndp, gp)
 }
 
 /* convert global xyz to plane xyz */
-get_nonuni_coords(x, y, z, gp, xr, yr, zr)
-     double x,y,z,*xr,*yr,*zr;
-     Nonuni_gp *gp;
+void get_nonuni_coords(double x, double y, double z, Nonuni_gp *gp,
+    double *xr, double *yr, double *zr)
 {
   double rx,ry,rz;
 
@@ -171,9 +232,8 @@ get_nonuni_coords(x, y, z, gp, xr, yr, zr)
 }
 
 /* convert plane xyz point to global xyz point */
-get_global_coords(x, y, z, gp, xg, yg, zg)
-     double x,y,z, *xg, *yg, *zg;
-     Nonuni_gp *gp;
+void get_global_coords(double x, double y, double z, Nonuni_gp *gp,
+    double *xg, double *yg, double *zg)
 {
   double xv, yv, zv;
 
@@ -187,18 +247,15 @@ get_global_coords(x, y, z, gp, xg, yg, zg)
 }
 
 /* convert plane xyz vector to global xyz vector */
-get_global_vec(x, y, z, gp, xg, yg, zg)
-     double x,y,z, *xg, *yg, *zg;
-     Nonuni_gp *gp;
+void get_global_vec(double x, double y, double z, Nonuni_gp *gp,
+    double *xg, double *yg, double *zg)
 {
   *xg = x * gp->ux_x + y * gp->uy_x + z * gp->uz_x;
   *yg = x * gp->ux_y + y * gp->uy_y + z * gp->uz_y;
   *zg = x * gp->ux_z + y * gp->uy_z + z * gp->uz_z;
 }
 
-int readTree(fp, gp)
-FILE *fp;
-Nonuni_gp *gp;
+int readTree(FILE *fp, Nonuni_gp *gp)
 {
   static char line[MAXLINE];
   char *retchar;
@@ -331,16 +388,14 @@ Nonuni_gp *gp;
 }
 
 /* set coordinates of this cell and its children */
-set_cell_coords(cell,x0,y0,x1,y1)
-     Gcell *cell;
-     double x0, y0, x1, y1;
+void set_cell_coords(Gcell *cell, double x0, double y0, double x1, double y1)
 {
   cell->x0 = x0;
   cell->y0 = y0;
   cell->x1 = x1;
   cell->y1 = y1;
 
-  switch(get_children_type(cell)) {
+  switch(c_get_children_type(cell)) {
   case NONE:
     break;
   case BI:
@@ -356,9 +411,7 @@ set_cell_coords(cell,x0,y0,x1,y1)
 
 }
 
-set_bi_coords( two_kids, x0, y0, x1, y1)
-  Bi *two_kids;
-  double x0,y0,x1,y1;
+void set_bi_coords(Bi *two_kids, double x0, double y0, double x1, double y1)
 {
   if (two_kids->type == NS) {
     /* north child */
@@ -376,9 +429,7 @@ set_bi_coords( two_kids, x0, y0, x1, y1)
     GP_PANIC("Unknown bi child type in set_bi_coords");
 }
 
-set_grid_coords(grid, x0, y0, x1, y1)
-  Grid_2d *grid;
-  double x0,y0,x1,y1;
+void set_grid_coords(Grid_2d *grid, double x0, double y0, double x1, double y1)
 {
   int i,j;
   double xsize, ysize;
@@ -397,8 +448,7 @@ set_grid_coords(grid, x0, y0, x1, y1)
 }
     
 
-process_tree(gp)
-     Nonuni_gp *gp;
+void process_tree(Nonuni_gp *gp)
 {
   Info info;
 
@@ -438,14 +488,12 @@ process_tree(gp)
 
 
 /* recursive function to process tree */
-resolve_nodes(cell, info)
-     Gcell *cell;
-     Info *info;
+void resolve_nodes(Gcell *cell, Info *info)
 {
-  switch (get_children_type(cell)) {
+  switch (c_get_children_type(cell)) {
   case NONE:
     /* we are a leaf */
-    if (!is_leaf(cell)) GP_PANIC("Not a leaf!");
+    if (!c_is_leaf(cell)) GP_PANIC("Not a leaf!");
     make_nodes(cell, info);
     info->gp->num_leaves++;    /* update number of leaves in tree */
     break;
@@ -466,9 +514,7 @@ resolve_nodes(cell, info)
 /* make "nodes" for the four corners of a leaf */
 /* the information we want to collect is the cells attached to the node (4 max)
    and the adjacent nodes (4 max).  We start at the bottom with the leaves */
-make_nodes(cell, info)
-     Gcell *cell;
-     Info *info;
+void make_nodes(Gcell *cell, Info *info)
 {
   G_nodes *node;
   Nonuni_gp *gp = info->gp;
@@ -513,8 +559,7 @@ make_nodes(cell, info)
 */
 }
 
-G_nodes *add_to_gnodelist(node, nodelist)
-     G_nodes *node, *nodelist;
+G_nodes *add_to_gnodelist(G_nodes *node, G_nodes *nodelist)
 {
   if (nodelist == NULL) {
     node->prev = node->next = NULL;
@@ -528,9 +573,7 @@ G_nodes *add_to_gnodelist(node, nodelist)
   return node;
 }
 
-resolve_bi_children(cell, info)
-     Gcell *cell;
-     Info *info;
+void resolve_bi_children(Gcell *cell, Info *info)
 {
   Bi *two_kids;
   G_edges **edges;
@@ -581,9 +624,7 @@ resolve_bi_children(cell, info)
 
 }
 
-G_edges *make_one_edge(owner_cell, child_cell, dir)
-     Gcell *owner_cell, *child_cell;
-     char dir;
+G_edges *make_one_edge(Gcell *owner_cell, Gcell *child_cell, char dir)
 {
   G_edges *edge;
   int i;
@@ -602,9 +643,8 @@ G_edges *make_one_edge(owner_cell, child_cell, dir)
   return edge;
 }
 
-G_edges *make_two_edge(owner_cell, child1, child2, dir)
-     Gcell *owner_cell, *child1, *child2;
-     char dir;
+G_edges *make_two_edge(Gcell *owner_cell, Gcell *child1, Gcell *child2,
+    char dir)
 {
   G_edges *edge;
   int i;
@@ -625,9 +665,7 @@ G_edges *make_two_edge(owner_cell, child1, child2, dir)
 }
 
 
-Gcell *new_Gcells(num, flag)
-     int num;
-     int flag;
+Gcell *new_Gcells(int num, int flag)
 {
   Gcell *new;
   int i;
@@ -645,8 +683,7 @@ Gcell *new_Gcells(num, flag)
 
 }
 
-Gcell *new_Gcell(flag)
-     int flag;
+Gcell *new_Gcell(int flag)
 {
   Gcell *new;
 
@@ -662,8 +699,7 @@ Gcell *new_Gcell(flag)
 }
 
 /* this is never called */
-init_Gcell(cell)
-     Gcell *cell;
+void init_Gcell(Gcell *cell)
 {
   int i;
 
@@ -676,8 +712,7 @@ init_Gcell(cell)
   cell->ishole = FALSE;
 }
 
-G_nodes *new_Gnode(flag)
-     int flag;
+G_nodes *new_Gnode(int flag)
 {
   int i;
   G_nodes *new;
@@ -695,11 +730,8 @@ G_nodes *new_Gnode(flag)
 
 }
   
-G_nodes *make_new_node(x, y, cell_dir, cell, index)
-     double x,y;
-     int cell_dir;
-     Gcell *cell;
-     int index;
+G_nodes *make_new_node(double x, double y, int cell_dir, Gcell *cell, int
+    index)
 {
   G_nodes *node;
 
@@ -716,8 +748,7 @@ G_nodes *make_new_node(x, y, cell_dir, cell, index)
   return node;
 }
 
-void *gp_malloc(size)
-     int size;
+void *gp_malloc(int size)
 {
   void *ptr;
 
@@ -742,20 +773,18 @@ void *gp_malloc(size)
    2. one is a leaf and the other has multiple children.
 */
 
-Combine_edges(cell1, dir1, cell2, dir2)
-     Gcell *cell1, *cell2;
-     char dir1, dir2;
+void Combine_edges(Gcell *cell1, char dir1, Gcell *cell2, char dir2)
 {
   G_edges *edge1, *edge2;
   int i;
 
-  while(!is_leaf(cell1) && cell1->bndry.edges[dir1]->num_children == 1)
+  while(!c_is_leaf(cell1) && cell1->bndry.edges[dir1]->num_children == 1)
     cell1 = cell1->bndry.edges[dir1]->children[0];
 
-  while(!is_leaf(cell2) && cell2->bndry.edges[dir2]->num_children == 1)
+  while(!c_is_leaf(cell2) && cell2->bndry.edges[dir2]->num_children == 1)
     cell2 = cell2->bndry.edges[dir2]->children[0];
 
-  if (is_leaf(cell1) || is_leaf(cell2))
+  if (c_is_leaf(cell1) || c_is_leaf(cell2))
     /* one is a leaf so time to propogate info to the other */
     combine_node_info(cell1, dir1, cell2, dir2);
   else {
@@ -775,17 +804,15 @@ Combine_edges(cell1, dir1, cell2, dir2)
 
 }
 
-combine_node_info(cell1, dir1, cell2, dir2)
-     Gcell *cell1, *cell2;
-     char dir1, dir2;
+void combine_node_info(Gcell *cell1, char dir1, Gcell *cell2, char dir2)
 {
   char isleaf1, isleaf2;
   Gcell *leafcell, *nonleafcell;
   G_nodes *fareast_north, *farwest_south;
   char leafdir, nonleafdir;
 
-  isleaf1 = is_leaf(cell1);
-  isleaf2 = is_leaf(cell2);
+  isleaf1 = c_is_leaf(cell1);
+  isleaf2 = c_is_leaf(cell2);
 
   if (isleaf1) {
     leafcell = cell1;
@@ -813,18 +840,15 @@ combine_node_info(cell1, dir1, cell2, dir2)
 
 /* put leafcell pointer into nodes on the nonleafcell edge */
 /* and return the nodes on the end of the nonleafcell edge */
-give_cell_adjaceny(leaf, leafdir, nonleaf, nonleafdir, 
-		   pfareast_north, pfarwest_south)
-     Gcell *leaf, *nonleaf;
-     G_nodes **pfareast_north, **pfarwest_south;
-     char leafdir, nonleafdir;
+void give_cell_adjaceny(Gcell *leaf, char leafdir, Gcell *nonleaf,
+    char nonleafdir, G_nodes **pfareast_north, G_nodes **pfarwest_south)
 {
   int i;
   int num_kids;
   G_nodes *fareast_north, *farwest_south;
   G_edges *edge;
   
-  if (is_leaf(nonleaf)) {
+  if (c_is_leaf(nonleaf)) {
     if (nonleafdir == NORTH) {   
       nonleaf->bndry.nodes[NE]->cells[NW] = leaf;
       nonleaf->bndry.nodes[NW]->cells[NE] = leaf;
@@ -867,10 +891,8 @@ give_cell_adjaceny(leaf, leafdir, nonleaf, nonleafdir,
 }
 
 /* combine the nodes on leafcell's leafdir with the given nodes */	
-combine_nodes(leafcell, leafdir, fareast_north, farwest_south)
-     Gcell *leafcell;
-     char leafdir;
-     G_nodes *fareast_north, *farwest_south;
+void combine_nodes(Gcell *leafcell, char leafdir, G_nodes *fareast_north,
+    G_nodes *farwest_south)
 {
 
   if (leafdir == NORTH) {
@@ -895,8 +917,7 @@ combine_nodes(leafcell, leafdir, fareast_north, farwest_south)
 
 /* replace the cell's node in the node_dir direction with new node
    */
-replace_node(old_node, new_node)
-     G_nodes *new_node, *old_node;
+void replace_node(G_nodes *old_node, G_nodes *new_node)
 {
   int i;
 
@@ -929,8 +950,7 @@ replace_node(old_node, new_node)
   kill_node(old_node);
 }
 
-kill_node(node)
-     G_nodes *node;
+void kill_node(G_nodes *node)
 {
 #if GP_DEBUG == TRUE
   printf("killing node:");
@@ -942,8 +962,7 @@ kill_node(node)
 }
 
 /* delete first node in nodelist if it is marked as dead. NOT USED */
-delete_first_node(gp)
-     Nonuni_gp *gp;
+void delete_first_node(Nonuni_gp *gp)
 {
   G_nodes *node;
 
@@ -956,8 +975,7 @@ delete_first_node(gp)
 }
   
 /* remove nodes from linked list marked "DEAD".  */
-delete_dead_nodes(gp)
-     Nonuni_gp *gp;
+void delete_dead_nodes(Nonuni_gp *gp)
 {
   G_nodes *node, *free_me;
 
@@ -981,8 +999,7 @@ delete_dead_nodes(gp)
   }
 }
 
-remove_and_free(node)
-     G_nodes *node;
+void remove_and_free(G_nodes *node)
 {
 
   if (node->prev != NULL)
@@ -996,14 +1013,12 @@ remove_and_free(node)
   free_g_node(node);
 }
 
-free_g_node(node)
-     G_nodes *node;
+void free_g_node(G_nodes *node)
 {
   free(node);
 }
 
-determine_adjaceny(nodelist)
-     G_nodes *nodelist;
+void determine_adjaceny(G_nodes *nodelist)
 {
   G_nodes *node;
   int i;
@@ -1033,12 +1048,11 @@ determine_adjaceny(nodelist)
 /* given two cells (cell1, cell2), which share a common node, find 
    the other nodes along their common edge and determine which is closer
    to the common node */
-G_nodes *get_adjacent_node(node, cell1, node_dir1, edge_dir1, cell2, 
-			   node_dir2, edge_dir2)
-     G_nodes *node;             /* the shared node */
-     Gcell *cell1, *cell2;
-     char edge_dir1, edge_dir2; /*which edge of each cell is the shared edge*/
-     char node_dir1, node_dir2; /*which node of each cell is the shared one */
+G_nodes *get_adjacent_node(G_nodes *node, Gcell *cell1, char node_dir1,
+    char edge_dir1, Gcell *cell2, char node_dir2, char edge_dir2)
+/* G_nodes *node;             the shared node */
+/* char edge_dir1, edge_dir2; which edge of each cell is the shared edge*/
+/* char node_dir1, node_dir2; which node of each cell is the shared one */
 {
   G_nodes *node1 = NULL, *node2 = NULL;
 
@@ -1064,16 +1078,14 @@ G_nodes *get_adjacent_node(node, cell1, node_dir1, edge_dir1, cell2,
 }
 
 /* get the other node on the edge_dir edge of cell */
-G_nodes *get_other_gnode(cell, edge_dir, node_dir)
-     Gcell *cell;
-     char edge_dir, node_dir;
+G_nodes *get_other_gnode(Gcell *cell, char edge_dir, char node_dir)
 {
   G_nodes **nodes;
 
   if (cell == NULL)
     GP_PANIC("get_other_gnode given a null cell!");
     
-  if (!is_leaf(cell))
+  if (!c_is_leaf(cell))
     GP_PANIC("get_other_gnode requested other node of a nonleaf node!");
 
   nodes = cell->bndry.nodes;
@@ -1103,11 +1115,10 @@ G_nodes *get_other_gnode(cell, edge_dir, node_dir)
   }
   else
     GP_PANIC("get_other_node: bad edge_dir, node_dir combination");
-  
+  return ((G_nodes*)NULL);
 }
 
-compute_z_fils(gp)
-     Nonuni_gp *gp;
+void compute_z_fils(Nonuni_gp *gp)
 {
   double *z_c, *thick, *z_pts, thickness;
   int num_z_pts;
@@ -1151,14 +1162,12 @@ compute_z_fils(gp)
   
 
 /* this generates the segments for FastH */
-generate_segs(gp, indsys)
-     Nonuni_gp *gp;
-     SYS *indsys;
+void generate_segs(Nonuni_gp *gp, SYS *indsys)
 {
   G_nodes *node, *othernode;
   double thickness, leftwidth, rightwidth;
-  static complain = 0;
-  static complain2 = 0;
+  static int complain = 0;
+  static int complain2 = 0;
   double x_shift, x_width, y_shift, y_width;
   
   gp->num_seg_groups = 0; 
@@ -1206,12 +1215,8 @@ generate_segs(gp, indsys)
 
 /* figure out width of segment and where its center point will be
    (center point is given as a shift from node point) */
-get_width_and_shift(width_dir, node, leftcell, rightcell, ret_width, 
-		     ret_shift)
-     char width_dir;
-     G_nodes *node;
-     Gcell *leftcell, *rightcell;
-     double *ret_width, *ret_shift;
+void get_width_and_shift(char width_dir, G_nodes *node, Gcell *leftcell,
+    Gcell *rightcell, double *ret_width, double *ret_shift)
 {
   double x_min, x_max;  /* put the two cells in a box and these are the
 			      extremal values of the enclosing box*/
@@ -1240,61 +1245,53 @@ get_width_and_shift(width_dir, node, leftcell, rightcell, ret_width,
   *ret_shift = center - node_x; 
 }  
 
-get_x_cell_vals(left, node, right, x_left, x_right)
-     Gcell *left, *right;
-     G_nodes *node;
-     double *x_left, *x_right;
+void get_x_cell_vals(Gcell *left, G_nodes *node, Gcell *right, double *x_left,
+    double *x_right)
 {
-  if (left != NULL && !is_hole(left))
-    *x_left = get_x0(left);
+  if (left != NULL && !c_is_hole(left))
+    *x_left = c_get_x0(left);
   else
     *x_left = node->x;
   
-  if (right != NULL && !is_hole(right))
-    *x_right = get_x1(right);
+  if (right != NULL && !c_is_hole(right))
+    *x_right = c_get_x1(right);
   else 
     *x_right = node->x;
   
 #if GP_DEBUG == TRUE
   /* do some data checking */
   if (left != NULL && right != NULL)
-    if (get_x1(left) != node->x || get_x0(right) != node->x)
+    if (c_get_x1(left) != node->x || c_get_x0(right) != node->x)
       GP_PANIC("Node doesn't seem to be at the right cell point!");
 #endif
   
 }
 
 /* left and right of direction */
-get_y_cell_vals(left, node, right, y_min, y_max)
-     Gcell *left, *right;
-     G_nodes *node;
-     double *y_min, *y_max;
+void get_y_cell_vals(Gcell *left, G_nodes *node, Gcell *right, double *y_min,
+    double *y_max)
 {
-  if (left != NULL && !is_hole(left))
-    *y_min = get_y0(left);
+  if (left != NULL && !c_is_hole(left))
+    *y_min = c_get_y0(left);
   else
     *y_min = node->y;
   
-  if (right != NULL && !is_hole(right))
-    *y_max = get_y1(right);
+  if (right != NULL && !c_is_hole(right))
+    *y_max = c_get_y1(right);
   else 
     *y_max = node->y;
   
 #if GP_DEBUG == TRUE
   /* do some data checking */
   if (left != NULL && right != NULL)
-    if (get_y1(left) != node->y || get_y0(right) != node->y)
+    if (c_get_y1(left) != node->y || c_get_y0(right) != node->y)
       GP_PANIC("Node doesn't seem to be at the right cell point!");
 #endif
   
 }
 
-make_segs(direction, node, othernode, width, x_shift, y_shift, gp, indsys)
-     char direction;
-     G_nodes *node, *othernode;
-     double width, x_shift, y_shift;
-     Nonuni_gp *gp;
-     SYS *indsys;
+void make_segs(char direction, G_nodes *node, G_nodes *othernode, double width,
+    double x_shift, double y_shift, Nonuni_gp *gp, SYS *indsys)
 {
   int num_z_pts = gp->num_z_pts;
   double *z_c = gp->z_c;
@@ -1343,18 +1340,15 @@ make_segs(direction, node, othernode, width, x_shift, y_shift, gp, indsys)
   }
 }
 
-SEGMENT *make_one_seg(x0,y0,z0,x1,y1,z1, width, height, wx, wy, wz, gp, indsys,
-		      pnode0, pnode1)
-     double x0, y0, z0, x1, y1, z1, width, height, wx, wy, wz;
-     Nonuni_gp *gp;
-     SYS *indsys;  /* needed in makeseg at the very least */
-     NODES **pnode0, **pnode1;
+SEGMENT *make_one_seg(double x0, double y0, double z0, double x1, double y1,
+    double z1, double width, double height, double wx, double wy, double wz,
+    Nonuni_gp *gp, SYS *indsys, NODES **pnode0, NODES **pnode1)
+/* SYS *indsys;  needed in makeseg at the very least */
 {
   NODES *node0, *node1;
   static double dontcare = 2.0;
   double *widthdir;
   char name[100];
-  NODES *makenode();
   double xg,yg,zg;
   double wxg, wyg, wzg;
   
@@ -1389,14 +1383,10 @@ SEGMENT *make_one_seg(x0,y0,z0,x1,y1,z1, width, height, wx, wy, wz, gp, indsys,
 
 }
 
-draw_one_seg(direction,
-	     x1, y1, z1, x2, y2, z2, width, height, hx, hy, hz, wx, wy, wz,
-	     nhinc, gp)
-     char direction;
-     double x1, y1, z1, x2, y2, z2, width, height;
-     double hx, hy, hz, wx, wy, wz;
-     int nhinc;
-     Nonuni_gp *gp;
+void draw_one_seg(char direction, double x1, double y1, double z1,
+    double x2, double y2, double z2, double width, double height, double hx,
+    double hy, double hz, double wx, double wy, double wz, int nhinc,
+    Nonuni_gp *gp)
 {
 
   FILE *fp = stdout;
@@ -1547,18 +1537,16 @@ draw_one_seg(direction,
     fprintf(fp,"\n");
 }     
 
-print_cell_and_kids(cell)
+void print_cell_and_kids(Gcell *cell)
 {
   fprint_cell_and_kids(cell, stdout);
 }
 
-fprint_cell_and_kids(cell, fp)
-     Gcell *cell;
-     FILE *fp;
+void fprint_cell_and_kids(Gcell *cell, FILE *fp)
 {
   dump_cell(cell, fp);
   
-  switch(get_children_type(cell)) {
+  switch(c_get_children_type(cell)) {
   case NONE:
     break;
   case BI:
@@ -1573,17 +1561,13 @@ fprint_cell_and_kids(cell, fp)
   }
 }
 
-fprint_bi_kids(two_kids, fp)
-     Bi *two_kids;
-     FILE *fp;
+void fprint_bi_kids(Bi *two_kids, FILE *fp)
 {
   fprint_cell_and_kids(two_kids->child1, fp);
   fprint_cell_and_kids(two_kids->child2, fp);
 }
 
-dump_cell(cell, fp)
-     Gcell *cell;
-     FILE *fp;
+void dump_cell(Gcell *cell, FILE *fp)
 {
   int i;
 
@@ -1592,9 +1576,9 @@ dump_cell(cell, fp)
 	  cell->x0,cell->y0,cell->x1,cell->y1);
 
   fprintf(fp, "  area %lg \tChildren type: %d\tChildren: ",
-	  (cell->y1-cell->y0)*(cell->x1 - cell->x0), get_children_type(cell));
+	  (cell->y1-cell->y0)*(cell->x1 - cell->x0), c_get_children_type(cell));
 
-  switch(get_children_type(cell)) {
+  switch(c_get_children_type(cell)) {
   case NONE:
     fprintf(fp, "NONE\n");
     break;
@@ -1609,7 +1593,7 @@ dump_cell(cell, fp)
     break;
   }
   
-  if (is_leaf(cell)) {
+  if (c_is_leaf(cell)) {
     fprintf(fp, "   Nodes ne,se,sw,nw: ");
     for (i = 0; i < NUMNODES; i++)
       DUMP_INDEX(cell->bndry.nodes[i]);
@@ -1619,21 +1603,17 @@ dump_cell(cell, fp)
   fflush(fp);
 }
 
-print_bi_addresses(two_kids, fp)
-     Bi *two_kids;
-     FILE *fp;
+void print_bi_addresses(Bi *two_kids, FILE *fp)
 {
   fprintf(fp, "%d %d\n",two_kids->child1->index, two_kids->child2->index);
 }
 
-print_node_list(node)
+void print_node_list(G_nodes *node)
 {
   fprint_node_list(node, stdout);
 }
 
-fprint_node_list(node, fp)
-     G_nodes *node;
-     FILE *fp;
+void fprint_node_list(G_nodes *node, FILE *fp)
 {
   while(node != NULL) {
     dump_node(node, fp);
@@ -1641,9 +1621,7 @@ fprint_node_list(node, fp)
   }
 }
 
-dump_node(node,fp)
-     FILE *fp;
-     G_nodes *node;
+void dump_node(G_nodes *node,FILE *fp)
 {
   int i;
 
@@ -1666,16 +1644,14 @@ dump_node(node,fp)
 }
 
 
-debug_func()
+void debug_func()
 {
   int i;
 
   i = 0;
 }
 
-dump_leaf_cells_to_file(cell, fname)
-     Gcell *cell;
-     char *fname;
+void dump_leaf_cells_to_file(Gcell *cell, char *fname)
 {
   FILE *fp;
 
@@ -1690,11 +1666,9 @@ dump_leaf_cells_to_file(cell, fname)
   fclose(fp);
 }
 
-dump_leaf_cells(cell, fp)
-     Gcell *cell;
-     FILE *fp;
+void dump_leaf_cells(Gcell *cell, FILE *fp)
 {
-  switch (get_children_type(cell)) {
+  switch (c_get_children_type(cell)) {
   case NONE:
     print_leaf_cell(cell, fp);
     break;
@@ -1712,9 +1686,7 @@ dump_leaf_cells(cell, fp)
   }
 }
 
-dump_grid_leaf_cells( grid, fp )
-     Grid_2d *grid;
-     FILE *fp;
+void dump_grid_leaf_cells(Grid_2d *grid, FILE *fp)
 {
   int i, j;
 
@@ -1723,19 +1695,14 @@ dump_grid_leaf_cells( grid, fp )
       dump_leaf_cells(grid->kids[i][j], fp);
 }
 
-print_leaf_cell(cell, fp)
-     Gcell *cell;
-     FILE *fp;
+void print_leaf_cell(Gcell *cell, FILE *fp)
 {
   fprintf(fp, "Q %d  %lg %lg %lg  %lg %lg %lg  %lg %lg %lg  %lg %lg %lg\n",
 	  cell->index, cell->x0, cell->y0, 0.0, cell->x1, cell->y0, 0.0,
 	  cell->x1, cell->y1, 0.0, cell->x0, cell->y1, 0.0);
 }
 
-dump_nonuni_plane_currents(gp, Ib, fp)
-     Nonuni_gp *gp;
-     CX *Ib;
-     FILE *fp;
+void dump_nonuni_plane_currents(Nonuni_gp *gp, CX *Ib, FILE *fp)
 {
   G_nodes *gnode;
   double x,y,z;
@@ -1771,8 +1738,7 @@ dump_nonuni_plane_currents(gp, Ib, fp)
 /* This is essentially the area that can be used to calculate 
    the current density from an injection point and should match 
    the real perimeter of the contact for accurate resistance calculation */
-double get_perimeter(node)
-     G_nodes *node;
+double get_perimeter(G_nodes *node)
 {
   double sum = 0;
 

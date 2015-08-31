@@ -2,8 +2,11 @@
 /*  There is little error checking that these are valid */
 #include "induct.h"
 
-default_opts(opts)
-ind_opts *opts;
+/* SRW */
+void default_opts(ind_opts*);
+
+
+void default_opts(ind_opts *opts)
 {
   opts->soln_technique = ITERATIVE;      /* -s */
   opts->mat_vect_prod  = MULTIPOLE;      /* -m */

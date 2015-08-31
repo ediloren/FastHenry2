@@ -1,0 +1,102 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:03 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../gpexamp_copper.inp
+Title:
+* Portion of a printed circuit board underneath PGA package.  This
+
+all lengths multiplied by 2.54e-05 to convert to meters
+Total number of filaments before multipole refine: 6952
+Total number of filaments after multipole refine: 8656
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 5
+  Total number of filaments: 8656
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 2 
+Number of filaments:       8656
+Number of segments:        8656
+Number of nodes:           5654
+Number of meshes:          3501
+          ----from tree:                   301 
+          ----from planes: (before holes)  3200 
+Number of conductors:        18   (rows of matrix in Zc.mat) 
+Number of columns:           18   (columns of matrix in Zc.mat) 
+Number of real nodes:      5191
+filling M...
+filling R and L...
+Total Memory allocated: 42965 kilobytes
+Frequency = 1e+10
+Forming sparse matrix preconditioner..
+conductor 0 from node ngvss18_34
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 
+conductor 1 from node nruni123
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 
+conductor 2 from node nruni135
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 3 from node nruni136
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 
+conductor 4 from node nruni137
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 
+conductor 5 from node nruni133
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 6 from node nruni134
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 7 from node nruni138
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 8 from node nruni139
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 9 from node nruni140
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 
+conductor 10 from node nruni132
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 11 from node nruni170
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 12 from node nruni214
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 13 from node nruni255
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 
+conductor 14 from node nruni23
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 15 from node nruni221
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 
+conductor 16 from node nruni237
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 
+conductor 17 from node ngvdd19_34
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0.02068
+        Multipole setup 3.44893
+        Scanning graph  0.000655
+        Form A M and Z  0
+        form M'ZM       0
+        Form precond    1.64321
+        GMRES time      34.7913
+   Total:               39.9048

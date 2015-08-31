@@ -65,4 +65,4 @@ struct tri {			/* triangular element */
 };
 typedef struct tri tri;
 
-/* #define MAXCON 10000		/* assumes never more conductors than this */
+/* #define MAXCON 10000	*/	/* assumes never more conductors than this */

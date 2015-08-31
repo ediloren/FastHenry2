@@ -6,11 +6,15 @@
 static int num2nd=0, num4th=0, numexact=0;
 static int num2ndsav=0, num4thsav=0, numexactsav=0;
 
-double calcp(pchg1, pchg2, pfd)
-charge *pchg1, *pchg2;
-double *pfd;   /* left over from fastcap */
+/* SRW */
+double calcp(charge*, charge*, double*);
+void dumpnums(int, int);
+double tilelength(charge*);
+
+
+double calcp(charge *pchg1, charge *pchg2, double *pfd)
+/* double *pfd;   left over from fastcap */
 {
-  double mutual(), selfterm();
 
   if (pfd != NULL)
     fprintf(stderr, "calcp: I don't know what to do with pfd!=NULL\n");
@@ -33,8 +37,7 @@ double *pfd;   /* left over from fastcap */
 } 
 
 /* from the fastcap calcp */
-dumpnums(flag, size)
-int flag, size;
+void dumpnums(int flag, int size)
 {
   double total;
 
@@ -67,8 +70,7 @@ int flag, size;
   }
 }
 
-double tilelength(nq)
-charge *nq;
+double tilelength(charge *nq)
 {
   return nq->max_diag;
 }

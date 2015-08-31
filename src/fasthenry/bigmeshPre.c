@@ -2,6 +2,7 @@
  code from olmulPrcond() */
 
 #include "induct.h"
+
 #define PARTMESH OFF
 
 /* This near picks up only the hamming distance one cubes. */    
@@ -22,14 +23,17 @@
 
 FILE *fp;
 
+/* SRW */
+void bigmeshPre(ssystem*, SYS*, double);
+cube *getcube(charge*, ssystem*);
+int is_in_list(cube*, cube**, int*);
+void addtolist(cube*, cube**, int*, int*);
 
-bigmeshPre(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+
+void bigmeshPre(ssystem *sys, SYS *indsys, double w)
 {
 
-  cube *getcube(), *main_nc;
+  cube *main_nc;
   static cube **nc_list;   /* an array of pointers to cubes */
   int msh, p;
   int numblocks, blocknum;
@@ -63,7 +67,6 @@ double w;
                             /* number in mat if in fillist.  */
                             /* fillist and findx are inverses of each other */
 
-  MELEMENT *getnext();
 
   int num_mesh = indsys->num_mesh;
   int num_fils = indsys->num_fils;
@@ -393,9 +396,7 @@ double w;
 
 
 /* returns the cube that contains the charge */
-cube *getcube(chg, sys)
-charge *chg;
-ssystem *sys;
+cube *getcube(charge *chg, ssystem *sys)
 {
 
   int xi, yi, zi;
@@ -407,9 +408,7 @@ ssystem *sys;
 
 }
 
-is_in_list(nc, list, blocknum)
-cube *nc, **list;
-int *blocknum;
+int is_in_list(cube *nc, cube **list, int *blocknum)
 {
   int i;
 
@@ -429,9 +428,7 @@ int *blocknum;
 /* numblocks is the total number of blocks (cubes) in the matrix */
 /* startrows is the row number where the block starts */
 
-addtolist(nc, list, numblocks, startrows)
-cube *nc, **list;
-int *numblocks, *startrows;
+void addtolist(cube *nc, cube **list, int *numblocks, int *startrows)
 {
 
   list[*numblocks] = nc;

@@ -1,0 +1,81 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:06:21 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../trace_over_mesh_new.inp
+Title:
+* A set of bending traces sandwiched between meshed planes
+
+all lengths multiplied by 1e-06 to convert to meters
+Translating contact connection nx_power0_1 into:
+contact decay_rect (-3700,0,110,30,30,12,12,-1,-1)
+contact equiv_rect nx_power0_1 (-3700,0,110,30,30)
+Translating contact connection ny_power0_1 into:
+contact decay_rect (0,8800,110,30,30,12,12,-1,-1)
+contact equiv_rect ny_power0_1 (0,8800,110,30,30)
+Translating contact connection nx_ground0_1 into:
+contact decay_rect (-3700,0,0,30,30,12,12,-1,-1)
+contact equiv_rect nx_ground0_1 (-3700,0,0,30,30)
+Translating contact connection ny_ground0_1 into:
+contact decay_rect (0,8800,0,30,30,12,12,-1,-1)
+contact equiv_rect ny_ground0_1 (0,8800,0,30,30)
+Total number of filaments before multipole refine: 10159
+Total number of filaments after multipole refine: 10192
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 5
+  Total number of filaments: 10192
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 2 
+Number of filaments:      10192
+Number of segments:       10192
+Number of nodes:          20397
+Number of meshes:          4957
+          ----from tree:                   47 
+          ----from planes: (before holes)  4910 
+Number of conductors:         3   (rows of matrix in Zc.mat) 
+Number of columns:            3   (columns of matrix in Zc.mat) 
+Number of real nodes:     20353
+filling M...
+Exact number of meshes after ground plane holes removed: 4871
+filling R and L...
+Total Memory allocated: 65363 kilobytes
+Frequency = 1.25e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node ngground_nx_ground0_1_pseudo_center
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 
+conductor 1 from node ngpower_nx_power0_1_pseudo_center
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 
+conductor 2 from node nx0start
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 
+Frequency = 2.69304e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node ngground_nx_ground0_1_pseudo_center
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 
+conductor 1 from node ngpower_nx_power0_1_pseudo_center
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 
+conductor 2 from node nx0start
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0.019215
+        Multipole setup 4.39419
+        Scanning graph  0.000749
+        Form A M and Z  0.004382
+        form M'ZM       0.000181
+        Form precond    5.80071
+        GMRES time      11.5624
+   Total:               21.7818

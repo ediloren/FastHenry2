@@ -1,13 +1,15 @@
 /* this is 'fastcap.c' */
 #include "induct.h"
 
-ssystem *SetupMulti(chglist, indsys)
-charge *chglist;
-SYS *indsys;
+/* SRW */
+ssystem *SetupMulti(charge*, SYS*);
+
+
+ssystem *SetupMulti(charge *chglist, SYS *indsys)
 {
   int ttliter, i, j, num_cond;
-  charge *nq, *input_problem();
-  ssystem *sys, *mulInit();
+  charge *nq;
+  ssystem *sys;
   double **capmat, dirtimesav, mulsetup, initalltime, ttlsetup, ttlsolve;
   double relperm;
   int autmom, autlev, numMom, numLev;
@@ -234,7 +236,7 @@ SYS *indsys;
 #endif
 
 #endif				/* DIRSOL == OFF */
-  dumpnums(ON, eval_size, up_size); /* save num/type of pot. coeff calcs */
+  dumpnums(ON, eval_size); /* save num/type of pot. coeff calcs */
 
   dirtimesav = dirtime;		/* save direct matrix setup time */
   dirtime = 0.0;		/* make way for direct solve time */
@@ -267,7 +269,7 @@ SYS *indsys;
   /* stoptimer */
   mulsetup = dtime;		/* save multipole matrix setup time */
 
-  dumpnums(OFF, eval_size, up_size);	/* dump num/type of pot. coeff calcs */
+  dumpnums(OFF, eval_size);	/* dump num/type of pot. coeff calcs */
 
 #if DUMPPS == ALL
   dump_ps_mat(filename, 0, 0, eval_size, eval_size, argv, argc, CLOSE);
@@ -335,43 +337,43 @@ SYS *indsys;
 #endif
 
  if (indsys->opts->debug == ON) {
-  fprintf(stdout, "Total memory allocated: %d kilobytes ", memcount/1024);
+  fprintf(stdout, "Total memory allocated: %ld kilobytes ", memcount/1024);
   uallocEfcy(memcount);
 
-  fprintf(stdout, "  Q2M  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Q2M  matrix memory allocated: %7.ld kilobytes\n",
 	  memQ2M/1024);
   memcount = memQ2M;
-  fprintf(stdout, "  Q2L  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Q2L  matrix memory allocated: %7.ld kilobytes\n",
 	  memQ2L/1024);
   memcount += memQ2L;
-  fprintf(stdout, "  Q2P  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Q2P  matrix memory allocated: %7.ld kilobytes\n",
 	  memQ2P/1024);
   memcount += memQ2P;
-  fprintf(stdout, "  L2L  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  L2L  matrix memory allocated: %7.ld kilobytes\n",
 	  memL2L/1024);
   memcount += memL2L;
-  fprintf(stdout, "  M2M  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  M2M  matrix memory allocated: %7.ld kilobytes\n",
 	  memM2M/1024);
   memcount += memM2M;
-  fprintf(stdout, "  M2L  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  M2L  matrix memory allocated: %7.ld kilobytes\n",
 	  memM2L/1024);
   memcount += memM2L;
-  fprintf(stdout, "  M2P  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  M2P  matrix memory allocated: %7.ld kilobytes\n",
 	  memM2P/1024);
   memcount += memM2P;
-  fprintf(stdout, "  L2P  matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  L2P  matrix memory allocated: %7.ld kilobytes\n",
 	  memL2P/1024);
   memcount += memL2P;
-  fprintf(stdout, "  Q2PD matrix memory allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Q2PD matrix memory allocated: %7.ld kilobytes\n",
 	  memQ2PD/1024);
   memcount += memQ2PD;
-  fprintf(stdout, "  Miscellaneous mem. allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Miscellaneous mem. allocated: %7.ld kilobytes\n",
 	  memMSC/1024);
   memcount += memMSC;
-  fprintf(stdout, "  Inductance mem allocated: %7.d kilobytes\n",
+  fprintf(stdout, "  Inductance mem allocated: %7.ld kilobytes\n",
 	  memIND/1024);
   memcount += memIND;
-  fprintf(stdout, "  Total memory (check w/above): %7.d kilobytes\n",
+  fprintf(stdout, "  Total memory (check w/above): %7.ld kilobytes\n",
 	  memcount/1024);
  }
 #endif

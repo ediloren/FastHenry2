@@ -3,6 +3,18 @@
 
 #include "induct.h"
 
+/* SRW */
+double OneCubeCost(cube*****, int, int, int, int, int, double*);
+double ratio_of_divided_segs(double, charge*, SYS*);
+int is_gp_charge(charge*);
+void add_to_counts(cube*, int, int*****, int*****);
+/*
+void dump_evalcnts(ssystem*);
+void initCounters(ssystem*);
+int *****make_ints_for_cubes(ssystem*);
+*/
+
+
 /* this function estimates the size of the matrix which will be inverted
   for this cube for the preconditioner.  Since M has not been formed, and 
   the size of the preconditioner is based on meshes, not filaments/charges,
@@ -11,10 +23,8 @@
   is cube->multisize/2.  
 */
 
-double OneCubeCost(cubes, i,j,k,l,side, dir_cost)
-cube *****cubes;
-int i,j,k,l,side;
-double *dir_cost;
+double OneCubeCost(cube *****cubes, int i, int j, int k, int l, int side,
+    double *dir_cost)
 {
   int m,n,p;
   double total, dir_total, this_size;
@@ -38,10 +48,7 @@ double *dir_cost;
   return total*total*total;
 }
 
-double ratio_of_divided_segs(length,charges,indsys)
-double length;
-charge *charges;
-SYS *indsys;
+double ratio_of_divided_segs(double length, charge *charges, SYS *indsys)
 {
   SEGMENT *seg;
   int totalfils = 0, broken = 0;
@@ -63,8 +70,7 @@ SYS *indsys;
   return rat;
 }
 
-is_gp_charge(chg)
-charge *chg;
+int is_gp_charge(charge *chg)
 {
   if (chg->fil->segm->node[0]->gp == NULL)
     return FALSE;
@@ -72,9 +78,7 @@ charge *chg;
     return TRUE;
 }
 
-add_to_counts(nc, cols, evals, cnts)
-cube *nc;
-int cols, *****evals, *****cnts;
+void add_to_counts(cube *nc, int cols, int *****evals, int *****cnts)
 {
   cube *na;
 
@@ -88,8 +92,7 @@ int cols, *****evals, *****cnts;
 }
 
 #if 1 == 0
-dump_evalcnts(sys)
-ssystem *sys;
+void dump_evalcnts(ssystem *sys)
 {
   cube *****cubes = sys->cubes;
   int i,j,k,m,side;
@@ -119,10 +122,8 @@ ssystem *sys;
     }
 }
 
-initCounters(sys)
-ssystem *sys;
+void initCounters(ssystem *sys)
 {
-  int *****make_ints_for_cubes();
   
   sys->evalQ2Ps = make_ints_for_cubes(sys);
   sys->evalL2Ps = make_ints_for_cubes(sys);
@@ -132,8 +133,7 @@ ssystem *sys;
   sys->cntM2Ps = make_ints_for_cubes(sys);
 }
 
-int *****make_ints_for_cubes(sys)
-ssystem *sys;
+int *****make_ints_for_cubes(ssystem *sys)
 {
   int *****cubes;
   int i,j,k,m,side;

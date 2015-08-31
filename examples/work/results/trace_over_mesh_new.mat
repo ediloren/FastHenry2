@@ -1,0 +1,11 @@
+Row 3:  nx_ground0_1  to  ny_ground0_1, port name: ground_path_for_trace_0_and_1
+Row 2:  nx_power0_1  to  ny_power0_1, port name: power_path_for_trace_0_and_1
+Row 1:  nx0start  to  ny0end, port name: signal_trace_0
+Impedance matrix for frequency = 1.25e+08 3 x 3
+       0.22156      +3.83125j      0.012383      +2.52508j     0.0120202      +2.46447j 
+    0.0123862      +2.52523j     0.0193379      +2.57047j      0.011451      +2.44447j 
+    0.0120231      +2.46269j     0.0114474      +2.44256j     0.0175797      +2.57028j 
+Impedance matrix for frequency = 2.69304e+08 3 x 3
+      0.226022      +8.23671j     0.0157732      +5.43163j     0.0152868       +5.3013j 
+     0.015775      +5.43195j     0.0228845      +5.52912j     0.0146046      +5.25846j 
+     0.015288      +5.29748j     0.0146007      +5.25434j     0.0210035      +5.52892j 

@@ -12,12 +12,29 @@ double *Beta, *Betam;		/* beta and beta*m array */
 double *tleg;		/* Temporary Legendre storage. */
 double **factFac;		/* factorial factor array: (n-m+1)...(n+m) */
 
+/* SRW */
+int multerms(int);
+int costerms(int);
+int sinterms(int);
+void xyz2sphere(double, double, double, double, double, double, double*,
+    double*, double*);
+// int index(int, int);
+// int sindex(int, int, int);
+double iPwr(int);
+double fact(int);
+void evalFactFac(double**, int);
+void mulMultiAlloc(int, int, int);
+void evalLegendre(double, double*, int);
+double **mulQ2Multi(charge**, int*, int, double, double, double, int);
+double **mulMulti2Multi(double, double, double, double, double, double, int);
+double **mulMulti2P(double, double, double, charge**, int, int);
+
+
 /* 
    Used various places.  Returns number of coefficients in the multipole 
    expansion. 
 */
-int multerms(order)
-int order;
+int multerms(int order)
 {
   return(costerms(order) + sinterms(order));
 }
@@ -25,8 +42,7 @@ int order;
 /*
   returns number of cos(m*phi)-weighted terms in the real (not cmpx) multi exp
 */
-int costerms(order)
-int order;
+int costerms(int order)
 {
   return(((order + 1) * (order + 2)) / 2);
 }
@@ -34,8 +50,7 @@ int order;
 /*
   returns number of sin(m*phi)-weighted terms in the real (not cmpx) multi exp
 */
-int sinterms(order)
-int order;
+int sinterms(int order)
 {
   return((((order + 1) * (order + 2)) / 2) - (order+1));
 }
@@ -44,8 +59,8 @@ int order;
 /*
   takes two sets of cartesian absolute coordinates; finds rel. spherical coor.
 */
-void xyz2sphere(x, y, z, x0, y0, z0, rho, cosA, beta)
-double x, y, z, x0, y0, z0, *rho, *cosA, *beta;
+void xyz2sphere(double x, double y, double z, double x0, double y0, double z0,
+    double *rho, double *cosA, double *beta)
 {
   /* get relative coordinates */
   x -= x0;			/* "0" coordinates play the role of origin */
@@ -72,8 +87,7 @@ double x, y, z, x0, y0, z0, *rho, *cosA, *beta;
 
 #if TRUE == FALSE
 
-int index(n, m)
-int n, m;
+int index(int n, int m)
 {
   if(m > n) {
     fprintf(stderr, "index: m = %d > n = %d\n", m, n);
@@ -93,8 +107,8 @@ int n, m;
   assumed entry order: (n,m) = (1,1) (2,1) (2,2) (3,1) (3,2) (3,3) (4,1)...
 */
 /* REPLACED BY MACRO SINDEX(N, M, CTERMS) 24July91 */
-int sindex(n, m, cterms)
-int n, m, cterms;		/* cterms is costerms(order) */
+int sindex(int n, int m, int cterms)
+/* int n, m, cterms;		cterms is costerms(order) */
 {
   if(m > n) {
     fprintf(stderr, "sindex: m = %d > n = %d\n", m, n);
@@ -116,8 +130,8 @@ int n, m, cterms;		/* cterms is costerms(order) */
 /*
   returns i = sqrt(-1) to the power of the argument
 */
-double iPwr(e)
-int e;				/* exponent, computes i^e */
+double iPwr(int e)
+/* int e;				exponent, computes i^e */
 {
   if(e == 0) return(1.0);
   if(e % 2 != 0) {
@@ -134,8 +148,7 @@ int e;				/* exponent, computes i^e */
 /*
   returns factorial of the argument (x!)
 */
-double fact(x)
-int x;
+double fact(int x)
 {
   double ret = 1.0;
   if(x == 0 || x == 1) return(1.0);
@@ -155,9 +168,7 @@ int x;
 /*
   produces factorial factor array for mulMulti2P
 */
-void evalFactFac(array, order)
-int order;
-double **array;
+void evalFactFac(double **array, int order)
 {
   int n, m;			/* array[n][m] = (m+n)!/(n-m)! */
 
@@ -183,8 +194,7 @@ double **array;
 /*
   Allocates space for temporary vectors.
 */
-void mulMultiAlloc(maxchgs, order, depth)
-int maxchgs, order, depth;
+void mulMultiAlloc(int maxchgs, int order, int depth)
 {
   int x;
 
@@ -265,9 +275,7 @@ int maxchgs, order, depth;
   n and m have maximum value order
   vector entries correspond to (n,m) = (0,0) (1,0) (1,1) (2,0) (2,1)...
 */
-void evalLegendre(cosA, vector, order)
-double cosA, *vector;
-int order;
+void evalLegendre(double cosA, double *vector, int order)
 {
   int x;
   int n, m;			/* as in Pn^m, both <= order */
@@ -315,10 +323,8 @@ int order;
   Returns a matrix which gives a cube's multipole expansion when *'d by chg vec
   OPTIMIZATIONS USING is_dummy HAVE NOT BEEN COMPLETELY IMPLEMENTED
 */
-double **mulQ2Multi(chgs, is_dummy, numchgs, x, y, z, order)
-double x, y, z; 
-charge **chgs;
-int numchgs, order, *is_dummy;
+double **mulQ2Multi(charge **chgs, int *is_dummy, int numchgs, double x,
+    double y, double z, int order)
 {
   double **mat;
   double cosA;			/* cosine of elevation coordinate */
@@ -408,12 +414,11 @@ int numchgs, order, *is_dummy;
   return(mat);
 }
 
-double **mulMulti2Multi(x, y, z, xp, yp, zp, order)
-double x, y, z, xp, yp, zp;	/* cube center, parent cube center */
-int order;
+double **mulMulti2Multi(double x, double y, double z, double xp,
+    double yp, double zp, int order)
+/* double x, y, z, xp, yp, zp;	cube center, parent cube center */
 {
   double **mat, rho, rhoPwr, cosA, beta, mBeta, temp1, temp2; 
-  double iPwr(), fact();
   int r, j, k, m, n, c;
   int cterms = costerms(order), sterms = sinterms(order);
   int terms = cterms + sterms;
@@ -512,10 +517,9 @@ int order;
 /* 
   builds multipole evaluation matrix; used only for fake downward pass 
 */
-double **mulMulti2P(x, y, z, chgs, numchgs, order)
-double x, y, z;			/* multipole expansion origin */
-charge **chgs;
-int numchgs, order;
+double **mulMulti2P(double x, double y, double z, charge **chgs, int numchgs,
+    int order)
+/* double x, y, z;			multipole expansion origin */
 {
   double **mat;
   double cosTh;			/* cosine of elevation coordinate */

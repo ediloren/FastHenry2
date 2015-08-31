@@ -42,6 +42,11 @@ typedef struct {
 } Fmatrix;
 #endif
 
+/* SRW */
+void savemat(FILE*, int, char*, int, int, int, double*, double*);
+void savemat_mod(FILE*, int, char*, int, int, int, double*, double*, int, int);
+
+
 #ifdef __STDC__
 void savemat(FILE *fp, int type, char *pname, int mrows, int ncols, 
              int imagf, double *preal, double *pimag)

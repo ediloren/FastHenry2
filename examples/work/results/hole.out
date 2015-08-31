@@ -1,0 +1,52 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:43 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../hole.inp
+Title:
+*This is the input deck to calculate effective inductance
+
+all lengths multiplied by 1 to convert to meters
+Total number of filaments before multipole refine: 724
+Total number of filaments after multipole refine: 724
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 3
+  Total number of filaments: 724
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 1 
+Number of filaments:        724
+Number of segments:         724
+Number of nodes:            441
+Number of meshes:           402
+          ----from tree:                   2 
+          ----from planes: (before holes)  400 
+Number of conductors:         1   (rows of matrix in Zc.mat) 
+Number of columns:            1   (columns of matrix in Zc.mat) 
+Number of real nodes:       441
+filling M...
+Exact number of meshes after ground plane holes removed: 334
+filling R and L...
+Total Memory allocated: 2479 kilobytes
+Frequency = 2e+06
+Forming sparse matrix preconditioner..
+conductor 0 from node ng118_8
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0
+        Multipole setup 0.031281
+        Scanning graph  4.7e-05
+        Form A M and Z  0
+        form M'ZM       0
+        Form precond    0
+        GMRES time      0.026842
+   Total:               0.05817

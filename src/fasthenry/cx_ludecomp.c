@@ -6,10 +6,12 @@
 
 #include "induct.h"
 
-CX **cx_ludecomp(matin, size, allocate)
-CX **matin;
-int size;
-int allocate;
+/* SRW */
+CX **cx_ludecomp(CX**, int, int);
+void cx_lu_solve(CX**, CX*, CX*, int);
+
+
+CX **cx_ludecomp(CX **matin, int size, int allocate)
 {
   extern int fulldirops;
   CX factor, **mat, tmp;
@@ -49,9 +51,7 @@ int allocate;
 /*
   For direct solution of Pq = psi, used if DIRSOL == ON or if preconditioning.
 */
-void cx_lu_solve(mat, x, b, size)
-CX **mat, *x, *b;
-int size;
+void cx_lu_solve(CX **mat, CX *x, CX *b, int size)
 {
   extern int fulldirops;
   int i, j;

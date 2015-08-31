@@ -4,7 +4,7 @@ program=fasthenry
 version="3.0wr"
 
 # The inno packager exeutable.
-inno="/inno-5.2.2/iscc"
+inno="/inno-5.5.1/iscc"
 
 topdir=data
 
@@ -27,8 +27,8 @@ mkdir $docs
 mkdir $examples
 
 echo copying $srcbin
-install -sc -m 0755 -o Administrator -g None $srcbin/fasthenry.exe $bin
-install -sc -m 0755 -o Administrator -g None $srcbin/zbuf.exe $bin
+install -sc -m 0755 $srcbin/fasthenry.exe $bin
+install -sc -m 0755 $srcbin/zbuf.exe $bin
 
 echo copying $srclib/examples
 cp $srclib/examples/30pin.inp $examples

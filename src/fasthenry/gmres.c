@@ -1,7 +1,32 @@
 /* This is a complex Generalized Minimal residual algorithm */
 
 #include "induct.h"
+#include "sparse/spMatrix.h"
+
 #define EPSGMRES 1e-13    /* machine precision * 10 */
+
+/* SRW */
+// typedef CX (*gmres_cb1)(CX*, CX*, int);
+// typedef void (*gmres_cb2)(CX*, ssystem*, CX*, int, charge*, double, double*,
+//     SYS*);
+void blockPrecond(CX**, CX*, int, CX*, CX**, int, int*);
+void cx_invert(CX**, int);
+void matMult(CX**, CX**, int, int, int, CX*);
+void matMultVect(CX**, CX*, CX*, int);
+int gmres(CX**, CX*, CX*, gmres_cb1, gmres_cb2, int, int, double, ssystem*,
+    charge*, double, double*, SYS*, int);
+void sub_3(CX*, CX*, CX*, int);
+void set_scalar_mult_1(CX*, double, int);
+void set_scalar_mult_2(CX*, CX*, double, int);
+void add_scalar_mult_2(CX*, CX*, double, int);
+void add_cx_mult_2(CX*, CX*, CX, int);
+void sub_cx_mult_2(CX*, CX*, CX, int);
+CX inner(CX*, CX*, int);
+void veryoldmatvec(CX*, CX**, CX*, int);
+void disMat(CX**, int);
+void multvec2(CX**, CX*, CX*, int*, int);
+void directmatvec(CX*, ssystem*, CX*, int, charge*, double, double*, SYS*);
+void calc_other_norm(CX*, CX*, int, double, double*, double*, double*, double*);
 
 /*
 mat - dense matrix to block precondition. Mat is replaced with  D^-1 Mat, 
@@ -15,11 +40,8 @@ startrows - beginning row of each diag block,
 startrows[0] = 0, startrows[numblocks] = size;
 */
 
-int blockPrecond(mat, rhs, size, vect, pvect, numblocks, startrows)
-CX **mat, *rhs;
-CX *vect, **pvect;
-int size, numblocks;
-int *startrows;
+void blockPrecond(CX **mat, CX *rhs, int size, CX *vect, CX **pvect,
+    int numblocks, int *startrows)
 {
 int i, j;
 CX **diagBlock;
@@ -52,9 +74,7 @@ CX **diagBlock;
 /* 
   In-place inverts a matrix using guass-jordan.
 */
-cx_invert(mat, size)
-CX **mat;
-int size;
+void cx_invert(CX **mat, int size)
 {
   int i, j, k;
   CX normal, multiplier, tmp;
@@ -85,9 +105,8 @@ int size;
 /*
 Multiplies mat1 * mat2, replacing mat2 with the product. 
 */
-matMult(mat1, mat2, rows1, firstcol, lastcol, vtemp)
-CX **mat1, **mat2, *vtemp;
-int rows1, firstcol, lastcol;
+void matMult(CX **mat1, CX **mat2, int rows1, int firstcol, int lastcol,
+    CX *vtemp)
 {
 int i, j, k;
 CX *row, tmp;
@@ -109,9 +128,7 @@ CX *row, tmp;
 /*
 dvect = mat1 * svect.
 */
-matMultVect(mat1, svect, dvect, rows)
-CX **mat1, *svect, *dvect;
-int rows;
+void matMultVect(CX **mat1, CX *svect, CX *dvect, int rows)
 {
   int i, j, k;
   CX *row, tmp, sum;
@@ -127,23 +144,11 @@ int rows;
   }
 }
     
-int
-gmres(A, b, x0, inner, matvec, size, maxiters, tol, sys, chglist, w, R, indsys,
-      cond)
-  CX **A;
-  CX *b;
-  CX *x0;
-  CX (*inner)();
-  int (*matvec)();
-  int size;
-  int maxiters;
-  double tol;
-  SYS *indsys;
-  ssystem *sys;
-  charge *chglist;
-  double w;  /* frequency */
-  double *R;
-  int cond;   /* conductor number for saving residual data */
+int gmres(CX **A, CX *b, CX *x0, gmres_cb1 inner, gmres_cb2 matvec, int size,
+    int maxiters, double tol, ssystem *sys, charge *chglist, double w,
+    double *R, SYS *indsys, int cond)
+  /* double w;  frequency */
+  /* int cond;  conductor number for saving residual data */
 {
   register int i, j, k;
   double rnorm, norm, length, blahnorm;
@@ -385,9 +390,7 @@ gmres(A, b, x0, inner, matvec, size, maxiters, tol, sys, chglist, w, R, indsys,
 }
 
 
-sub_3(z,x,y,size)
-  CX *z, *x, *y;
-  int size;
+void sub_3(CX *z, CX *x, CX *y, int size)
 {
   int i;
   CX tmp;
@@ -400,10 +403,7 @@ sub_3(z,x,y,size)
 }
 
 
-set_scalar_mult_1(x,alpha,size)
-  CX *x;
-  double alpha;
-  int size;
+void set_scalar_mult_1(CX *x, double alpha, int size)
 {
   int i;
   
@@ -415,10 +415,7 @@ set_scalar_mult_1(x,alpha,size)
 }
 
 
-set_scalar_mult_2(x,y,alpha,size)
-  CX *x, *y;
-  double alpha;
-  int size;
+void set_scalar_mult_2(CX *x, CX *y, double alpha, int size)
 {
   int i;
   
@@ -430,10 +427,7 @@ set_scalar_mult_2(x,y,alpha,size)
 }
 
 
-add_scalar_mult_2(x,y,alpha,size)
-  CX *x, *y;
-  double alpha;
-  int size;
+void add_scalar_mult_2(CX *x, CX *y, double alpha, int size)
 {
   int i;
   
@@ -445,10 +439,7 @@ add_scalar_mult_2(x,y,alpha,size)
 }
 
 
-add_cx_mult_2(x,y,alpha,size)
-  CX *x, *y;
-  CX alpha;
-  int size;
+void add_cx_mult_2(CX *x, CX *y, CX alpha, int size)
 {
   int i;
   CX tmp1;
@@ -462,10 +453,7 @@ add_cx_mult_2(x,y,alpha,size)
   
 }
 
-sub_cx_mult_2(x,y,alpha,size)
-  CX *x, *y;
-  CX alpha;
-  int size;
+void sub_cx_mult_2(CX *x, CX *y, CX alpha, int size)
 {
   int i;
   CX tmp1;
@@ -479,10 +467,7 @@ sub_cx_mult_2(x,y,alpha,size)
   
 }
 
-CX
-inner(x, y, size)
-  CX *x, *y;
-  int size;
+CX inner(CX *x, CX *y, int size)
 {
   int i;
   CX tmp1, tmp2;
@@ -505,13 +490,10 @@ inner(x, y, size)
 
 int
 #if !defined ( NOMULTI )
-oldmatvec(y, A, x, size,startrows, numblocks)
+void oldmatvec(CX *y, CX **A, CX *x, int size, int *startrows, int numblocks)
 #else NOMULTI
-matvec(y, A, x, size,startrows, numblocks)
+void matvec(CX *y, CX **A, CX *x, int size, int *startrows, int numblocks)
 #endif NOMULTI
-  CX *x, *y;
-  CX **A;
-  int *startrows, numblocks;
 {
   int i,j, row;
   CX temp;
@@ -545,9 +527,7 @@ matvec(y, A, x, size,startrows, numblocks)
 }
 #endif
 
-veryoldmatvec(y, A, x, size)
-  CX *x, *y;
-  CX **A;
+void veryoldmatvec(CX *y, CX **A, CX *x, int size)
 {
   int i, j;
   CX temp;
@@ -561,9 +541,7 @@ veryoldmatvec(y, A, x, size)
   }
 }
 
-disMat(A, size)
-CX **A;
-int size;
+void disMat(CX **A, int size)
 {
   int i, j;
 
@@ -578,10 +556,7 @@ int size;
 
 /* multiplies the vector by just the diagonal blocks */
 /* That is, it multiplies by the preconditioner */
-multvec2(A, x, y, startrows, numblocks)
-int *startrows, numblocks;
-  CX *x, *y;
-  CX **A;
+void multvec2(CX **A, CX *x, CX *y, int *startrows, int numblocks)
 {
   int i,j, row;
   CX temp;
@@ -599,14 +574,10 @@ int *startrows, numblocks;
 
 /* Vs holds the result of (indsys->MtZM)*(indsys->Precond)*Im */
 /* All other arguments are not used.   MK 10/92 */
-directmatvec(Vs, sys, Im, size, chglist, w, R, indsys)
-CX *Vs, *Im;
-int size;
-ssystem *sys;
-charge *chglist;
-double w;  /* radian frequency */
-double *R;  /* resistance vector */
-SYS *indsys;
+void directmatvec(CX *Vs, ssystem *sys, CX *Im, int size, charge *chglist,
+    double w, double *R, SYS *indsys)
+/* double w;  radian frequency */
+/* double *R; resistance vector */
 {
   int i;
 
@@ -616,15 +587,13 @@ SYS *indsys;
       Im[i] = Vs[i];
   }
   else if (indsys->precond_type == SPARSE) 
-    spSolve(indsys->sparMatrix, Im, Im);
+    spSolve(indsys->sparMatrix, (spREAL*)Im, (spREAL*)Im);
 
   veryoldmatvec(Vs, indsys->MtZM, Im, size);
 }
 
-calc_other_norm(x, xlast, size, abs_tol, r_real, r_imag, max_real, max_imag)
-     double abs_tol, *r_real, *r_imag, *max_real, *max_imag;
-     CX *x, *xlast;
-     int size;
+void calc_other_norm(CX *x, CX *xlast, int size, double abs_tol,
+    double *r_real, double *r_imag, double *max_real, double *max_imag)
 {
   double r_max_diff, r_max_val, i_max_diff, i_max_val, r_abstol, i_abstol;
   int i;

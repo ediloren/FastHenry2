@@ -1,0 +1,153 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:06:01 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../pin-connect.inp
+Title:
+***PACKAGE INDUCTANCE - 35 of 68 pins***
+
+all lengths multiplied by 2.54e-05 to convert to meters
+Total number of filaments before multipole refine: 2625
+Total number of filaments after multipole refine: 3270
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 3
+  Total number of filaments: 3270
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 0 
+Number of filaments:       3270
+Number of segments:         218
+Number of nodes:            253
+Number of meshes:          3087
+          ----from tree:                   35 
+          ----from planes: (before holes)  0 
+Number of conductors:        35   (rows of matrix in Zc.mat) 
+Number of columns:           35   (columns of matrix in Zc.mat) 
+Number of real nodes:       253
+filling M...
+filling R and L...
+Total Memory allocated: 43142 kilobytes
+Frequency = 1
+Forming sparse matrix preconditioner..
+conductor 0 from node n35end1
+Calling gmres...
+1 2 3 
+conductor 1 from node n34end1
+Calling gmres...
+1 2 3 
+conductor 2 from node n33end1
+Calling gmres...
+1 2 3 
+conductor 3 from node n32end1
+Calling gmres...
+1 2 3 
+conductor 4 from node n31end1
+Calling gmres...
+1 2 3 
+conductor 5 from node n30end1
+Calling gmres...
+1 2 3 
+conductor 6 from node n29end1
+Calling gmres...
+1 2 3 
+conductor 7 from node n28end1
+Calling gmres...
+1 2 3 
+conductor 8 from node n27end1
+Calling gmres...
+1 2 3 
+conductor 9 from node n26end1
+Calling gmres...
+1 2 3 
+conductor 10 from node n25end1
+Calling gmres...
+1 2 3 
+conductor 11 from node n24end1
+Calling gmres...
+1 2 3 
+conductor 12 from node n23end1
+Calling gmres...
+1 2 3 
+conductor 13 from node n22end1
+Calling gmres...
+1 2 3 
+conductor 14 from node n21end1
+Calling gmres...
+1 2 3 
+conductor 15 from node n20end1
+Calling gmres...
+1 2 3 
+conductor 16 from node n19end1
+Calling gmres...
+1 2 3 
+conductor 17 from node n18end1
+Calling gmres...
+1 2 3 
+conductor 18 from node n17end1
+Calling gmres...
+1 2 3 
+conductor 19 from node n16end1
+Calling gmres...
+1 2 3 
+conductor 20 from node n15end1
+Calling gmres...
+1 2 3 
+conductor 21 from node n14end1
+Calling gmres...
+1 2 3 
+conductor 22 from node n13end1
+Calling gmres...
+1 2 3 
+conductor 23 from node n12end1
+Calling gmres...
+1 2 3 
+conductor 24 from node n11end1
+Calling gmres...
+1 2 3 
+conductor 25 from node n10end1
+Calling gmres...
+1 2 3 
+conductor 26 from node n9end1
+Calling gmres...
+1 2 3 
+conductor 27 from node n8end1
+Calling gmres...
+1 2 3 
+conductor 28 from node n7end1
+Calling gmres...
+1 2 3 
+conductor 29 from node n6end1
+Calling gmres...
+1 2 3 
+conductor 30 from node n5end1
+Calling gmres...
+1 2 3 
+conductor 31 from node n4end1
+Calling gmres...
+1 2 3 
+conductor 32 from node n3end1
+Calling gmres...
+1 2 3 
+conductor 33 from node n2end1
+Calling gmres...
+1 2 3 
+conductor 34 from node n1end1
+Calling gmres...
+1 2 3 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0.002228
+        Multipole setup 12.6714
+        Scanning graph  4.9e-05
+        Form A M and Z  0.000963
+        form M'ZM       0
+        Form precond    1.14015
+        GMRES time      5.1379
+   Total:               18.9527

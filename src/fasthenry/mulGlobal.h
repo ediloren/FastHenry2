@@ -53,6 +53,7 @@ extern char *   realloc();
 #endif /* end if NEWS */
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
 
 /* fastcap data structures */
 #include "mulStruct.h"
@@ -78,13 +79,19 @@ extern char *   realloc();
   - MALLOC() used when memory can be anything
     core should be malloc() or ualloc()
 ***********************************************************************/
-/* #define CALCORE(NUM, TYPE) calloc((unsigned)(NUM),sizeof(TYPE)) */
-#define CALCORE(NUM, TYPE) ualloc((unsigned)(NUM)*sizeof(TYPE))
-/* #define MALCORE malloc */
-#define MALCORE ualloc
 
-/* declare ualloc */
-extern char *ualloc();
+/* SRW - Default now is to use calloc/malloc rather than ualloc.  The
+ * sbrk function is deprecated in many operating systems. 11/16/13
+ */
+#define NO_SBRK
+#ifdef NO_SBRK
+#define sbrk(x) 0L
+#define CALCORE(NUM, TYPE) calloc((unsigned)(NUM),sizeof(TYPE))
+#define MALCORE malloc
+#else
+#define CALCORE(NUM, TYPE) ualloc((unsigned)(NUM)*sizeof(TYPE))
+#define MALCORE ualloc
+#endif
 
 /* counts of memory usage by multipole matrix type */
 extern long memcount;
@@ -117,50 +124,46 @@ extern long membins[1001];
 #define AMSC 9
 #define IND 10
 
-#ifdef NO_SBRK
-#define sbrk(x) 0
-#endif
-
 #define DUMPALLOCSIZ                                                   \
 {                                                                      \
   (void)fprintf(stderr,                                                \
-		"Total Memory Allocated: %d kilobytes (brk = 0x%x)\n", \
-		memcount/1024, sbrk(0));			       \
+		"Total Memory Allocated: %ld kilobytes (brk = 0x%lx)\n", \
+		memcount/1024, (long)sbrk(0));			       \
 /* # ***** awked out for release */                                    \
-  (void)fprintf(stderr, " Q2M  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Q2M  matrix memory allocated: %7.ld kilobytes\n",\
 		memQ2M/1024);                                          \
   memcount = memQ2M;                                                   \
-  (void)fprintf(stderr, " Q2L  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Q2L  matrix memory allocated: %7.ld kilobytes\n",\
 		memQ2L/1024);                                          \
   memcount += memQ2L;                                                  \
-  (void)fprintf(stderr, " Q2P  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Q2P  matrix memory allocated: %7.ld kilobytes\n",\
 		memQ2P/1024);                                          \
   memcount += memQ2P;                                                  \
-  (void)fprintf(stderr, " L2L  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " L2L  matrix memory allocated: %7.ld kilobytes\n",\
 		memL2L/1024);                                          \
   memcount += memL2L;                                                  \
-  (void)fprintf(stderr, " M2M  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " M2M  matrix memory allocated: %7.ld kilobytes\n",\
 		memM2M/1024);                                          \
   memcount += memM2M;                                                  \
-  (void)fprintf(stderr, " M2L  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " M2L  matrix memory allocated: %7.ld kilobytes\n",\
 		memM2L/1024);                                          \
   memcount += memM2L;                                                  \
-  (void)fprintf(stderr, " M2P  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " M2P  matrix memory allocated: %7.ld kilobytes\n",\
 		memM2P/1024);                                          \
   memcount += memM2P;                                                  \
-  (void)fprintf(stderr, " L2P  matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " L2P  matrix memory allocated: %7.ld kilobytes\n",\
 		memL2P/1024);                                          \
   memcount += memL2P;                                                  \
-  (void)fprintf(stderr, " Q2PD matrix memory allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Q2PD matrix memory allocated: %7.ld kilobytes\n",\
 		memQ2PD/1024);                                          \
   memcount += memQ2PD;                                                  \
-  (void)fprintf(stderr, " Miscellaneous mem. allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Miscellaneous mem. allocated: %7.ld kilobytes\n",\
 		memMSC/1024);                                          \
   memcount += memMSC;                                                  \
-  (void)fprintf(stderr, " Inductance mem. allocated: %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Inductance mem. allocated: %7.ld kilobytes\n",\
 		memIND/1024);                                          \
   memcount += memMSC;                                                  \
-  (void)fprintf(stderr, " Total memory (check w/above): %7.d kilobytes\n",\
+  (void)fprintf(stderr, " Total memory (check w/above): %7.ld kilobytes\n",\
 		memcount/1024);                                        \
 /* # ***** awked out for release */                                    \
 }
@@ -175,7 +178,7 @@ extern long membins[1001];
        (void)fprintf(stderr,                                                \
 	 "\nfastcap: out of memory in file `%s' at line %d\n",              \
 	       __FILE__, __LINE__);                                         \
-       (void)fprintf(stderr, " (NULL pointer on %d byte request)\n",        \
+       (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",       \
 		     (NUM)*sizeof(TYPE));                                   \
        DUMPALLOCSIZ;                                                        \
        DUMPRSS;                                                             \
@@ -207,24 +210,24 @@ extern long membins[1001];
      }                                                                      \
 }
 
-#define MALLOC(PNTR, NUM, TYPE, FLAG, MTYP)                                  \
-{                                                                            \
-     if((NUM)*sizeof(TYPE)==0)			                             \
+#define MALLOC(PNTR, NUM, TYPE, FLAG, MTYP)                                 \
+{                                                                           \
+     if((NUM)*sizeof(TYPE)==0)			                            \
        (void)fprintf(stderr,                                                \
 		     "zero element request in file `%s' at line %d\n",      \
 		     __FILE__, __LINE__);	                            \
      else if(((PNTR)=(TYPE*)MALCORE((unsigned)((NUM)*sizeof(TYPE))))==NULL) { \
-       (void)fprintf(stderr,                                                 \
-	 "\nfastcap: out of memory in file `%s' at line %d\n",               \
-	       __FILE__, __LINE__);                                          \
-       (void)fprintf(stderr, " (NULL pointer on %d byte request)\n",         \
-		     (NUM)*sizeof(TYPE));                                    \
-       DUMPALLOCSIZ;                                                         \
-       DUMPRSS;                                                              \
-       (void)fflush(stderr);                                                 \
-       (void)fflush(stdout);                                                 \
-       if(FLAG == ON) exit(1);                                               \
-     }                                                                       \
+       (void)fprintf(stderr,                                                \
+	 "\nfastcap: out of memory in file `%s' at line %d\n",             \
+	       __FILE__, __LINE__);                                         \
+       (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",        \
+		     (NUM)*sizeof(TYPE));                                   \
+       DUMPALLOCSIZ;                                                        \
+       DUMPRSS;                                                             \
+       (void)fflush(stderr);                                                \
+       (void)fflush(stdout);                                                \
+       if(FLAG == ON) exit(1);                                              \
+     }                                                                      \
      else {                                                                 \
        memcount += ((NUM)*sizeof(TYPE));                                    \
        if(MTYP == AQ2M) memQ2M += ((NUM)*sizeof(TYPE));                     \
@@ -436,3 +439,83 @@ misc. global macros
 /* blkDirect.c related flags - used only when DIRSOL == ON || EXPGCR == ON */
 #define MAXSIZ 0		/* any more tiles than this uses matrix on disk
 				   for DIRSOL == ON or EXPGCR == ON */
+
+/* SRW -- prototypes */
+
+/* calcp.c */
+double calcp(charge*, charge*, double*);
+
+/* capsolve.c */
+void computePsi(ssystem*, double*, double*, int, charge*);
+
+/* direct.c */
+double **Q2PDiag(charge**, int, int*, int);
+double **Q2P(charge**, int, int*, charge**, int, int);
+// double **Q2Pfull(cube*, int);
+double **ludecomp(double**, int, int);
+void solve(double**, double*, double*, int);
+void invert(double**, int, int*);
+int compressMat(double**, int, int*, int);
+void expandMat(double**, int, int, int*, int);
+// void matcheck(double**, int, int);
+// void matlabDump(double**, int, char*);
+
+/* mulDo.c */
+void mulDirect(ssystem*);
+// void mulPrecond(ssystem*, int);
+void mulUp(ssystem*);
+void mulEval(ssystem*);
+void mulDown(ssystem*);
+
+/* mulLocal.c */
+void evalFacFra(double**, int);
+// void evalSqrtFac(double**, double**, int);
+// void evalSinCos(double, int);
+// double sinB(int);
+// double cosB(int);
+double **mulMulti2Local(double, double, double, double, double, double, int);
+double **mulLocal2Local(double, double, double, double, double, double, int);
+double **mulQ2Local(charge**, int, int*, double, double, double, int);
+double **mulLocal2P(double, double, double, charge**, int, int);
+
+/* mulMats.c */
+void mulMatDirect(ssystem*);
+// void bdmulMatPrecond(ssystem*);
+// void olmulMatPrecond(ssystem*);
+// void find_flux_density_row(double**, double**, int, int, int, int, int,
+//     charge**, charge**, int*, int*);
+void mulMatUp(ssystem*);
+void mulMatEval(ssystem*);
+void mulMatDown(ssystem*);
+
+/* mulMulti.c */
+int multerms(int);
+int costerms(int);
+// int sinterms(int);
+void xyz2sphere(double, double, double, double, double, double, double*,
+    double*, double*);
+double iPwr(int);
+double fact(int);
+// void evalFactFac(double**, int);
+void mulMultiAlloc(int, int, int);
+void evalLegendre(double, double*, int);
+double **mulQ2Multi(charge**, int*, int, double, double, double, int);
+double **mulMulti2Multi(double, double, double, double, double, double, int);
+double **mulMulti2P(double, double, double, charge**, int, int);
+
+/* mulSetup.c */
+// other protos in induct.h
+// void getrelations(ssystem*);
+// void removeabandoned(ssystem*);
+// void setPosition(ssystem*);
+// void indexkid(ssystem*, cube*, int*, int*);
+// void setExact(ssystem*, int);
+// void getnbrs(ssystem*);
+// int cntDwnwdChg(cube*, int);
+// void linkcubes(ssystem*);
+// void setMaxq(ssystem*);
+// void markUp(cube*, int);
+// int getInter(cube*, ssystem*);
+// void getAllInter(ssystem*);
+// void set_vector_masks(ssystem*);
+

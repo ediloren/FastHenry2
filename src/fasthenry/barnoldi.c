@@ -30,15 +30,30 @@
 #include "induct.h"
 #include "sparse/spMatrix.h"
 
-ArnoldiROM(B, C, D, P, size, numinp, numout, q_orig,
-           matvec, indsys, sys, chglist)
-  double **B, **C, **D;
-  char **P;  /* really in sparse matrix form */
-  int size, numinp, numout, q_orig;
-  int (*matvec)();
-  SYS *indsys;
-  ssystem *sys;
-  charge *chglist;
+/* SRW */
+// typedef int (*barnoldi_cb)(double**, ssystem*, double**, charge*, SYS*, int,
+//     int, int);
+int ArnoldiROM(double**, double**, double**, char**, int, int, int, int,
+    barnoldi_cb, SYS*, ssystem*, charge*);
+int qr(double**, double**, double**, int, int, int);
+int qr_P(double**, double**, double**, double**, int, int, int, char*);
+int dumpROM(FILE*, double**, double**, double**, double**, int, int, int);
+void dumpROMequiv_circuit(FILE*, double**, double**, double**, double**,
+    int, int, int, char*, char*, SYS*);
+int dumpROMbin(FILE*, double**, double**, double**, double**, int, int, int);
+int createMRMt(char**, SYS*);
+int createMRMtinvMLMt(double***, SYS*, char*);
+int realComputePsi(double**, ssystem*, double**, charge*, SYS*, int, int, int);
+int realMatVect(double**, ssystem*, double**, charge*, SYS*, int, int, int);
+int printRowCol(double**, int, int, int, int);
+void formMLMt(SYS*);
+void ZeroMatrix(double**, int, int);
+
+
+int ArnoldiROM(double **B, double **C, double **D, char **P, int size,
+    int numinp, int numout, int q_orig, barnoldi_cb matvec, SYS *indsys,
+    ssystem *sys, charge *chglist)
+  /* char **P;  really in sparse matrix form */
 {
   static double **H = NULL, **V, **R1, **W, **X, **Z;
   int i, j, k, iter, bter;
@@ -73,7 +88,7 @@ to make this efficient\n");
   }
 
   /* QR-decompose the input matrix: [V(:, 1:s), R] = qr(B,0); */
-  qr_P(B, V, R1, Z, size, s, 0, P);
+  qr_P(B, V, R1, Z, size, s, 0, (char*)P);
 
   printf("Computing %d x %d matrix vector products for Reduced order model:\n",
          q, s);
@@ -111,7 +126,7 @@ to make this efficient\n");
     }
 
     /* compute [V(:, js1:j1s), X] = qr(W,0); */
-    qr_P(W, V, X, Z, size, s, iter+1, P);
+    qr_P(W, V, X, Z, size, s, iter+1, (char*)P);
     for (i = 0; i < s; i++) {
       for (j = 0; j < s; j++) {
         H[(iter+1) * s + i][iter * s + j] = X[i][j];
@@ -167,9 +182,8 @@ to make this efficient\n");
  *
  *****************************************************************************/
 
-qr(Bmat, Qmat, Rmat, numlin, numcol, block)
-  double **Bmat, **Qmat, **Rmat;
-  int numlin, numcol, block;
+int qr(double **Bmat, double **Qmat, double **Rmat, int numlin, int numcol,
+    int block)
 {
   int k, j, i;
   double normsq;
@@ -221,10 +235,8 @@ qr(Bmat, Qmat, Rmat, numlin, numcol, block)
  *
  *****************************************************************************/
 
-qr_P(Bmat, Qmat, Rmat, Z, numlin, numcol, block, P)
-  double **Bmat, **Qmat, **Rmat, **Z;
-  char *P;
-  int numlin, numcol, block;
+int qr_P(double **Bmat, double **Qmat, double **Rmat, double **Z, int numlin,
+    int numcol, int block, char *P)
 {
   int k, j, i;
   double normsq;
@@ -279,10 +291,8 @@ qr_P(Bmat, Qmat, Rmat, Z, numlin, numcol, block, P)
  *      be improved...
  *****************************************************************************/
 
-dumpROM(fp, Ar, Br, Cr, Dr, size, numinp, numout)
-  FILE *fp;
-  double **Ar, **Br, **Cr, **Dr;
-  int size, numinp, numout;
+int dumpROM(FILE *fp, double **Ar, double **Br, double **Cr, double **Dr,
+    int size, int numinp, int numout)
 {
   int i, j;
 
@@ -422,14 +432,9 @@ dumpROM(fp, Ar, Br, Cr, Dr, size, numinp, numout)
  *
  *****************************************************************************/
 
-dumpROMequiv_circuit(fp, Ar, Br, Cr, Dr, size, numinp, numout, title, suffix,
-                     indsys)
-  FILE *fp;
-  double **Ar, **Br, **Cr, **Dr;
-  int size, numinp, numout;
-  char *title;
-  char *suffix;
-  SYS *indsys;
+void dumpROMequiv_circuit(FILE *fp, double **Ar, double **Br, double **Cr,
+    double **Dr, int size, int numinp, int numout, char *title, char *suffix,
+    SYS *indsys)
 {
   
   int i,j;
@@ -543,10 +548,8 @@ dumpROMequiv_circuit(fp, Ar, Br, Cr, Dr, size, numinp, numout, title, suffix,
  * Description: dumps the original system representation to a file
  *****************************************************************************/
 
-dumpROMbin(fp, A, B, C, D, size, numinp, numout)
-  FILE *fp;
-  double **A, **B, **C, **D;
-  int size, numinp, numout;
+int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
+    int size, int numinp, int numout)
 {
   int i, j, realsize;
   static double *temp = (double *) NULL;
@@ -611,9 +614,7 @@ dumpROMbin(fp, A, B, C, D, size, numinp, numout)
  *      generation
  *****************************************************************************/
 
-createMRMt(MRMt_Ptr, indsys)
-  char **MRMt_Ptr;
-  SYS *indsys;
+int createMRMt(char **MRMt_Ptr, SYS *indsys)
 {
   SEGMENT *seg;
   double valR;
@@ -676,10 +677,7 @@ createMRMt(MRMt_Ptr, indsys)
  *      generation.  
  *****************************************************************************/
 
-createMRMtinvMLMt(MRMtinvMLMt_Ptr, indsys, MRMt)
-  double ***MRMtinvMLMt_Ptr;
-  SYS *indsys;
-  char *MRMt;
+int createMRMtinvMLMt(double ***MRMtinvMLMt_Ptr, SYS *indsys, char *MRMt)
 {
   double **MRMtinvMLMt;
   int m, n, p;
@@ -767,12 +765,8 @@ createMRMtinvMLMt(MRMtinvMLMt_Ptr, indsys, MRMt)
  *       factored
  *****************************************************************************/
 
-realComputePsi(Prod, sys, B, chglist, indsys, size, numRHS, initcol)
-  double **Prod, **B;
-  ssystem *sys;
-  charge *chglist;
-  SYS *indsys;
-  int size, numRHS, initcol;
+int realComputePsi(double **Prod, ssystem *sys, double **B, charge *chglist,
+    SYS *indsys, int size, int numRHS, int initcol)
 {
   static double *Ib = NULL, *Vb = NULL;
   static double *Im = NULL, *Vs = NULL;
@@ -904,12 +898,8 @@ realComputePsi(Prod, sys, B, chglist, indsys, size, numRHS, initcol)
  *        in this situation the matrix has indeed been compuded explicitely
  *****************************************************************************/
 
-realMatVect(Prod, sys, B, chglist, indsys, size, numRHS, initcol)
-  double **Prod, **B;
-  ssystem *sys;
-  charge *chglist;
-  SYS *indsys;
-  int size, numRHS, initcol;
+int realMatVect(double **Prod, ssystem *sys, double **B, charge *chglist,
+    SYS *indsys, int size, int numRHS, int initcol)
 {
   int i, j, currRHS;
   double temp;
@@ -949,9 +939,7 @@ realMatVect(Prod, sys, B, chglist, indsys, size, numRHS, initcol)
  *         subsequent call overwrites the file.
  *****************************************************************************/
 
-printRowCol(mat, rowcol, rownum, colnum, size)
-  double **mat;
-  int rowcol, rownum, colnum;
+int printRowCol(double **mat, int rowcol, int rownum, int colnum, int size)
 {
   int i;
   FILE *localfp;
@@ -989,8 +977,7 @@ printRowCol(mat, rowcol, rownum, colnum, size)
   
 /* This computes the product M*L*Mt and stores it in imag(indsys->MtZM) */
 /*  It is just formMZMt() without the real part */
-formMLMt(indsys)
-SYS *indsys;
+void formMLMt(SYS *indsys)
 {
   int m,n,p;
   double tempsum, tempR, tempsumR;
@@ -1043,9 +1030,7 @@ SYS *indsys;
 }
 
 /* sets everything to zero in a matrix */
-ZeroMatrix(A, rows, cols)
-  double **A;
-  int rows, cols;
+void ZeroMatrix(double **A, int rows, int cols)
 {
   int i, j;
 

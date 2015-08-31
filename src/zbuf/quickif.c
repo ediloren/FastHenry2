@@ -35,12 +35,23 @@ of this software.
 #include "mulGlobal.h"
 #include "quickif.h"
 
+/* SRW */
+int alias_match(Name*, char*);
+int alias_match_name(Name*, char*);
+void add_to_alias(Name*, char*);
+char *last_alias(Name*);
+int getConductorNum(char*, Name**, int*);
+int getConductorNumNoAdd(char*, Name*);
+char *getConductorName(int, Name**);
+int oldrenameConductor(char*, char*, Name**, int*);
+int renameConductor(char*, char*, Name**, int*);
+charge *quickif(FILE*, char*, char*, int, double*, int*, Name**, char*);
+
+
 /*
   tells if any conductor name alias matches a string
 */
-int alias_match(cur_name, name)
-char *name;
-Name *cur_name;
+int alias_match(Name *cur_name, char *name)
 {
   Name *cur_alias;
 
@@ -54,9 +65,7 @@ Name *cur_name;
 /*
   tells if any conductor name alias matches a string only up to length(name)
 */
-int alias_match_name(cur_name, name)
-char *name;
-Name *cur_name;
+int alias_match_name(Name *cur_name, char *name)
 {
   Name *cur_alias;
   char name_frag[BUFSIZ];
@@ -76,9 +85,7 @@ Name *cur_name;
 /*
   adds an alias 
 */
-void add_to_alias(cur_name, new_name)
-Name *cur_name;
-char *new_name;
+void add_to_alias(Name *cur_name, char *new_name)
 {
   Name *last_alias = NULL, *cur_alias;
 
@@ -102,8 +109,7 @@ char *new_name;
 /*
   return pointer to last alias string (= current name for conductor)
 */
-char *last_alias(cur_name)
-Name *cur_name;
+char *last_alias(Name *cur_name)
 {
   Name *cur_alias, *last_alias;
 
@@ -120,13 +126,10 @@ Name *cur_name;
 /*
   manages the conductor name list
 */
-int getConductorNum(name, name_list, num_cond)
-char *name;
-Name **name_list;
-int *num_cond;
+int getConductorNum(char *name, Name **name_list, int *num_cond)
 {
   Name *cur_name, *prev_name;
-  int i, alias_match();
+  int i;
 
   /* if this is the very first name, make and load struct on *name_list */
   if(*num_cond == 0) {
@@ -162,12 +165,10 @@ int *num_cond;
   - returns NOTFND if name not found
   - name must have group name appended
 */
-int getConductorNumNoAdd(name, name_list)
-char *name;
-Name *name_list;
+int getConductorNumNoAdd(char *name, Name *name_list)
 {
   Name *cur_name, *prev_name;
-  int i, alias_match();
+  int i;
 
   /* check to see if name is present */
   for(cur_name = name_list, i = 1; cur_name != NULL;
@@ -183,12 +184,9 @@ Name *name_list;
 /*
   gets the name (aliases are ignored) corresponding to a conductor number
 */
-char *getConductorName(cond_num, name_list)
-Name **name_list;
-int cond_num;
+char *getConductorName(int cond_num, Name **name_list)
 {
   Name *cur_name;
-  char *last_alias();
   int i;
 
   /* check to see if conductor number is present */
@@ -206,10 +204,8 @@ int cond_num;
 /*
   renames a conductor
 */
-int oldrenameConductor(old_name, new_name, name_list, num_cond)
-char *old_name, *new_name;
-int *num_cond;
-Name **name_list;
+int oldrenameConductor(char *old_name, char *new_name, Name **name_list,
+    int *num_cond)
 {
   Name *cur_name, *cur_name2, *prev_name;
   int i, j;
@@ -247,13 +243,10 @@ Name **name_list;
 /*
   renames a conductor
 */
-int renameConductor(old_name, new_name, name_list, num_cond)
-char *old_name, *new_name;
-int *num_cond;
-Name **name_list;
+int renameConductor(char *old_name, char *new_name, Name **name_list,
+    int *num_cond)
 {
   Name *cur_name, *cur_name2, *prev_name;
-  int alias_match();
   int i, j;
 
   /* check to see if old name is present in names or their aliases */
@@ -283,16 +276,13 @@ Name **name_list;
   N <cond name string> <Rename string>
   * <Comment string>
 */
-charge *quickif(fp, line, title, surf_type, trans, num_cond, name_list,
-		name_suffix)
-int surf_type, *num_cond;
-char *line, *title, *name_suffix; /* suffix for all cond names read */
-double *trans;
-Name *name_list;		/* name list pointer */
-FILE *fp;
+/* SRW -- error fixed here: Name* -> Name** */
+charge *quickif(FILE *fp, char *line, char *title, int surf_type,
+    double *trans, int *num_cond, Name **name_list, char *name_suffix)
+/* Name *name_list;		name list pointer */
 {
   int linecnt = 2, i, cond;
-  char *delcr(), temp[BUFSIZ], temp2[BUFSIZ], line1[BUFSIZ], *cp, *strtok();
+  char temp[BUFSIZ], temp2[BUFSIZ], line1[BUFSIZ], *cp;
   char condstr[BUFSIZ];
   double x1, x2, x3, x4, y1, y2, y3, y4, z1, z2, z3, z4;
   quadl *fstquad = NULL, *curquad;
@@ -403,7 +393,7 @@ FILE *fp;
 	strcat(condstr, name_suffix);
 	strcat(temp2, name_suffix);
 
-	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE) 
+	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE)
 	    exit(0);
       }
 

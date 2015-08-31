@@ -110,10 +110,8 @@ extern void perror();
  */
 
 char *
-AllocateMatrix( Size, Complex, pError )
+AllocateMatrix( int Size, BOOLEAN Complex, int *pError )
 
-int Size, *pError;
-BOOLEAN Complex;
 {
 /* Begin `AllocateMatrix'. */
     return spCreate( Size, Complex, pError );
@@ -128,9 +126,8 @@ BOOLEAN Complex;
  */
 
 void
-DeallocateMatrix( Matrix )
+DeallocateMatrix( char *Matrix )
 
-char *Matrix;
 {
 /* Begin `DeallocateMatrix'. */
     spDestroy( Matrix );
@@ -147,9 +144,8 @@ char *Matrix;
  */
 
 void
-CleanMatrix( Matrix )
+CleanMatrix( char *Matrix )
 
-char *Matrix;
 {
 /* Begin `CleanMatrix'. */
     spStripFills( Matrix );
@@ -166,9 +162,8 @@ char *Matrix;
  */
 
 void
-ClearMatrix( Matrix )
+ClearMatrix( char *Matrix )
 
-char *Matrix;
 {
 /* Begin `ClearMatrix'. */
     spClear( Matrix );
@@ -187,11 +182,9 @@ char *Matrix;
 /*VARARGS4*/
 
 RealNumber *
-AddElementToMatrix( Matrix, Row, Col, Real, Imag )
+AddElementToMatrix( char *Matrix, int Row, int Col, RealNumber Real,
+    RealNumber Imag )
 
-char *Matrix;
-int  Row, Col;
-RealNumber  Real, Imag;
 {
 RealNumber  *pElement;
 
@@ -233,10 +226,8 @@ RealNumber  *pElement;
  */
 
 void
-AddRealElementToMatrix( Element, Real )
+AddRealElementToMatrix( RealNumber *Element, RealNumber Real )
 
-RealNumber *Element;
-RealNumber  Real;
 {
 /* Begin `AddRealElementToMatrix'. */
 
@@ -249,10 +240,8 @@ RealNumber  Real;
 #if spCOMPLEX
 
 void
-AddImagElementToMatrix( Element, Imag )
+AddImagElementToMatrix( RealNumber *Element, RealNumber Imag )
 
-RealNumber *Element;
-RealNumber  Imag;
 {
 /* Begin `AddImagElementToMatrix'. */
 
@@ -264,10 +253,9 @@ RealNumber  Imag;
 
 
 void
-AddComplexElementToMatrix( Element, Real, Imag )
+AddComplexElementToMatrix( RealNumber *Element, RealNumber Real,
+    RealNumber Imag )
 
-RealNumber *Element;
-RealNumber  Real, Imag;
 {
 /* Begin `AddComplexElementToMatrix'. */
 
@@ -292,12 +280,9 @@ RealNumber  Real, Imag;
 /*VARARGS5*/
 
 void
-AddAdmittanceToMatrix( Matrix, Node1, Node2, Template, Real, Imag )
+AddAdmittanceToMatrix( char *Matrix, int Node1, int Node2,
+    struct spTemplate *Template, RealNumber Real, RealNumber Imag )
 
-char  *Matrix;
-int  Node1, Node2;
-struct  spTemplate  *Template;
-RealNumber  Real, Imag;
 {
 /* Begin `AddAdmittanceToMatrix'. */
     Template->Element1 = spGetElement( Matrix, Node1, Node1 );
@@ -335,12 +320,9 @@ RealNumber  Real, Imag;
 /*VARARGS7*/
 
 void
-AddQuadToMatrix( Matrix, Row1, Row2, Col1, Col2, Template, Real, Imag )
+AddQuadToMatrix( char *Matrix, int Row1, int Row2, int Col1, int Col2,
+    struct spTemplate *Template, RealNumber Real, RealNumber Imag )
 
-char  *Matrix;
-int  Row1, Row2, Col1, Col2;
-struct  spTemplate  *Template;
-RealNumber  Real, Imag;
 {
 /* Begin `AddQuadToMatrix'. */
     Template->Element1 = spGetElement( Matrix, Row1, Col1 );
@@ -410,11 +392,9 @@ RealNumber  Real, Imag;
  */
 
 void
-AddOnesToMatrix(Matrix, Pos, Neg, Eqn, Template)
+AddOnesToMatrix( char *Matrix, int Pos, int Neg, int Eqn,
+    struct spTemplate *Template)
 
-char  *Matrix;
-int  Pos, Neg, Eqn;
-struct  spTemplate  *Template;
 {
 /* Begin `AddOnesToMatrix'. */
     Template->Element4Negated = spGetElement( Matrix, Neg, Eqn );
@@ -453,10 +433,8 @@ struct  spTemplate  *Template;
  */
 
 void
-AddRealQuadElementToMatrix( Template, Real )
+AddRealQuadElementToMatrix( struct spTemplate *Template, RealNumber Real )
 
-struct  spTemplate  *Template;
-RealNumber  Real;
 {
 /* Begin `AddRealQuadElementToMatrix'. */
     spADD_REAL_QUAD( *Template, Real );
@@ -489,10 +467,8 @@ RealNumber  Real;
  */
 
 void
-AddImagQuadElementToMatrix( Template, Imag )
+AddImagQuadElementToMatrix( struct spTemplate *Template, RealNumber Imag )
 
-struct  spTemplate  *Template;
-RealNumber  Imag;
 {
 /* Begin `AddImagQuadElementToMatrix'. */
     spADD_IMAG_QUAD( *Template, Imag );
@@ -527,10 +503,9 @@ RealNumber  Imag;
  */
 
 void
-AddComplexQuadElementToMatrix( Template, Real, Imag )
+AddComplexQuadElementToMatrix( struct spTemplate *Template, RealNumber Real,
+    RealNumber Imag )
 
-struct  spTemplate  *Template;
-RealNumber  Real, Imag;
 {
 /* Begin `AddComplexQuadElementToMatrix'. */
     spADD_COMPLEX_QUAD( *Template, Real, Imag );
@@ -551,12 +526,10 @@ RealNumber  Real, Imag;
 #endif
 
 int
-OrderAndDecomposeMatrix( eMatrix, RHS, RelThreshold, AbsThreshold,
-                         Growth, PseudoCondition, LargestElement )
+OrderAndDecomposeMatrix( char *eMatrix, RealNumber *RHS,
+    RealNumber RelThreshold, RealNumber AbsThreshold, RealNumber *Growth,
+    RealNumber *PseudoCondition, RealNumber *LargestElement )
 
-char *eMatrix;
-RealNumber  RHS[], RelThreshold, AbsThreshold;
-RealNumber  *Growth, *PseudoCondition, *LargestElement;
 {
 int Error;
 RealNumber LargestBefore, LargestAfter;
@@ -596,10 +569,9 @@ RealNumber LargestBefore, LargestAfter;
 #endif
 
 int
-DecomposeMatrix( eMatrix, Growth, PseudoCondition, LargestElement )
+DecomposeMatrix( char *eMatrix, RealNumber *Growth,
+    RealNumber *PseudoCondition, RealNumber *LargestElement )
 
-RealNumber  *Growth, *PseudoCondition, *LargestElement;
-char *eMatrix;
 {
 int Error;
 RealNumber LargestBefore, LargestAfter;
@@ -638,10 +610,9 @@ RealNumber LargestBefore, LargestAfter;
 /*VARARGS3*//*ARGSUSED*/
 
 void
-SolveMatrix( eMatrix, RHS, Solution, iRHS, iSolution )
+SolveMatrix( char *eMatrix, RealVector RHS, RealVector Solution,
+    RealVector iRHS, RealVector iSolution )
 
-char *eMatrix;
-RealVector  RHS, Solution, iRHS, iSolution;
 {
 #if spCOMPLEX AND spSEPARATED_COMPLEX_VECTORS
     spSolve( eMatrix, RHS, Solution, iRHS, iSolution );
@@ -655,10 +626,9 @@ RealVector  RHS, Solution, iRHS, iSolution;
 /*VARARGS3*//*ARGSUSED*/
 
 void
-SolveTransposedMatrix( eMatrix, RHS, Solution, iRHS, iSolution )
+SolveTransposedMatrix( char *eMatrix, RealVector RHS, RealVector Solution,
+    RealVector iRHS, RealVector iSolution )
 
-char *eMatrix;
-RealVector  RHS, Solution, iRHS, iSolution;
 {
 #if spCOMPLEX AND spSEPARATED_COMPLEX_VECTORS
     spSolveTransposed( eMatrix, RHS, Solution, iRHS, iSolution );
@@ -677,10 +647,8 @@ RealVector  RHS, Solution, iRHS, iSolution;
  */
 
 void
-DeleteRowAndColFromMatrix( eMatrix, Row, Col )
+DeleteRowAndColFromMatrix( char *eMatrix, int Row, int Col )
 
-char *eMatrix;
-int  Row, Col;
 {
     spDeleteRowAndCol( eMatrix, Row, Col );
     return;
@@ -695,10 +663,8 @@ int  Row, Col;
  */
 
 void
-PrintMatrix( eMatrix, Compressed, PrintReordered )
+PrintMatrix( char *eMatrix, BOOLEAN Compressed, BOOLEAN PrintReordered )
 
-char *eMatrix;
-BOOLEAN  Compressed, PrintReordered;
 {
     spPrint( eMatrix, PrintReordered, NOT Compressed, YES );
 }
@@ -712,10 +678,9 @@ BOOLEAN  Compressed, PrintReordered;
  */
 
 void
-OutputMatrixToFile( eMatrix, Label, Reordered, Data, Header )
+OutputMatrixToFile( char *eMatrix, char *Label, BOOLEAN Reordered,
+    BOOLEAN Data, BOOLEAN Header )
 
-char *eMatrix, *Label;
-BOOLEAN Reordered, Data, Header;
 {
 char ErrMsg[BUFSIZ];
 
@@ -737,10 +702,8 @@ char ErrMsg[BUFSIZ];
 /*VARARGS*//*ARGSUSED*/
 
 void
-OutputVectorToFile( eMatrix, RHS, iRHS )
+OutputVectorToFile( char *eMatrix, RealVector RHS, RealVector iRHS )
 
-char *eMatrix;
-RealVector RHS, iRHS;
 {
 char ErrMsg[BUFSIZ];
 
@@ -762,9 +725,8 @@ char ErrMsg[BUFSIZ];
  */
 
 void
-OutputStatisticsToFile( eMatrix, Label )
+OutputStatisticsToFile( char *eMatrix, char *Label )
 
-char *eMatrix, *Label;
 {
 char ErrMsg[BUFSIZ];
 extern int pFileStats;
@@ -788,9 +750,8 @@ extern int pFileStats;
  */
 
 void
-PreorderForModifiedNodal( eMatrix )
+PreorderForModifiedNodal( char *eMatrix )
 
-char *eMatrix;
 {
 /* Begin `PreorderForModifiedNodal'. */
 
@@ -809,10 +770,9 @@ char *eMatrix;
  */
 
 void
-ScaleMatrix( eMatrix, RHS_ScaleFactors, SolutionScaleFactors )
+ScaleMatrix( char *eMatrix, RealVector RHS_ScaleFactors,
+    RealVector SolutionScaleFactors )
 
-char *eMatrix;
-RealVector  RHS_ScaleFactors, SolutionScaleFactors;
 {
 /* Begin `ScaleMatrix'. */
 
@@ -831,10 +791,9 @@ RealVector  RHS_ScaleFactors, SolutionScaleFactors;
  /*VARARGS3*//*ARGSUSED*/
 
 void
-MatrixMultiply( eMatrix, RHS, Solution, iRHS, iSolution )
+MatrixMultiply( char *eMatrix, RealVector RHS, RealVector Solution,
+    RealVector iRHS, RealVector iSolution )
 
-char *eMatrix;
-RealVector RHS, Solution, iRHS, iSolution;
 {
 /* Begin `MatrixMultiply'. */
 
@@ -856,11 +815,9 @@ RealVector RHS, Solution, iRHS, iSolution;
  */
 
 void
-Determinant (eMatrix, pExponent, pDeterminant, piDeterminant )
+Determinant ( char *eMatrix, int *pExponent, RealNumber *pDeterminant,
+    RealNumber *piDeterminant )
 
-char *eMatrix;
-register  RealNumber *pDeterminant, *piDeterminant;
-int  *pExponent;
 {
 /* Begin `Determinant'. */
 
@@ -885,9 +842,8 @@ int  *pExponent;
  */
 
 RealNumber
-MatrixRoundoffError( eMatrix )
+MatrixRoundoffError( char *eMatrix )
 
-char *eMatrix;
 {
 /* Begin `MatrixRoundoffError'. */
     return 0.0;
@@ -905,9 +861,8 @@ char *eMatrix;
  */
 
 int
-MatrixError( Matrix )
+MatrixError( char *Matrix )
 
-char  *Matrix;
 {
 /* Begin `MatrixError'. */
 
@@ -924,9 +879,8 @@ char  *Matrix;
  */
 
 int
-ClearMatrixError( Matrix )
+ClearMatrixError( char *Matrix )
 
-char  *Matrix;
 {
 int  Error;
 
@@ -947,10 +901,8 @@ int  Error;
  */
 
 int
-GetMatrixSize( Matrix, External )
+GetMatrixSize( char *Matrix, BOOLEAN External )
 
-char  *Matrix;
-BOOLEAN  External;
 {
 /* Begin `GetMatrixSize'. */
 
@@ -968,9 +920,8 @@ BOOLEAN  External;
  */
 
 void
-SetMatrixReal( Matrix )
+SetMatrixReal( char *Matrix )
 
-char *Matrix;
 {
 /* Begin `SetMatrixReal'. */
 
@@ -979,9 +930,8 @@ char *Matrix;
 
 
 void
-SetMatrixComplex( Matrix )
+SetMatrixComplex( char *Matrix )
 
-char  *Matrix;
 {
 /* Begin `SetMatrixComplex'. */
     spSetComplex( Matrix );
@@ -999,9 +949,8 @@ char  *Matrix;
  */
 
 int
-MatrixFillinCount( Matrix )
+MatrixFillinCount( char *Matrix )
 
-char *Matrix;
 {
 /* Begin `MatrixFillinCount'. */
     return spFillinCount( Matrix );
@@ -1009,9 +958,8 @@ char *Matrix;
 
 
 int
-MatrixElementCount( Matrix )
+MatrixElementCount( char *Matrix )
 
-char  *Matrix;
 {
 /* Begin `MatrixElementCount'. */
     return spElementCount( Matrix );

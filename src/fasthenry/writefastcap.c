@@ -2,13 +2,19 @@
 #include <math.h>
 #include "induct.h"
 
+/* SRW */
+void writefastcap(char*, char*, SYS*);
+void make_between(FILE*, GROUNDPLANE*, double, double, double, double, int,
+    int);
+void unit_cross_product(double, double, double, double, double, double,
+    double*, double*, double*);
+void assign_shades(SYS*);
+
 
 /* this writes a file of faces of the segments suitable to be
    read in by keith's program for generating postscript images */
 
-writefastcap(fname, shading_name, indsys)
-char *fname, *shading_name;
-SYS *indsys;
+void writefastcap(char *fname, char *shading_name, SYS *indsys)
 {
   SEGMENT *seg;
   NODES *node0, *node1;
@@ -273,11 +279,8 @@ SYS *indsys;
   fclose(shade_fp);
 }
 
-make_between(fp, gp, wx,wy,wz,width,j,k)
-GROUNDPLANE *gp;
-double wx,wy,wz,width;
-int j,k;
-FILE *fp;
+void make_between(FILE *fp, GROUNDPLANE *gp, double wx, double wy, double wz,
+    double width, int j, int k)
 {
   double x,y,z;
 
@@ -304,8 +307,8 @@ FILE *fp;
   fprintf(fp,"\n");
 }
 
-unit_cross_product(x1,y1,z1,x2,y2,z2,cx, cy,cz)
-double x1,y1,z1,x2,y2,z2,*cx, *cy,*cz;
+void unit_cross_product(double x1, double y1, double z1, double x2, double y2,
+    double z2, double *cx, double *cy, double *cz)
 {
   double magc;
 
@@ -326,8 +329,7 @@ double x1,y1,z1,x2,y2,z2,*cx, *cy,*cz;
 /* attempts to choose shades for each segment to make seeing the condutors 
    easier.  To see shades, run with the zbuf -q options */
 
-assign_shades(indsys)
-SYS *indsys;
+void assign_shades(SYS *indsys)
 {
   int_list *elem;
   EXTERNAL *ext;

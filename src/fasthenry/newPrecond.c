@@ -3,15 +3,24 @@
 #include "induct.h"
 #include "sparse/spMatrix.h"
 
-/* SRW, alredy declared in spMatrix.h    double *spGetElement(); */
 
 static char outfname[80];
 
 /* used in shift_mutual */
 static double radius_factor;
 
-choose_and_setup_precond(indsys)
-SYS *indsys;
+/* SRW */
+void choose_and_setup_precond(SYS*);
+void get_selfs(SYS*);
+void fill_spPre(ssystem*, SYS*, double);
+void create_sparMatrix(SYS*);
+void fill_bySegment(ssystem*, SYS*, double);
+void fill_diagL(ssystem*, SYS*, double);
+void fill_diagR(SYS*);
+double shift_mutual(FILAMENT*, FILAMENT*, ssystem*);
+
+
+void choose_and_setup_precond(SYS *indsys)
 {
   int precond_choice = indsys->opts->precond;
 
@@ -58,14 +67,12 @@ vector products.  POSDEF option ignored.\n");
   }
 }
 
-get_selfs(indsys)
-SYS *indsys;
+void get_selfs(SYS *indsys)
 {
   int j, filnum_j;
   FILAMENT *fil_j;
   SEGMENT *seg1;
   double *diagL = indsys->diagL;
-  double selfterm();
 
   for(seg1 = indsys->segment; seg1 != NULL; seg1 = seg1->next) {
     for(j = 0; j < seg1->num_fils; j++) {
@@ -82,10 +89,8 @@ SYS *indsys;
   }
 }
 
-fill_spPre(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;  /* frequency */
+void fill_spPre(ssystem *sys, SYS *indsys, double w)
+/* double w;  frequency */
 {
 
   int i,j,err,used;
@@ -148,8 +153,7 @@ double w;  /* frequency */
 
 /* this is called by choose_and_setup_precond() and also by main() if 
    dont_form_Z is true (fmin = 0) */
-create_sparMatrix(indsys)
-SYS *indsys;
+void create_sparMatrix(SYS *indsys)
 {
   int err;
 
@@ -168,10 +172,7 @@ SYS *indsys;
   }
 } 
 
-fill_bySegment(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+void fill_bySegment(ssystem *sys, SYS *indsys, double w)
 {
   SEGMENT *seg;
   int max_fils;
@@ -307,10 +308,7 @@ double w;
    and fmin=0 (the MZMt matrix will be a sparse MRMt).  but
    now has it's own function, fill_diagR() 
 */
-fill_diagL(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+void fill_diagL(ssystem *sys, SYS *indsys, double w)
 {
   SEGMENT *seg;
   double val, valR;
@@ -387,8 +385,7 @@ double w;
    The reordering and fillin manipulation must be dominating and
    since we only factor this once, there is no real benefit.
 */
-fill_diagR(indsys)
-SYS *indsys;
+void fill_diagR(SYS *indsys)
 {
   SEGMENT *seg;
   double val, valR;
@@ -420,10 +417,9 @@ SYS *indsys;
    of the vectors from one end of each fil to the other end and r0 is
    the multipole cube side length times a factor (radius_factor) which 
    is specified on the command line or defaults to 0.87 = sqrt(3)*0.5 
-   so that the sphere encompasses the whole cube */ 
-double shift_mutual(fil_i, fil_j, sys)
-FILAMENT *fil_i, *fil_j;
-ssystem *sys;
+   so that the sphere encompasses the whole cube
+*/
+double shift_mutual(FILAMENT *fil_i, FILAMENT *fil_j, ssystem *sys)
 {
   /* a factor to scale r0 */
   /* static double factor = 0.87; */   /*(sqrt( 3) / 2*/

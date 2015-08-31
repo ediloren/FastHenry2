@@ -1,6 +1,6 @@
 
 # This will create a Windows package in the current directory.  It needs
-# 1) the inno packager installed in /inno-5.2.2
+# 1) the inno packager installed in /inno-5.5.1
 # 2) a utd utility accessible somewhere (Cygwin?)
 # 
 # You can tune mkwinpkg and/or fasthenry.iss.in to your needs.

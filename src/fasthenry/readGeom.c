@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "induct.h"
+#include "gp.h"
 
 #define MAXLINE 1000
 #define XX 0
@@ -35,8 +36,6 @@ typedef struct Defaults {
   double rw, rh;
 } DEFAULTS;
 
-char *getaline();
-           
 static DEFAULTS defaults = {0, 0 , 0, 0, 0,
 #if SUPERCON == ON
                 0, 0,
@@ -56,9 +55,34 @@ int plane_count;                     /* CMS 7/1/92 */
 int sizenodes = 0;
 int sizesegs = 0;
 
-int readGeom(fp, indsys)
-FILE *fp;
-SYS *indsys;
+/* SRW */
+int readGeom(FILE*, SYS*);
+int dodot(char*, SYS*);
+int changeunits(char*, SYS*);
+int addexternal(char*, SYS*);
+int choosefreqs(char*, SYS*);
+int old_equivnodes(char*, SYS*);
+int dodefault(char*);
+int addnode(char*, SYS*, NODES**, int);
+NODES *makenode(char*, int, double, double, double, int, SYS*);
+int addseg(char*, SYS*, int, SEGMENT**);
+SEGMENT *makeseg(char*, NODES*, NODES*, double, double, double,
+#if SUPERCON == ON
+    double,
+#endif  
+    int, int, double, double, double*, int, int, SYS*);
+int addgroundplane(char*, SYS*, GROUNDPLANE**);
+int nothing(char*);
+char *getaline(FILE*);
+char *plusline(FILE*);
+char *getoneline(FILE*);
+void savealine(char*);
+int notblankline(char*);
+void tolowercase(char*);
+int is_nonuni_gp(GROUNDPLANE*);
+
+
+int readGeom(FILE *fp, SYS *indsys)
 {
   char *line;
   int end, error;
@@ -112,9 +136,7 @@ SYS *indsys;
   return end;
 }
 
-dodot(line,indsys)
-char *line;
-SYS *indsys;
+int dodot(char *line, SYS *indsys)
 {
   int end;
 
@@ -127,7 +149,7 @@ SYS *indsys;
   else if (strncasecmp("equ",line, 3) == 0)
     end = equivnodes(line, indsys);
   else if (strncasecmp("def",line, 3) == 0)
-    end = dodefault(line, indsys);
+    end = dodefault(line);
   else if (strncasecmp("end",line, 3) == 0)
     end = 2;
   else {
@@ -137,14 +159,12 @@ SYS *indsys;
   return end;
 }
 
-changeunits(line, indsys)
-char *line;
-SYS *indsys;
+int changeunits(char *line, SYS *indsys)
 {
   char unitname[20];
 
   if (sscanf(line, "%*s %s", unitname) != 1) {
-    printf("couldn't read units line\n.%s\n");
+    printf("couldn't read units line\n.%s\n", line);
     return 1;
   }
   else if (strncasecmp("mil",unitname, 3) == 0)
@@ -173,9 +193,7 @@ SYS *indsys;
   return 0;
 }
 
-addexternal(line, indsys)
-char *line;
-SYS *indsys;
+int addexternal(char *line, SYS *indsys)
 {
   int skip, i;
   NODES *node[2];
@@ -198,12 +216,7 @@ SYS *indsys;
   GROUNDPLANE *plane;
   NODES *outnode, *innode, *finode, *pnode;
   SPATH *pathpointer;
-
-  int equivnodes();
   
-  void findrefnodes();                    /* functions from addgroundplane.c */
-  void makenpath();
-  NODES *find_nearest_node();
   /*--------------------------------------------------------------*/
 
   templine = (char *)MattAlloc(100,sizeof(char));           /* CMS 9/4/92 */
@@ -273,9 +286,7 @@ The name is already used for port between %s and %s\n",
   return err;
 }
 
-choosefreqs(line, indsys)
-char *line;
-SYS *indsys;
+int choosefreqs(char *line, SYS *indsys)
 {
   int skip;
   double dumb;
@@ -334,9 +345,8 @@ SYS *indsys;
  return 0;
 
 }
-old_equivnodes(line, indsys)
-char *line;
-SYS *indsys;
+
+int old_equivnodes(char *line, SYS *indsys)
 {
 
   int skip, i;
@@ -389,8 +399,7 @@ SYS *indsys;
   return 0;
 }
 
-dodefault(line)
-char *line;
+int dodefault(char *line)
 {
   int skip;
   double dumb;
@@ -474,18 +483,13 @@ char *line;
   return 0;
 }
 
-addnode(line,indsys,retnode, type)
-char *line;
-SYS *indsys;
-NODES **retnode;
-int type;
+int addnode(char *line, SYS *indsys, NODES **retnode, int type)
 {
   double dumb;
   int skip;
   int xread = 0, yread = 0, zread = 0;
   NODES *node;
   static char name[80];
-  NODES *makenode();
   double nodex, nodey, nodez;
 
   /* read name */
@@ -562,12 +566,8 @@ int type;
   return 0;
 }
 
-NODES *makenode(name, number, x, y, z, type, indsys)
-char *name;
-int number;
-double x, y, z;
-int type;
-SYS *indsys;
+NODES *makenode(char *name, int number, double x, double y, double z,
+    int type, SYS *indsys)
 {
   NODES *node;
 
@@ -613,11 +613,8 @@ SYS *indsys;
   return node;
 }
 
-addseg(line, indsys, type, retseg)
-char *line;
-SYS *indsys;
-int type;                     /* CMS 8/21/92 -- type of thing the seg is in */
-SEGMENT **retseg;
+int addseg(char *line, SYS *indsys, int type, SEGMENT **retseg)
+/* int type;  CMS 8/21/92 -- type of thing the seg is in */
 {
   double dumb, *tmp;
   int skip, i, j, dumbi;
@@ -884,26 +881,27 @@ SEGMENT **retseg;
   return 0;
 }
 
-SEGMENT *makeseg(name, node0, node1, height, width, sigma,
+SEGMENT *makeseg(char *name, NODES *node0, NODES *node1, double height,
+    double width, double sigma,
 #if SUPERCON == ON
-        lambda,
+    double lambda,
 #endif  
-        hinc, winc, r_height, r_width, widthdir, number, type, indsys)
-   char *name;
-   double *widthdir;  /*if width is not || to x-y plane and perpendicular to*/
-                       /* the length, then this is 3 element vector in       */
-                       /* in the direction of width*/
-   int number;         /* an arbitrary number for the segment */
-   int type;    /* CMS 8/21/92 -- type of structure the segment is in */
-   double width, height;  /*width and height to cross section */
-   int hinc, winc;             /* number of filament divisions in each dir */
-   NODES *node0, *node1;                /* nodes at the ends */
-   double sigma;               /* conductivity */
+    int hinc, int winc, double r_height, double r_width, double *widthdir,
+    int number, int type, SYS *indsys)
+    /* double *widthdir; if width is not || to x-y plane and perpendicular to */
+    /*                   the length, then this is 3 element vector in         */
+    /*                   in the direction of width                            */
+    /* int number;       an arbitrary number for the segment                  */
+    /* int type;     CMS 8/21/92 -- type of structure the segment is in       */
+    /* double width,     height;  width and height to cross section           */
+    /* int hinc, winc;   number of filament divisions in each dir             */
+    /* NODES *node0, *node1;  nodes at the ends                               */
+    /* double sigma;     conductivity                                         */
 #if SUPERCON == ON
-   double lambda;              /* London penetration depth */
+    /* double lambda;    London penetration depth                             */
 #endif
-   double r_height, r_width; /* ratio of adjacent fils for assignFil() */
-   SYS *indsys;         /* nonNULL if we are to add to system linked list */
+    /* double r_height, r_width; ratio of adjacent fils for assignFil()       */
+    /* SYS *indsys;      nonNULL if we are to add to system linked list       */
 {
 
   SEGMENT *seg;
@@ -966,23 +964,8 @@ SEGMENT *makeseg(name, node0, node1, height, width, sigma,
 /*-------------------------------------------------------------------------------*/
 /*                      CMS code addition to support groundplanes                */
 /*-------------------------------------------------------------------------------*/
-  /* functions called from addgroundplane.c */
-  void fillgrids();
-  void doincrment();
-  void dounitvector();
-  void make_nodelist();
-  int checkmiddlepoint();
-  int checkplaneformula();
-  double findsegmentwidth();
-  double lengthof2();
-  double find_coordinate();
-  SPATH *path_through_gp();
 
-
-addgroundplane(line, indsys, retplane)
-char *line;
-SYS *indsys;
-GROUNDPLANE **retplane;
+int addgroundplane(char *line, SYS *indsys, GROUNDPLANE **retplane)
 {
 
   /* read in variables */
@@ -1027,7 +1010,6 @@ GROUNDPLANE **retplane;
   int dummy1, dummy2;
   double xt[4], yt[4], zt[4];
   int dumbi, tseg1, tseg2;
-  double get_perimeter();
 
   /* file for nonuniform plane hierarchy */
   FILE *nonuni_fp;
@@ -1644,8 +1626,7 @@ node is referenced later.\n",listpointer->name);
 /*                          end of groundplane code                             */
 /*------------------------------------------------------------------------------*/
 
-nothing(line)
-char *line;
+int nothing(char *line)
 {
   if (line[0] == '+')
     printf("Nothing to continue.\n%s\n",line);
@@ -1654,14 +1635,12 @@ char *line;
   return (1);
 }
 
-char *getaline(fp)
-FILE *fp;
+char *getaline(FILE *fp)
 {
   static char *all_lines = NULL;
   static int length = 0;
   char *line; 
   int newlength;
-  char *getoneline(), *plusline();
 
   if (length == 0) {
     length = MAXLINE;
@@ -1696,10 +1675,9 @@ FILE *fp;
 
 
 
-char *plusline(fp)
-FILE *fp;
+char *plusline(FILE *fp)
 {
-  char *tmpline, *getoneline();
+  char *tmpline;
 
   tmpline = getoneline(fp);
 
@@ -1721,8 +1699,7 @@ FILE *fp;
 /* a variable just for the following functions */   
 static int keep = 0;
 
-char *getoneline(fp)
-FILE *fp;
+char *getoneline(FILE *fp)
 {
   static char line[MAXLINE] = { '\0' };
   char *retchar;
@@ -1745,8 +1722,7 @@ FILE *fp;
     return line;
 }
 
-savealine(line)
-char *line;
+void savealine(char *line)
 {
   if (keep != 0) {
     printf("already have one line stored\n");
@@ -1756,8 +1732,7 @@ char *line;
     keep = 1;
 }
   
-int notblankline(string)
-char *string;
+int notblankline(char *string)
 {
    while( *string!='\0' && isspace(*string))
      string++;
@@ -1766,8 +1741,7 @@ char *string;
      else return 1;
 }
 
-tolowercase(line)
-char *line;
+void tolowercase(char *line)
 {
   while(*line != '\0') {
     *line = tolower(*line);
@@ -1775,8 +1749,7 @@ char *line;
   }
 }
 
-is_nonuni_gp(gp)
-     GROUNDPLANE *gp;
+int is_nonuni_gp(GROUNDPLANE *gp)
 {
   return (gp->nonuni != NULL);
 }

@@ -11,6 +11,18 @@ Configuring for your machine:
 
   2.  Configure for your machine  (sets the compilation flags)
 
+    Linux, OS X, FreeBSD: 
+      You don't need to configure anything, the default is set when
+      you unpack the distribution.
+
+      To reset, after configuring to something else:
+
+      prompt % config default
+      Then see note c. below
+
+    It isn't likely that you will need to use any of the other configs.
+    HPUX and Solaris probably don't need special treatment anymore.
+
     SunOS 4.x, IBM RS 6000's, and other 4.2/3 BSD systems(?):
       prompt %   config default
 
@@ -23,10 +35,6 @@ Configuring for your machine:
     Silicon Graphics:
       prompt %   config sgi 
       and then read the extra instructions in README.sgi
-
-    Linux: 
-      prompt % config default
-      Then see note c. below
 
   System V operating systems:
 
@@ -57,6 +65,8 @@ Configuring for your machine:
     machines running Linux and compiling with gcc with optimization.  
     Removing the "-O" option from CFLAGS in the Makefiles (zbuf and fasthenry)
     seems to help.
+    (This note is ancient, disregard)
+    (If anything, probably more optimization would be good)
 
 Compiling:
 

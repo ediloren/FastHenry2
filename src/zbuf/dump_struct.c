@@ -3,20 +3,23 @@
 /*  It produces the file panels.mat */
 
 #include "mulGlobal.h"
+#include "zbufGlobal.h"
 
-dump_struct(chglist,qv)
-charge *chglist; 
-double *qv; 
+/* SRW */
+void dump_struct(charge*, double*);
+
+
+void dump_struct(charge *chglist, double *qv)
 {
 
   charge *cp; 
   double *x, *y, *z, *q; 
   int index; 
-  FILE *fp, *fopen(); 
+  FILE *fp; 
   int type; 
   int size, i; 
   extern char *title, *ps_file_base, *in_file_name;
-  char *fname, *concat3();
+  char *fname;
   
   fname = concat3(ps_file_base,".","mat");
 

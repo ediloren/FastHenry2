@@ -2,13 +2,50 @@
 #include<string.h>
 #include<math.h>
 #include "induct.h"
+#include "gp.h"
 
 #define PIOVER2 1.570796327
 
+/* SRW */
+double square(double);
+double lengthof(int, int, double*, double*, double*);
+double lengthof2(double*, double, double, double);
+double innerproduct(int, int, int, int, double*, double*, double*);
+double findangle(int, int, int, int, double*, double*, double*);
+void order(int*, int*);
+void bubblesort(int*, int);
+int checkmiddlepoint(double*, double*, double*, int, int, int);
+int checkplaneformula(double*, double*, double*, double, double, double,
+    int, int, int);
+double findsegmentwidth(double*, double*, double*, int, int, int, int);
+void doincrement(double, double, double, double, double, double, int,
+    double*, double*, double*);
+void dounitvector(double, double, double, double, double, double,
+    double*, double*, double*);
+void fillgrids(GROUNDPLANE*);
+void make_nodelist(NODELIST*, char*, double, double, double);
+double find_coordinate(GROUNDPLANE*, double, double, double, int);
+void findrefnodes(GROUNDPLANE*, NODES*, NODES*, int*, int*, int*, int*);
+SPATH *old_path_through_gp(NODES*, NODES*, GROUNDPLANE*);
+/*
+void makenpath(SEGMENT*, NODES*);
+*/
+MELEMENT **old_makeMlist(GROUNDPLANE*, int*, double**, int);
+SPATH *path_through_gp(NODES*, NODES*, GROUNDPLANE*);
+SPATH *get_a_path(NODES*, NODES*, GROUNDPLANE*, NPATH*, int, int);
+void sort_choices(choice_list*, int);
+void clear_marks(SYS*);
+void increment_usage(SEGMENT*);
+void dump_mesh_coords(SYS*);
+void dump_ascii_mesh_coords(SYS*);
+void **Make_C_array(void*, int, int, int);
+int add_choice(choice_list*, NPATH*, SEGMENT*, NODES*, int, int, int, int, int);
+void clear_plane_marks(GROUNDPLANE*);
+
+
 /*-------------------------MATH FUNCTIONS-------------------------------*/
 /* calculates the square of x                                           */
-double square(x)
-double x;
+double square(double x)
 {
   double val;
   
@@ -18,9 +55,7 @@ double x;
 
 /* function to find the length of a vector given the points that make up the */
 /* vector.                                                                   */
-double lengthof(p1, p2,x, y, z)
-int p1, p2;
-double x[4], y[4], z[4];
+double lengthof(int p1, int p2, double *x, double *y, double *z)
 {
   double value;
 
@@ -33,9 +68,7 @@ double x[4], y[4], z[4];
 
 /* function that calculates the length of a vector that connects two given */
 /* points.                                                                 */
-double lengthof2(a, x, y, z)
-double a[3];
-double x, y, z;
+double lengthof2(double *a, double x, double y, double z)
 {
   double temp1, temp2, temp3, value;
 
@@ -50,9 +83,8 @@ double x, y, z;
 
 /* function that returns the innerproduct of two vectors given the points that */
 /* make up the vectors.                                                        */
-double innerproduct(p1,p2,p3,p4,x, y, z)
-int p1,p2,p3,p4;
-double x[4], y[4], z[4];
+double innerproduct(int p1, int p2, int p3, int p4,
+    double *x, double *y, double *z)
 {
   double value;
 
@@ -65,9 +97,8 @@ double x[4], y[4], z[4];
 
 /* function that returns the angle between two vectors given the points that */
 /* make up the vectors.                                                      */
-double findangle(p1,p2,p3,p4,x, y, z)
-int p1,p2,p3,p4;
-double x[4], y[4], z[4];
+double findangle(int p1, int p2, int p3, int p4,
+    double *x, double *y, double *z)
 {
   
   double temp1, temp2, temp3, value;
@@ -84,8 +115,7 @@ double x[4], y[4], z[4];
 /*---------------------------SORTING ROUTINES (currently not used)----------*/
 /* this is a primitive bubble sorting routing that takes is the order n*n... */
 /* for the purpose of sorting a small array, it is effective.                */
-void order(p, q)
-int *p, *q;
+void order(int *p, int *q)
 {
   int temp;
   
@@ -96,8 +126,8 @@ int *p, *q;
   }
 }
 
-void bubblesort(array, n)
-int *array, n;                 /* n is the size of the array of pointers */
+void bubblesort(int *array, int n)
+/* n is the size of the array of pointers */
 {
   int i, j;
 
@@ -112,9 +142,7 @@ int *array, n;                 /* n is the size of the array of pointers */
 /* point numbers.  (example: mid = 0 o1 = 1 o2 = 2 ... the middle is point 0*/
 /* and the others are points 1 and 2.                                       */
 
-int checkmiddlepoint(x, y, z, o1, o2, mid)
-double x[4], y[4], z[4];
-int o1, o2, mid;
+int checkmiddlepoint(double *x, double *y, double *z, int o1, int o2, int mid)
 {
   double temp1, temp2, temp3;
   int to1, to2, tmid;
@@ -126,7 +154,7 @@ int o1, o2, mid;
 
   if((fabs(temp1) < fabs(temp2)) && (fabs(temp1) < fabs(temp3))){
     tmid = 0; to1 = 1; to2 = 2;}
-   else if((fabs(temp2) < fabs(temp3)) && (fabs(temp2) < fabs(temp1))){
+  else if((fabs(temp2) < fabs(temp3)) && (fabs(temp2) < fabs(temp1))){
     tmid = 1; to1 = 0; to2 = 2;} 
   else {
     tmid = 2; to1 = 0; to2 = 1;}
@@ -140,9 +168,8 @@ int o1, o2, mid;
 
 /* function that checks if the given coordinates satisfy the equation of the */
 /* given plane.                                                              */
-int checkplaneformula(xcord, ycord, zcord,x,y,z,mid,o1,o2)
-double xcord[4], ycord[4], zcord[4],x,y,z;
-int mid,o1,o2;
+int checkplaneformula(double *xcord, double *ycord, double *zcord,
+    double x, double y, double z, int mid, int o1, int o2)
 {
   double xpart, ypart, zpart, value;
   double equation;
@@ -171,9 +198,8 @@ int mid,o1,o2;
  
 /* function that finds the width of a segment given its coordinates and the */
 /* dimensions of a plane.                                                   */
-double findsegmentwidth(x, y, z, mid, o1, o2, dim)
-double x[4], y[4], z[4];
-int mid, o1, o2, dim;
+double findsegmentwidth(double *x, double *y, double *z, int mid,
+    int o1, int o2, int dim)
 {
   double value, theta, temp1;
   
@@ -184,19 +210,16 @@ int mid, o1, o2, dim;
   return value;
 }
 
-void doincrement(x, y, z, xi, yi, zi, dim, dx, dy, dz)
-double x, y, z, xi, yi, zi;
-int dim;
-double *dx, *dy, *dz;
+void doincrement(double x, double y, double z, double xi, double yi, double zi,
+    int dim, double *dx, double *dy, double *dz)
 {
   *dx = (x - xi)/dim;
   *dy = (y - yi)/dim;
   *dz = (z - zi)/dim;
 }
 
-void dounitvector(x, y, z, xi, yi, zi, wx, wy, wz)
-double x, y, z, xi, yi, zi;
-double *wx, *wy, *wz;
+void dounitvector(double x, double y, double z, double xi, double yi, double zi,
+    double *wx, double *wy, double *wz)
 {
   double temp1, w1, w2, w3;
 
@@ -213,8 +236,7 @@ double *wx, *wy, *wz;
 /*---------------------------MISCELLANEOUS FUNCTIONS-------------------------*/
 /* function that lays out and stores the grid matrix of a groundplane for use*/
 /* in Matlab.(grids are used to visualize the current distribution in a plane*/
-void fillgrids(plane)
-GROUNDPLANE *plane;
+void fillgrids(GROUNDPLANE *plane)
 {
   int rows, cols, i, j;
   int filnumber;
@@ -255,10 +277,7 @@ GROUNDPLANE *plane;
   }
 }
 
-void make_nodelist(node, name, x, y, z)
-NODELIST *node;
-char *name;
-double x, y, z;
+void make_nodelist(NODELIST *node, char *name, double x, double y, double z)
 {
   strcpy(node->name, name);
   node->x = x;
@@ -267,10 +286,8 @@ double x, y, z;
 
 }
 
-double find_coordinate(plane, x, y, z, flag)
-GROUNDPLANE *plane;
-double x, y, z;
-int flag;
+double find_coordinate(GROUNDPLANE *plane, double x, double y, double z,
+    int flag)
 {
   double coordinate, xpart, ypart, zpart, value, equation, divpart;
 
@@ -308,10 +325,8 @@ int flag;
 
 }
  
-void findrefnodes(plane, begnode, endnode, b0, b1, e0, e1)
-GROUNDPLANE *plane;
-NODES *begnode, *endnode;
-int *b0, *b1, *e0, *e1;
+void findrefnodes(GROUNDPLANE *plane, NODES *begnode, NODES *endnode,
+    int *b0, int *b1, int *e0, int *e1)
 {
   int node1, node2, i, j;
   NODES *tempnode;
@@ -335,9 +350,7 @@ int *b0, *b1, *e0, *e1;
   }
 }
 
-SPATH *old_path_through_gp(nodein, nodeout, plane)
-NODES *nodein, *nodeout;
-GROUNDPLANE *plane;
+SPATH *old_path_through_gp(NODES *nodein, NODES *nodeout, GROUNDPLANE *plane)
 {
   int deco1, deco2, counter1, counter2;
   int b0, b1, e0, e1, i, bc0, bc1, ec0,ec1;
@@ -347,8 +360,6 @@ GROUNDPLANE *plane;
   SPATH *tpath;
   SPATH *pathpointer;
   seg_ptr tempseg_ptr;
-
-  NODES *find_nearest_node();
 
   tempseg_ptr.type = NORMAL;
 
@@ -422,11 +433,9 @@ GROUNDPLANE *plane;
   return path;
 }
 
-NODES *findnode(node, plane, inout, var1, var2, samenode)
-NODES *node, *samenode;
-GROUNDPLANE *plane;
-int inout[3];
-double *var1, *var2;
+/* SRW -- this is no good, and not used anyway.
+NODES *findnode(NODES *node, GROUNDPLANE *plane, int *inout,
+    double *var1, double *var2, NODES *samenode)
 {
   NODES *retnode;
 
@@ -439,13 +448,12 @@ double *var1, *var2;
     return samenode;
   }
 }
+*/
 
 #if 1==0
 /*------------------------------ADDEXTERNAL FUNCTIONS------------------*/
 /* makes the nodepath for a given segment in the function addextern()  */
-void makenpath(seg, node)
-SEGMENT *seg;
-NODES *node;
+void makenpath(SEGMENT *seg, NODES *node)
 {
   NPATH *npath;
 
@@ -469,11 +477,8 @@ NODES *node;
 
 /* makes the Mlist for the groundplane given a plane and parameters defining */
 /* the current location of the overall Mlist.                                */
-MELEMENT **old_makeMlist(plane, checksegs, M, mesh)
-GROUNDPLANE *plane;
-int *checksegs;
-double **M;
-int mesh; 
+MELEMENT **old_makeMlist(GROUNDPLANE *plane, int *checksegs, double **M,
+    int mesh)
 {
   MELEMENT **pMlist, *melem, *melem2;
   FILAMENT **loopfils;
@@ -579,11 +584,9 @@ int mesh;
   return pMlist;
 }
 
-SPATH *path_through_gp(nodein, nodeout, plane)
-NODES *nodein, *nodeout;
-GROUNDPLANE *plane;
+SPATH *path_through_gp(NODES *nodein, NODES *nodeout, GROUNDPLANE *plane)
 {
-  SPATH *path, *path_through_nonuni_gp();
+  SPATH *path;
 
 #ifdef OLD_PATH
   return old_path_through_gp(nodein, nodeout, plane);
@@ -620,12 +623,8 @@ This may be due to \n\
 
 /* this returns a path from node to node_goal.  It takes one step and then
    calls itself recursively.  */
-SPATH *get_a_path(node, node_goal, plane, nodes_so_far, s1_momentum, 
-		  s2_momentum)
-NODES *node, *node_goal;
-GROUNDPLANE *plane;
-NPATH *nodes_so_far;
-int s1_momentum, s2_momentum;  
+SPATH *get_a_path(NODES *node, NODES *node_goal, GROUNDPLANE *plane,
+    NPATH *nodes_so_far, int s1_momentum, int s2_momentum)
 {
 #define MAXchoices 4
   choice_list choices[MAXchoices];
@@ -703,9 +702,7 @@ int s1_momentum, s2_momentum;
 }
 
 /* sort choices by rank.  Not the most efficient */
-sort_choices(choices, num)
-choice_list *choices;
-int num;
+void sort_choices(choice_list *choices, int num)
 {
   int i, j;
   choice_list temp;
@@ -719,8 +716,7 @@ int num;
       }
 }
 	
-clear_marks(indsys)
-SYS *indsys;
+void clear_marks(SYS *indsys)
 {
   SEGMENT *seg;
   NODES *node;
@@ -732,14 +728,12 @@ SYS *indsys;
     node->examined = 0;
 }
 
-increment_usage(seg)
-SEGMENT *seg;
+void increment_usage(SEGMENT *seg)
 {
   seg->is_deleted++;
 }
 
-dump_mesh_coords(indsys)
-SYS *indsys;
+void dump_mesh_coords(SYS *indsys)
 {
   FILE *fp;
   int nmeshes, i, counter, j;
@@ -797,8 +791,7 @@ SYS *indsys;
 
 }
 
-dump_ascii_mesh_coords(indsys)
-SYS *indsys;
+void dump_ascii_mesh_coords(SYS *indsys)
 {
   FILE *fp;
   int nmeshes, i, counter, j;
@@ -842,9 +835,7 @@ SYS *indsys;
    beginning at 'start',
    and returns an array of pointers to the beginning of each row.  
 */
-void **Make_C_array(start, rows, cols, size)
-void *start;
-int rows, cols, size;
+void **Make_C_array(void *start, int rows, int cols, int size)
 {
   char **ptr;
   int i;
@@ -864,15 +855,9 @@ int rows, cols, size;
 
 /* fills the choice_list structure if this is a valid choice */
 /* It returns 1 if it valid, 0 otherwise */
-int add_choice(choice, nodes_so_far, seg, node, is_right_direction, new_s1_mom,
-	       new_s2_mom, s1_momentum, s2_momentum)
-choice_list *choice;
-int is_right_direction;
-NPATH *nodes_so_far;
-SEGMENT *seg;
-NODES *node;
-int new_s1_mom, new_s2_mom;
-int s1_momentum, s2_momentum;
+int add_choice(choice_list *choice, NPATH *nodes_so_far, SEGMENT *seg,
+    NODES *node, int is_right_direction, int new_s1_mom, int new_s2_mom,
+    int s1_momentum, int s2_momentum)
 {
   static int overlap = 0;  /* weight changed to 0 from 1 since new precond */
                            /* shouldn't care.   6/94  */
@@ -912,8 +897,7 @@ int s1_momentum, s2_momentum;
     return 0;
 }
     
-clear_plane_marks(plane)
-GROUNDPLANE *plane;
+void clear_plane_marks(GROUNDPLANE *plane)
 {
   int i,j;
   int nodes1 = plane->num_nodes1;

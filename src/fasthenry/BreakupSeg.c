@@ -3,11 +3,14 @@
 
 #define DIVFACT 1  /* a factor that is always 1 except for debugging */
 
-DivideSegs(length, charges, indsys, is_initial)
-double length;
-charge *charges;
-SYS *indsys;
-int is_initial;    /* is this the initial refinement call */
+/* SRW */
+void DivideSegs(double, charge*, SYS*, int);
+void BreakupSeg(SEGMENT*, double, charge*, SYS*);
+void alterFils(SEGMENT*, NODES*, double, double, double);
+
+
+void DivideSegs(double length, charge *charges, SYS *indsys, int is_initial)
+/* int is_initial;   is this the initial refinement call */
 {
   SEGMENT *seg;
   int warned, warn_refine;
@@ -38,11 +41,7 @@ int is_initial;    /* is this the initial refinement call */
   }
 }
 
-BreakupSeg(seg, maxlength, charges, indsys)
-SEGMENT *seg;
-double maxlength;
-charge *charges;
-SYS *indsys;
+void BreakupSeg(SEGMENT *seg, double maxlength, charge *charges, SYS *indsys)
 {
   double oldlength, x, y, z, dx, dy, dz;
   int i, j, pieces;
@@ -50,11 +49,9 @@ SYS *indsys;
   SEGMENT *newseg, *lastseg, *condseg, *origsegnext;
   charge *chg;
   NODES *nodelast, *newnode;
-  NODES *makenode();
   static char name[80 + MAXDEP*3];
   charge *chgend;
   charge *oldnext;
-  charge *assignFil();
   NPATH *apath;
   SPATH *condpath, *lastpath, *headpath, *condbeg, *condend;
   int backwards;
@@ -145,10 +142,7 @@ SYS *indsys;
 
 }
     
-alterFils(seg, node, dx, dy, dz)
-SEGMENT *seg;
-NODES *node;
-double dx, dy, dz;
+void alterFils(SEGMENT *seg, NODES *node, double dx, double dy, double dz)
 {
   FILAMENT *fil;
   charge *chg;

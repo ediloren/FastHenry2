@@ -1,0 +1,66 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:43 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../msm.inp
+Title:
+* MSM inductance extraction
+
+all lengths multiplied by 1e-06 to convert to meters
+Total number of filaments before multipole refine: 1092
+Total number of filaments after multipole refine: 1092
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 3
+  Total number of filaments: 1092
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 0 
+Number of filaments:       1092
+Number of segments:         273
+Number of nodes:            275
+Number of meshes:           843
+          ----from tree:                   24 
+          ----from planes: (before holes)  0 
+Number of conductors:         1   (rows of matrix in Zc.mat) 
+Number of columns:            1   (columns of matrix in Zc.mat) 
+Number of real nodes:       251
+filling M...
+filling R and L...
+Total Memory allocated: 4736 kilobytes
+Frequency = 100
+Forming sparse matrix preconditioner..
+conductor 0 from node n122
+Calling gmres...
+1 2 
+Frequency = 100000
+Forming sparse matrix preconditioner..
+conductor 0 from node n122
+Calling gmres...
+1 2 
+Frequency = 1e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node n122
+Calling gmres...
+1 2 3 
+Frequency = 1e+11
+Forming sparse matrix preconditioner..
+conductor 0 from node n122
+Calling gmres...
+1 2 3 4 5 6 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0
+        Multipole setup 0.129257
+        Scanning graph  5.5e-05
+        Form A M and Z  0.000354
+        form M'ZM       2.1e-05
+        Form precond    0.079167
+        GMRES time      0.056175
+   Total:               0.265029

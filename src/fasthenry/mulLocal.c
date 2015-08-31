@@ -9,12 +9,24 @@ double **facFrA;		/* array of factorial fractions */
 double *cosmkB;			/* array used to look up cos[(m+-k)beta] */
 double *sinmkB;			/* array used to look up sin[(m+-k)beta] */
 
+/* SRW */
+void evalFacFra(double**, int);
+void evalSqrtFac(double**, double**, int);
+void evalSinCos(double, int);
+double sinB(int);
+double cosB(int);
+double **mulMulti2Local(double, double, double, double, double, double, int);
+double **mulLocal2Local(double, double, double, double, double, double, int);
+double **mulQ2Local(charge**, int, int*, double, double, double, int);
+double **mulLocal2P(double, double, double, charge**, int, int);
+
+
 /*
   initializes the factorial fraction array used in M2L, L2L matrix calculation
 */
-void evalFacFra(array, order)
-int order;			/* array is 2*order+1 x 2*order+1 */
-double **array;			/* array[num][den] = num!/den! */
+void evalFacFra(double **array, int order)
+/* double **array;  array[num][den] = num!/den! */
+/* int order;       array is 2*order+1 x 2*order+1 */
 {
   int d, i;
   for(i = 0; i <= 2*order; i++) {
@@ -48,9 +60,7 @@ double **array;			/* array[num][den] = num!/den! */
 /*
   initializes sqrt((m+n)!/(n-m)!) lookup table (for L2L)
 */
-void evalSqrtFac(arrayout, arrayin, order)
-int order;
-double **arrayout, **arrayin;
+void evalSqrtFac(double **arrayout, double **arrayin, int order)
 {
   int n, m;			/* arrayout[n][m] = sqrt((m+n)!/(n-m)!) */
 
@@ -75,9 +85,7 @@ double **arrayout, **arrayin;
 /*
   initializes cos[(m+-k)beta] and sin[(m+-k)beta] lookup tables (M2L and L2L)
 */
-void evalSinCos(beta, order)
-int order;
-double beta;
+void evalSinCos(double beta, int order)
 {
   int i;
   double temp = beta;
@@ -91,8 +99,7 @@ double beta;
 /*
   looks up sin[(m+-k)beta]
 */
-double sinB(sum)
-int sum;
+double sinB(int sum)
 {
   if(sum < 0) return(-sinmkB[abs(sum)]);
   else return(sinmkB[sum]);
@@ -101,8 +108,7 @@ int sum;
 /*
   looks up cos[(m+-k)beta]
 */
-double cosB(sum)
-int sum;
+double cosB(int sum)
 {
   return(cosmkB[abs(sum)]);
 }
@@ -110,9 +116,9 @@ int sum;
 /* 
   Used for all but no local downward pass. 
 */
-double **mulMulti2Local(x, y, z, xp, yp, zp, order)
-int order;
-double x, y, z, xp, yp, zp;	/* multipole and local cube centers */
+double **mulMulti2Local(double x, double y, double z, double xp, double yp,
+    double zp, int order)
+/* double x, y, z, xp, yp, zp;	multipole and local cube centers */
 {
   int i, j, k, n, m;
   int terms = multerms(order);	/* the number of non-zero moments */
@@ -122,7 +128,6 @@ double x, y, z, xp, yp, zp;	/* multipole and local cube centers */
   double rhoJ, rhoN;		/* rho^j and (-1)^n*rho^(n+1) in main loop */
   double rhoFac;		/* = rhoJ*rhoN intermediate storage */
   double temp1, temp2, temp3;
-  double iPwr(), sinB(), cosB();
   extern double *tleg, *Ir, *Irn, *phi, *Mphi; /* external temporary storage */
 
   /* allocate the multi to local transformation matrix */
@@ -199,9 +204,9 @@ double x, y, z, xp, yp, zp;	/* multipole and local cube centers */
 /* 
   Used only for true (Greengard) downward pass - similar to Multi2Local
 */
-double **mulLocal2Local(x, y, z, xc, yc, zc, order)
-int order;
-double x, y, z, xc, yc, zc;	/* parent and child cube centers */
+double **mulLocal2Local(double x, double y, double z, double xc, double yc,
+    double zc, int order)
+/* double x, y, z, xc, yc, zc;	parent and child cube centers */
 {
   int i, j, k, n, m;
   int terms = multerms(order);	/* the number of non-zero moments */
@@ -211,7 +216,6 @@ double x, y, z, xc, yc, zc;	/* parent and child cube centers */
   double rhoJ, rhoN;		/* rho^j and (-1)^n*rho^(n+1) in main loop */
   double rhoFac;		/* = rhoJ*rhoN intermediate storage */
   double temp1, temp2, temp3;
-  double iPwr(), sinB(), cosB();
   extern double *tleg, *Ir, *Irn, *phi, *Mphi; /* external temporary storage */
 
   /* allocate the local to local transformation matrix */
@@ -301,14 +305,12 @@ double x, y, z, xc, yc, zc;	/* parent and child cube centers */
   form almost identical to mulQ2Multi - follows NB12 pg 32 w/m,n replacing k,j
   OPTIMIZATIONS INVOLVING is_dummy HAVE NOT BEEN COMPLETELY IMPLEMENTED
 */
-double **mulQ2Local(chgs, numchgs, is_dummy, x, y, z, order)
-double x, y, z;
-charge **chgs;
-int numchgs, order, *is_dummy;
+double **mulQ2Local(charge **chgs, int numchgs, int *is_dummy, double x,
+    double y, double z, int order)
 {
   int i, j, k, kold, n, m, start;
   int cterms = costerms(order), terms = multerms(order);
-  double **mat, temp, fact();
+  double **mat, temp;
   double cosA;			/* cosine of elevation coordinate */
   extern double *Rhon, *Rho, *Betam, *Beta, *tleg;
 
@@ -403,14 +405,11 @@ int numchgs, order, *is_dummy;
   follows NB10 equation marked circle(2A) except roles of j,k and n,m switched
   very similar to mulMulti2P()
 */
-double **mulLocal2P(x, y, z, chgs, numchgs, order)
-double x, y, z;
-charge **chgs;
-int numchgs, order;
+double **mulLocal2P(double x, double y, double z, charge **chgs, int numchgs,
+    int order)
 {
   double **mat;
   double cosTh;			/* cosine of elevation coordinate */
-  double fact();
   extern double *Irn, *Mphi, *phi, *Ir;
   int i, j, k, m, n, kold, start;
   int cterms = costerms(order), terms = multerms(order);

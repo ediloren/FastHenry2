@@ -3,13 +3,23 @@
 /* It outputs in SI units only */
 
 #include "induct.h"
+#include <string.h>
 
-regurgitate(indsys)
-SYS *indsys;
+/* SRW */
+typedef void (*regurg_cb)(double, double, double, double*, double*, double*);
+void regurgitate(SYS*);
+void do_end_stuff(SYS*);
+void set_translate(double, double, double);
+void translate(double, double, double, double*, double*, double*);
+void reflect_x(double, double, double, double*, double*, double*);
+void reflect_y(double, double, double, double*, double*, double*);
+void reflect_y(double, double, double, double*, double*, double*);
+void do_nothing(double, double, double, double*, double*, double*);
+void spit(SYS*, regurg_cb, char*);
+
+
+void regurgitate(SYS *indsys)
 {
-  /* functions to shift coordinates */
-  void translate(), reflect_x(), reflect_y(), reflect_origin(), do_nothing();
-
   /* spit out geometries and .externals */
   spit(indsys, do_nothing, "");
 
@@ -22,8 +32,7 @@ SYS *indsys;
   do_end_stuff(indsys);
 }
 
-do_end_stuff(indsys)
-SYS *indsys;
+void do_end_stuff(SYS *indsys)
 {
   fprintf(stdout, ".freq fmin=%lg fmax=%lg ndec=%lg\n",indsys->fmin, 
           indsys->fmax, 1.0/indsys->logofstep);
@@ -37,16 +46,15 @@ SYS *indsys;
 static double delta_x, delta_y, delta_z;
 
 /* set amount of translation for translate() */
-set_translate(x, y, z)
-double x, y, z;
+void set_translate(double x, double y, double z)
 {
   delta_x = x;
   delta_y = y;
   delta_z = z;
 }
 
-void translate(x,y,z,new_x, new_y, new_z)
-double x,y,z,*new_x, *new_y, *new_z;
+void translate(double x, double y, double z, double *new_x, double *new_y,
+    double *new_z)
 {
   *new_x = x + delta_x;
   *new_y = y + delta_y;
@@ -54,8 +62,8 @@ double x,y,z,*new_x, *new_y, *new_z;
 }
 
 /* reflect about x axis (negate y) */
-void reflect_x(x,y,z,new_x, new_y, new_z)
-double x,y,z,*new_x, *new_y, *new_z;
+void reflect_x(double x, double y, double z, double *new_x, double *new_y,
+    double *new_z)
 {
   *new_x = x;
   *new_y = -y;
@@ -64,8 +72,8 @@ double x,y,z,*new_x, *new_y, *new_z;
 
 /* reflect about y axis (negate x) */
 
-void reflect_y(x,y,z,new_x, new_y, new_z)
-double x,y,z,*new_x, *new_y, *new_z;
+void reflect_y(double x, double y, double z, double *new_x, double *new_y,
+    double *new_z)
 {
   *new_x = -x;
   *new_y = y;
@@ -74,16 +82,16 @@ double x,y,z,*new_x, *new_y, *new_z;
 
 /* reflect about origin (negate x and y) */
 
-void reflect_origin(x,y,z,new_x, new_y, new_z)
-double x,y,z,*new_x, *new_y, *new_z;
+void reflect_origin(double x,double y,double z, double *new_x, double *new_y,
+    double *new_z)
 {
   *new_x = -x;
   *new_y = -y;
   *new_z = z;
 }
 
-void do_nothing(x,y,z,new_x, new_y, new_z)
-double x,y,z,*new_x, *new_y, *new_z;
+void do_nothing(double x, double y, double z, double *new_x, double *new_y,
+    double *new_z)
 {
   *new_x = x;
   *new_y = y;
@@ -93,10 +101,7 @@ double x,y,z,*new_x, *new_y, *new_z;
 
 /* spit out nodes and segments and .externals */
 
-spit(indsys, new_coords, suffix)
-SYS *indsys;
-void (*new_coords)();
-char *suffix;
+void spit(SYS *indsys, regurg_cb new_coords, char *suffix)
 {
   
   NODES *node;

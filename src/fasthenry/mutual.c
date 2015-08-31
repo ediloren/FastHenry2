@@ -4,24 +4,37 @@
 #include "induct.h"
 
 /* these are missing in some math.h files */
-#ifndef NO_ATANH
-extern double asinh();
-extern double atanh();
-#else
+#ifdef NO_ATANH
 double atanh(double x) { return (0.5*log((1.0+x)/(1.0-x))); }
 double asinh(double x) { return (log(x + sqrt(x*x+1))); }
 #endif
 #ifdef NO_ISNAN
 int finite(double x) { return (1); }
+#else
+/* SRW -- finite() is deprecated */
+#define finite(x) (!isnan(x) && !isinf(x))
+/* #define finite isfinite */
 #endif
+
+/* SRW */
+double mutual(FILAMENT*, FILAMENT*);
+void print_infinity_warning(FILAMENT*, FILAMENT*);
+void findfourfils(FILAMENT*, FILAMENT*);
+double selfterm(FILAMENT*);
+double mutualfil(FILAMENT*, FILAMENT*);
+double magdiff2(FILAMENT*, int, FILAMENT*, int);
+double mut_rect(double, double);
+double dotprod(FILAMENT*, FILAMENT*);
+double fourfil(FILAMENT*, FILAMENT*);
+double parallel_fils(FILAMENT*, FILAMENT*, int, double*, double*, double);
+
 
 int realcos_error = 0;
 
 /* calculates mutual inductance of "filaments" with width and height */
 /* as a combination of filament approximations                       */
 /* some functions it uses are in dist_betw_fils.c */
-double mutual(fil_j, fil_m)
-FILAMENT *fil_j, *fil_m;
+double mutual(FILAMENT *fil_j, FILAMENT *fil_m)
 {
   double totalM;
   int i,j,ij;
@@ -136,8 +149,7 @@ FILAMENT *fil_j, *fil_m;
   }
 }
 
-print_infinity_warning(fil1, fil2)
-     FILAMENT *fil1, *fil2;
+void print_infinity_warning(FILAMENT *fil1, FILAMENT *fil2)
 {
   FILAMENT *fil;
 
@@ -154,8 +166,7 @@ print_infinity_warning(fil1, fil2)
   fprintf(stderr,"Probably because there are overlapping but non-orthogonal segments in the input\n");
 }
 
-findfourfils(fil, subfils)
-FILAMENT *fil, subfils[4];
+void findfourfils(FILAMENT *fil, FILAMENT *subfils)
 {
   double hx,hy,hz,mag,wx,wy,wz;
   int i;
@@ -216,10 +227,8 @@ FILAMENT *fil, subfils[4];
 /* calculates selfinductance of rectangular filament */
 /* it uses an exact expression for the 6-fold integral from Ruehli */
 /* (the actual function comes is in file joelself.c */
-double selfterm(fil)
-FILAMENT *fil;
+double selfterm(FILAMENT *fil)
 {
-   double self();
    double approx, joelself;
 
 /*   approx = fil->length*MUOVER4PI*2
@@ -232,8 +241,7 @@ FILAMENT *fil;
 
 /* calculates the mutual inductance between two filaments */
 /* from Grover, Chapter 7 */
-double mutualfil(fil1, fil2)
-FILAMENT *fil1, *fil2;
+double mutualfil(FILAMENT *fil1, FILAMENT *fil2)
 {
   double R, R1, R2, R3, R4, l, m;
   double cose, sine, u,v,d;
@@ -473,9 +481,7 @@ by a distance 1e10 times their length\n");
 }
 
 /*
-double magdiff(fil1, node1, fil2, node2)
-FILAMENT *fil1, *fil2;
-int node1, node2;
+double magdiff(FULAMENT *fil1, int node1, FULAMENT *fil2, int node2)
 {
    return sqrt( SQUARE(fil1->x[node1] - fil2->x[node2])
 	       +SQUARE(fil1->y[node1] - fil2->y[node2])
@@ -484,9 +490,7 @@ int node1, node2;
 }
 */
 
-double magdiff2(fil1, node1, fil2, node2)
-FILAMENT *fil1, *fil2;
-int node1, node2;
+double magdiff2(FILAMENT *fil1, int node1, FILAMENT *fil2, int node2)
 {
    return ( SQUARE(fil1->x[node1] - fil2->x[node2])
 	       +SQUARE(fil1->y[node1] - fil2->y[node2])
@@ -497,8 +501,7 @@ int node1, node2;
 /* this gives the mutual inductance of two filaments who represent */
 /* opposite sides of a rectangle */
 
-double mut_rect(len, d)
-double len,d;
+double mut_rect(double len, double d)
 {
   double temp,temp1;
 
@@ -509,16 +512,14 @@ double len,d;
 
 /* returns the dotproduct of the vector from node0 to node1 of fil1 */
 /* with that of fil2 */
-double dotprod(fil1, fil2)
-FILAMENT *fil1, *fil2;
+double dotprod(FILAMENT *fil1, FILAMENT *fil2)
 {
   return(  (fil1->x[1] - fil1->x[0])*(fil2->x[1] - fil2->x[0])
 	 + (fil1->y[1] - fil1->y[0])*(fil2->y[1] - fil2->y[0])
 	 + (fil1->z[1] - fil1->z[0])*(fil2->z[1] - fil2->z[0]) );
 }
 
-double fourfil(fil_j, fil_m)
-FILAMENT *fil_j, *fil_m;
+double fourfil(FILAMENT *fil_j, FILAMENT *fil_m)
 {
   FILAMENT subfilj[MAXsubfils], subfilm[MAXsubfils];
   double totalM;
@@ -544,11 +545,9 @@ FILAMENT *fil_j, *fil_m;
   return totalM;
 }
 
-double parallel_fils(fil_j, fil_m, whperp, x_j, y_j, dist)
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double *x_j, *y_j;  /* unit vectors in the fil coord sys */
-double dist;
+double parallel_fils(FILAMENT *fil_j, FILAMENT *fil_m, int whperp,
+    double *x_j, double *y_j, double dist)
+/* double *x_j, *y_j;  unit vectors in the fil coord sys */
 {
   enum degen_type deg_j, deg_m;
   

@@ -2,6 +2,7 @@
  code from olmulPrcond() from FastCap */
 
 #include "induct.h"
+
 #define PARTMESH OFF
 
 /* This near picks up only the hamming distance one cubes. */    
@@ -22,11 +23,17 @@
 
 FILE *fp;
 
+/* SRW */
+void indPrecond(ssystem*, SYS*, double);
+void multPrecond(PRE_ELEMENT**, CX*, CX*, int);
+MELEMENT *getnext(MELEMENT*, int*);
+void cx_invert_dup(CX**, int, DUPS*);
+void mark_dup_mesh(MELEMENT**, int*, int, DUPS*, int*);
+void dumpPrecond(PRE_ELEMENT**, int);
+void indPrecond_direct(ssystem*, SYS*, double);
+
 	
-indPrecond(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+void indPrecond(ssystem *sys, SYS *indsys, double w)
 {
   cube *nc, *nnbr, *nnnbr;
   double **mat, **nmat;
@@ -57,8 +64,6 @@ double w;
   static int *findx;        /* For every filament, -1 if not in fillist, row */
                             /* number in mat if in fillist.  */
                             /* fillist and findx are inverses of each other */
-
-  MELEMENT *getnext();
 
   int num_mesh = indsys->num_mesh;
   int num_fils = indsys->num_fils;
@@ -499,10 +504,7 @@ double w;
 
 /* multiplies x times the preconditioner and returns in result */
 
-multPrecond(Precond, x, result, size)
-PRE_ELEMENT **Precond;
-CX *x, *result;
-int size;
+void multPrecond(PRE_ELEMENT **Precond, CX *x, CX *result, int size)
 {
 
   PRE_ELEMENT *pre;
@@ -520,9 +522,7 @@ int size;
 
 /* if mel->filindex is not in the cube and nearest nbrs (findx == -1), skip */
 /* to the next element which is */
-MELEMENT *getnext(mel, findx)
- MELEMENT *mel;
- int *findx;
+MELEMENT *getnext(MELEMENT *mel, int *findx)
 {
   while(mel != NULL && findx[mel->filindex] == -1)
     mel = mel->mnext; 
@@ -533,10 +533,7 @@ MELEMENT *getnext(mel, findx)
   In-place inverts a matrix using guass-jordan. 
   Skips rows and columns with is_dup[i].sign != 1.
 */
-cx_invert_dup(mat, size, is_dup)
-CX **mat;
-int size;
-DUPS *is_dup;
+void cx_invert_dup(CX **mat, int size, DUPS *is_dup)
 {
   int i, j, k;
   CX normal, multiplier, tmp;
@@ -578,11 +575,8 @@ DUPS *is_dup;
    so when we form the preconditioner later, the duplicate mesh will
    get the same entry as the original */
 
-mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx)
-MELEMENT **Mlist;
-int *meshnum, meshsize, *findx;
-DUPS *is_dup;
-
+void mark_dup_mesh(MELEMENT **Mlist, int *meshnum, int meshsize, DUPS *is_dup,
+    int *findx)
 {
   int i,j;
   MELEMENT *meli, *melj;
@@ -620,9 +614,7 @@ DUPS *is_dup;
     } /* for i*/
 }
 
-dumpPrecond(Precond, size)
-PRE_ELEMENT **Precond;
-int size;
+void dumpPrecond(PRE_ELEMENT **Precond, int size)
 {
   FILE *fp;
   int i,j;
@@ -674,10 +666,7 @@ int size;
 
   
   
-indPrecond_direct(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+void indPrecond_direct(ssystem *sys, SYS *indsys, double w)
 {
   cube *nc, *nnbr, *nnnbr;
   int nsize, nnsize;

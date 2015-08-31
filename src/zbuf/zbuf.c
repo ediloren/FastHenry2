@@ -33,19 +33,22 @@ of this software.
 */
 
 #include "mulGlobal.h"
+#include "zbufGlobal.h"
 
-main(argc, argv)
-int argc;
-char *argv[];
+/* SRW */
+char *concat3(char*, char*, char*);
+double *get_q(char*, charge*);
+
+
+int main(int argc, char **argv)
 {
   int ttliter, i, j, num_cond;
-  charge *chglist, *nq, *input_problem();
-  double *get_q();
-  ssystem *sys, *mulInit();
+  charge *chglist, *nq;
+  ssystem *sys;
   double **capmat, dirtimesav, mulsetup, initalltime, ttlsetup, ttlsolve;
   double relperm;
   int autmom, autlev, numMom, numLev;
-  char *fname, *concat3();
+  char *fname;
 
   extern int fulldirops, fullPqops;
   extern int num_dummy_panels, num_dielec_panels; 
@@ -121,8 +124,7 @@ char *argv[];
 
 }
 
-char *concat3(st1, st2, st3)
-char *st1, *st2, *st3;
+char *concat3(char *st1, char *st2, char *st3)
 {
   int length = 0;
   char *allthree;
@@ -143,9 +145,7 @@ char *st1, *st2, *st3;
 
 /*  For FastHenry, this reads the file of shadings for each of the faces */
 
-double *get_q(fname, chglist)
-char *fname;
-charge *chglist;
+double *get_q(char *fname, charge *chglist)
 {
   FILE *fp;
   int numchgs = 0;

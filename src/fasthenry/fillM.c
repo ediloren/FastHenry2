@@ -2,6 +2,26 @@
 
 #include <string.h>
 #include "induct.h"
+#include "gp.h"
+
+/* SRW */
+void fillM(SYS*);
+MELEMENT *make_mesh_from_path(SPATH*, int, SYS*);
+int is_next_seg_in_gp(SPATH*, NODES*);
+MELEMENT *insert_in_list(MELEMENT*, MELEMENT*);
+NODES *getnode(int, seg_ptr);
+void bad_seg_type(char*, seg_ptr);
+MELEMENT *make_melement(int, FILAMENT*, int);
+void add_to_external(PSEUDO_SEG*, int, int, SYS*);
+int_list *make_int_list(int, int);
+int_list *add_to_int_list(int_list*, int_list*);
+int makeMlist(GROUNDPLANE*, MELEMENT**, Minfo*, int);
+void fill_b(EXTERNAL*, CX*);
+void extractYcol(CX**, CX*, EXTERNAL*, EXTERNAL*);
+char *get_a_name(PSEUDO_SEG*);
+NODES *find_first_node(SPATH*);
+void makegrids(SYS*, CX*, int, int);
+
 
 /* this fills the kircoff's voltage law matrix (Mesh matrix) */
 /* it maps a matrix of mesh currents to branch currents */
@@ -12,8 +32,7 @@
 
 /* much of what is commented out is obsolete stuff from an old idea
    for a preconditioner that never worked */
-void fillM(indsys)
-SYS *indsys;
+void fillM(SYS *indsys)
 {
 
   GROUNDPLANE *plane;                           /* CMS 6/2/92 */
@@ -95,10 +114,7 @@ SYS *indsys;
 
 /* this takes a linked list of segments (path) and makes a row of the */
 /* mesh matrix out of the filament[0]'s of each segment.  */
-MELEMENT *make_mesh_from_path(path, mesh, indsys)
-SPATH *path;
-int mesh;
-SYS *indsys;
+MELEMENT *make_mesh_from_path(SPATH *path, int mesh, SYS *indsys)
 {
   SPATH *selem, *temppath, *telem;
   MELEMENT *m1, *m2, *m3, *mlist;
@@ -226,9 +242,7 @@ SYS *indsys;
 }
 
 /* Check to see if the next segment is also from the same groundplane */
-is_next_seg_in_gp(selem,plusnode)
-SPATH *selem;
-NODES *plusnode;
+int is_next_seg_in_gp(SPATH *selem, NODES *plusnode)
 {
   PSEUDO_SEG *pseg2, *pseg1;  
   NODES *othernode;
@@ -256,8 +270,7 @@ NODES *plusnode;
 
 /* this inserts melem into the linked list beginning with bigmhead. */
 /* It inserts it to preserve increasing filindex order. */
-MELEMENT *insert_in_list(melem, bigmhead)
-MELEMENT *melem, *bigmhead;
+MELEMENT *insert_in_list(MELEMENT *melem, MELEMENT *bigmhead)
 {
   MELEMENT *melem2;
 
@@ -283,9 +296,7 @@ MELEMENT *melem, *bigmhead;
   }
 }
 
-NODES *getnode(number, seg)
-int number;
-seg_ptr seg;
+NODES *getnode(int number, seg_ptr seg)
 {
   if (seg.type == NORMAL)
     return ((SEGMENT *)seg.segp)->node[number];
@@ -293,19 +304,16 @@ seg_ptr seg;
     return ((PSEUDO_SEG *)seg.segp)->node[number];
   else 
     bad_seg_type("getnode", seg);
+  return ((NODES*)NULL);
 }
 
-bad_seg_type(name, seg)
-char *name;
-seg_ptr seg;
+void bad_seg_type(char *name, seg_ptr seg)
 {
   fprintf(stderr, "%s: bad seg type: %d\n",name, seg.type);
   exit(1);
 }
 
-MELEMENT *make_melement(filindex, fil, sign)
-int filindex, sign;
-FILAMENT *fil;
+MELEMENT *make_melement(int filindex, FILAMENT *fil, int sign)
 {
   MELEMENT *melem;
 
@@ -321,10 +329,7 @@ FILAMENT *fil;
 /* this keeps track of the meshes which contain the nodes of the */
 /* .external statement.  This will have a voltage source in them */
 /* and will need a 1 placed in the RHS corresponding to mesh number 'mesh' */
-add_to_external(pseg, mesh, sign, indsys)
-PSEUDO_SEG *pseg;
-int mesh, sign;
-SYS *indsys;
+void add_to_external(PSEUDO_SEG *pseg, int mesh, int sign, SYS *indsys)
 {
   EXTERNAL *port;
   int realsign;
@@ -345,8 +350,7 @@ SYS *indsys;
     
 }
 
-int_list *make_int_list(mesh, sign)
-int mesh, sign;
+int_list *make_int_list(int mesh, int sign)
 {
   int_list *elem;
 
@@ -358,8 +362,7 @@ int mesh, sign;
   return elem;
 }
 
-int_list *add_to_int_list(int_elem, list)
-int_list *int_elem, *list;
+int_list *add_to_int_list(int_list *int_elem, int_list *list)
 {
   int_elem->next = list;
   return int_elem;
@@ -367,11 +370,8 @@ int_list *int_elem, *list;
 
 /* makes the Mlist for the groundplane given a plane and parameters defining */
 /* the current location of the overall Mlist.                                */
-makeMlist(plane, pMlist, pm_info, mstart)
-GROUNDPLANE *plane;
-MELEMENT **pMlist;
-Minfo *pm_info;
-int mstart;
+int makeMlist(GROUNDPLANE *plane, MELEMENT **pMlist, Minfo *pm_info,
+    int mstart)
 {
   MELEMENT *melem;
   SEGMENT *seg;
@@ -432,9 +432,7 @@ int mstart;
 
 }
 
-fill_b(ext, b)
-EXTERNAL *ext;
-CX *b;
+void fill_b(EXTERNAL *ext, CX *b)
 {
   int_list *elem;
 
@@ -442,9 +440,7 @@ CX *b;
     b[elem->index].real = elem->sign;
 }
 
-extractYcol(mat, x0, extcol, ext_list)
-CX **mat, *x0;
-EXTERNAL *extcol, *ext_list;
+void extractYcol(CX **mat, CX *x0, EXTERNAL *extcol, EXTERNAL *ext_list)
 {
   EXTERNAL *ext;
   int_list *elem;
@@ -463,16 +459,14 @@ EXTERNAL *extcol, *ext_list;
   
 }
 
-char *get_a_name(pseg)
-PSEUDO_SEG *pseg;
+char *get_a_name(PSEUDO_SEG *pseg)
 {
   return pseg->node[0]->name;
 }
 
 /* we wish to find the first node in a path which is the node of 
    the first segment which is not connected to the second segment */
-NODES *find_first_node(path)
-SPATH *path;
+NODES *find_first_node(SPATH *path)
 {
   NODES *node0, *node1;
   int node1_in_middle;
@@ -540,16 +534,13 @@ SPATH *path;
 
 }
 
-makegrids(indsys, Im, column, freq_num)
-SYS *indsys;
-CX *Im;
-int column;
+void makegrids(SYS *indsys, CX *Im, int column, int freq_num)
 {
   static CX *Ib = NULL, current;
   int fils, meshes;
   static CX **out1 = NULL;
   static CX **out2 = NULL;
-  static maxdir1 = 0, maxdir2 = 0;
+  static int maxdir1 = 0, maxdir2 = 0;
   int dir1, dir2, num, i, j;
   MELEMENT *mtemp;
   GROUNDPLANE *p;
@@ -713,12 +704,9 @@ The following is code that was not implemented and never used and is now
 
 /* this takes a linked list of segments (path) and makes many rows of the */
 /* mesh matrix out of the filament[0]'s of each segment.  */
-make_many_meshes_from_path(path, Mlist, m_info, mstart, indsys)
-SPATH *path;
-MELEMENT **Mlist;
-Minfo *m_info;
-int mstart;  /* the mesh index at which to start creating meshes. */
-SYS *indsys;
+void make_many_meshes_from_path(SPATH *path, MELEMENT **Mlist, Minfo *m_info,
+    int mstart, SYS *indsys)
+/* int mstart;  the mesh index at which to start creating meshes. */
 {
   SPATH *selem, *temppath, *telem, *minipath;
   MELEMENT *m1, *m2, *m3, *mlist;
@@ -882,26 +870,20 @@ SYS *indsys;
   return mesh;
 }
 
-reset_vars(seg_count, minipath)
-int *seg_count;
-SPATH **minipath;
+void reset_vars(nt *seg_count, SPATH **minipath)
 {
   *seg_count = 0;
   free_spath(*minipath); 
   *minipath = NULL;
 }
 
-make_unconstrained(pm_info, mesh)
-Minfo *pm_info;
-int mesh;
+void make_unconstrained(Minfo *pm_info, int mesh)
 {
   make_m_info(pm_info, UNCONSTRAINED, mesh, -1, -1, -1, -1);
 }
 
-make_m_info(pm_info, type, mesh_num, constr_mesh, first, num_meshes, 
-	    other_mesh)
-Minfo *pm_info;
-int type, mesh_num, constr_mesh, first, num_meshes, other_mesh;
+void make_m_info(Minfo *pm_info, int type, int mesh_num, int constr_mesh,
+    int first, int num_meshes, int other_mesh)
 {
   pm_info->type = type;
   pm_info->mesh_num = mesh_num;
@@ -911,12 +893,8 @@ int type, mesh_num, constr_mesh, first, num_meshes, other_mesh;
   pm_info->other_mesh = other_mesh;
 }
 
-pick_unconstrained(Mlist, m_info, total_meshes, big_meshes, num_meshes)
-MELEMENT **Mlist;
-Minfo *m_info;
-int num_meshes;
-int big_meshes;
-int total_meshes;
+void pick_unconstrained(MELEMENT **Mlist, Minfo *m_info, int total_meshes,
+    int big_meshes, int num_meshes)
 {
   Minfo **m_undone, *m_one;
   int i, j, quit;
@@ -1000,10 +978,8 @@ int total_meshes;
     
 }  
 
-count_duplicates(m_undone, undone, Mlist, m_info)
-Minfo **m_undone, *m_undone;
-int undone;
-MELEMENT **Mlist;
+void count_duplicates(Minfo **m_undone, int undone, MELEMENT **Mlist,
+    Minfo *m_info)
 {
   int i,j,k,m;
   Minfo *m_one;
@@ -1031,8 +1007,7 @@ MELEMENT **Mlist;
   }
 }
 
-mesh_comp(m1, m2)
-MELEMENT *m1, *m2;
+void mesh_comp(MELEMENT *m1, MELEMENT *m2)
 {
   int same;
 
@@ -1052,16 +1027,13 @@ MELEMENT *m1, *m2;
   return same;
 }
     
-is_duplicated(m_one)
-Minfo m_one;
+int is_duplicated(Minfo m_one)
 {
   return (m_one.other_mesh != 1);
 }
 
-is_globally_unique(m_one, minimeshes, Mlist, num_mesh)
-Minfo m_one;
-MELEMENT **Mlist;
-int num_mesh, minimeshes;
+int is_globally_unique(Minfo m_one, int minimeshes, MELEMENT **Mlist,
+    int num_mesh)
 {
   int unique = TRUE;
   int i,j;
@@ -1073,9 +1045,7 @@ int num_mesh, minimeshes;
   return unique;
 }
 
-choose_this_mesh(m_begin, constraining_mesh, m_info)
-Minfo *m_begin, *m_info;
-int constraining_mesh;
+void choose_this_mesh(Minfo *m_begin, int constraining_mesh, Minfo *m_info)
 {
   int other_mesh = -1;
   int num_dups = 1000000;
@@ -1103,9 +1073,7 @@ int constraining_mesh;
 }
 
 /* get all the remaining undone big meshes based on constraing_mesh still -1*/
-get_undone(m_undone, undone)
-Minfo **m_undone;
-int undone;
+int get_undone(Minfo **m_undone, int undone)
 {
   int i, new_undone;
 
@@ -1117,10 +1085,7 @@ int undone;
   return new_undone;
 }
 
-is_locally_unique(m_undone, mini_mesh, Mlist)
-Minfo **m_undone;
-int mini_mesh;
-MELEMENT **Mlist;
+int is_locally_unique(Minfo **m_undone, int mini_mesh, MELEMENT **Mlist)
 {
   int i, k;
   int unique = TRUE;

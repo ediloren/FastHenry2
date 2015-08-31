@@ -414,11 +414,15 @@
  */
 
 #if spCOMPLEX AND spSEPARATED_COMPLEX_VECTORS
-#define IMAG_VECTORS    , iRHS, iSolution
-#define IMAG_RHS        , iRHS
+#define IMAG_VECTORS    , RealVector iRHS, RealVector iSolution
+#define IMAG_VECTORS_C  , iRHS, iSolution
+#define IMAG_RHS        , RealVector iRHS
+#define IMAG_RHS_C      , iRHS
 #else
 #define IMAG_VECTORS
+#define IMAG_VECTORS_C
 #define IMAG_RHS
+#define IMAG_RHS_C
 #endif
 
 
@@ -879,3 +883,13 @@ struct  MatrixFrame
     struct FillinListNodeStruct *LastFillinListNode;
 };
 typedef  struct MatrixFrame  *MatrixPtr;
+
+
+ElementPtr spcGetElement( MatrixPtr );
+ElementPtr spcGetFillin( MatrixPtr );
+ElementPtr spcFindElementInCol( MatrixPtr, ElementPtr*, int, int, BOOLEAN );
+ElementPtr spcCreateElement( MatrixPtr, int, int, ElementPtr*, BOOLEAN );
+void spcLinkRows( MatrixPtr );
+void spcRowExchange( MatrixPtr, int, int );
+void spcColExchange( MatrixPtr, int, int );
+

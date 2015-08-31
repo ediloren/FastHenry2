@@ -1,0 +1,8 @@
+Row 2:  nodein  to  nodeout
+Row 1:  nb1  to  nbout
+Impedance matrix for frequency = 100 2 x 2
+    0.00084887   +2.9132e-05j  -1.24186e-05  -4.29278e-06j 
+ -1.24184e-05  -4.28971e-06j   4.45435e-05  +1.31058e-05j 
+Impedance matrix for frequency = 1e+10 2 x 2
+    0.00102301      +2215.32j  -1.75202e-05      -438.452j 
+ -1.76329e-05      -438.177j   4.87277e-05      +1276.54j 

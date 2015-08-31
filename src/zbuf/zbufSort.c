@@ -37,11 +37,28 @@ of this software.
 
 int cnt;			/* used in setting up the depth graph */
 
+/* SRW */
+int diff_is_zero(double, double, double);
+int diff_is_negative(double, double, double);
+double dot(double*, double*);
+void crossProd(double*, double*, double*);
+double getPlane(double*, double*, double*, double*);
+int whichSide(face*, face*);
+int doLinesIntersect(double*, double*, double*, double*, double*);
+int face_is_inside(double**, int, double**, int, double*);
+int is1stFaceDeeper(face*, face*, double*, double, double*);
+int isThereBoxOverlap(face*, face*, double*);
+int chkCycle(face*, face*, FILE*);
+void dumpCycles(face**, int, FILE*);
+void setDepth(face*);
+face **depthSortFaces(face**, int);
+void getAdjGraph(face**, int, double*, double, double*);
+
+
 /*
   returns TRUE if difference of two doubles is within machine precision
 */
-int diff_is_zero(num1, num2, bias)
-double num1, num2, bias;
+int diff_is_zero(double num1, double num2, double bias)
 {
   double margin;
 
@@ -56,8 +73,7 @@ double num1, num2, bias;
   returns TRUE if diff. of two doubles is negative within machine precision
   - note that argument order is relevant
 */
-int diff_is_negative(num1, num2, bias)
-double num1, num2, bias;
+int diff_is_negative(double num1, double num2, double bias)
 {
   double margin;
 
@@ -70,8 +86,7 @@ double num1, num2, bias;
 /*
   returns the dot product
 */
-double dot(vec1, vec2)
-double *vec1, *vec2;
+double dot(double *vec1, double *vec2)
 {
   int i;
   double ret = 0.0;
@@ -83,8 +98,7 @@ double *vec1, *vec2;
 /*
   calculate the cross product out = in1Xin2
 */
-void crossProd(out, in1, in2)
-double *out, *in1, *in2;
+void crossProd(double *out, double *in1, double *in2)
 {
   out[0] = in1[1]*in2[2] - in1[2]*in2[1];
   out[1] = in1[2]*in2[0] - in1[0]*in2[2];
@@ -94,11 +108,10 @@ double *out, *in1, *in2;
 /*
   returns a normal and rhs for a plane given by three points
 */
-double getPlane(normal, p1, p2, p3)
-double *normal, *p1, *p2, *p3;
+double getPlane(double *normal, double *p1, double *p2, double *p3)
 {
   int i;
-  double dot(), v12[3], v13[3], norm;
+  double v12[3], v13[3], norm;
 
   /* set up side vectors */
   for(i = 0; i < 3; i++) {
@@ -118,12 +131,11 @@ double *normal, *p1, *p2, *p3;
 /*
   returns POS, NEG or SPLIT for which side face corners are rel to plane
 */
-int whichSide(fac, facplane)
-face *fac, *facplane;
+int whichSide(face *fac, face *facplane)
 {
   int i, neg, pos, zero;
   double value[MAXSIDES];      	/* holds values when subbed in plane equ */
-  double dot(), margin[MAXSIDES], temp[MAXSIDES];
+  double margin[MAXSIDES], temp[MAXSIDES];
 
   /* if planes are identical, return SAME right away */
   if(fac->rhs < facplane->rhs+MARGIN && fac->rhs > facplane->rhs-MARGIN && 
@@ -172,8 +184,8 @@ face *fac, *facplane;
   - if lines are parallel up to MARGIN, FALSE is returned
   - lines than hit at segment endpoints up to MARGIN return FALSE
 */
-int doLinesIntersect(isect, from1, to1, from2, to2)
-double *from1, *to1, *from2, *to2, *isect;
+int doLinesIntersect(double *isect, double *from1, double *to1,
+    double *from2, double *to2)
 {
   double A[2][2], b[2];
   double det, margin, temp1, temp2, margin1, margin2;
@@ -232,9 +244,8 @@ double *from1, *to1, *from2, *to2, *isect;
   returns TRUE if one panel is completely inside the other
   - does careful checks when vertices on one face are on verts, sides of other
 */
-int face_is_inside(corners1, ccnt1, corners2, ccnt2, com_pnt)
-double **corners1, **corners2, *com_pnt;
-int ccnt1, ccnt2;
+int face_is_inside(double **corners1, int ccnt1, double **corners2, int ccnt2,
+    double *com_pnt)
 {
   int i, j, k, n, ccnt, zeros, pos, neg, ncnt;
   double *sfrom, *sto, margin1, margin2, **refcor, **curcor;
@@ -302,9 +313,7 @@ int ccnt1, ccnt2;
   - checks for intersections between each line of fac and all sides of facref
   - also checks for complete overlap (one face inside the other)
 */
-int is1stFaceDeeper(fac, facref, view)
-face *fac, *facref;
-double *view;
+int is1stFaceDeeper(face *fac, face *facref, double *view)
 {
   int i, j, k, olap[2], is_overlap;
   static double **cproj = NULL;	/* corners of fac in facref's plane */
@@ -313,7 +322,7 @@ double *view;
   double minref[2], maxref[2];	/* bounding box coordinates */
   double minfac[2], maxfac[2];
   double x[3], y[3];		/* coordinates of x and y in facref plane */
-  double dot(), temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0, temp1;
+  double temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0, temp1;
   double margin1;
   double *cfr, *ctr, *cff, *ctf, avg[3];
   int all_pos, all_neg, intersect;
@@ -502,9 +511,8 @@ double *view;
   - checks for intersections between each line of fac and all sides of facref
   - also checks for complete overlap (one face inside the other)
 */
-int is1stFaceDeeper(fac, facref, view, rhs, normal)
-face *fac, *facref;
-double *view, rhs, *normal;
+int is1stFaceDeeper(face *fac, face *facref, double *view, double rhs,
+    double *normal)
 {
   int i, j, k, olap[2], is_overlap, isect_cnt;
   static double ***cproj = NULL;	/* corners of faces in view plane */
@@ -512,7 +520,7 @@ double *view, rhs, *normal;
   double minref[2], maxref[2];	/* bounding box coordinates */
   double minfac[2], maxfac[2];
   double x[3], y[3];		/* coordinates of x and y in facref plane */
-  double dot(), temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0, temp1;
+  double temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0, temp1;
   double margin1;
   double *cfr, *ctr, *cff, *ctf, avg[3], origin[3];
   double isect_avg[3], isect[3]; /* intersection points */
@@ -768,9 +776,7 @@ double *view, rhs, *normal;
 /*
   returns TRUE if bounding box of facref and fac (proj to facref's plane) insct
 */
-int isThereBoxOverlap(fac, facref, view)
-face *fac, *facref;
-double *view;
+int isThereBoxOverlap(face *fac, face *facref, double *view)
 {
   int i, j, olap[2];
   double cproj[MAXSIDES][3];	/* corners of fac in facref's plane */
@@ -779,7 +785,7 @@ double *view;
   double minref[2], maxref[2];	/* bounding box coordinates */
   double minfac[2], maxfac[2];
   double x[3], y[3];		/* coordinates of x and y in facref plane */
-  double dot(), temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0;
+  double temp, tvec[3], tvec1[3], margin, ovrlapmgn = 0.0;
 
   /* figure projections of fac's corners back to facref's plane rel to view */
   for(i = 0; i < fac->numsides; i++) {
@@ -914,9 +920,7 @@ double *view;
 /*
 #else
 
-int is1stFaceDeeper(first, second, view)
-face *first, *second;
-double *view;
+int is1stFaceDeeper(face *first, face *second, double *view)
 {
   return(isThereProjOverlap(first, second, view));
 }
@@ -926,9 +930,7 @@ double *view;
 /*
   recursive guts of below
 */
-int chkCycle(fac, ref, fp)
-face *fac, *ref;
-FILE *fp;
+int chkCycle(face *fac, face *ref, FILE *fp)
 {
   int b, i;
 
@@ -953,10 +955,7 @@ FILE *fp;
 /*
   checks for cycles in the depth graph - BROKEN(?)
 */
-void dumpCycles(faces, numfaces, file)
-face **faces;
-int numfaces;
-FILE *file;
+void dumpCycles(face **faces, int numfaces, FILE *file)
 {
   int i, f, j, b, *cycled, *cyclei, numcycle, cycle = FALSE;
   face *fp;
@@ -983,8 +982,7 @@ FILE *file;
 /*
   recursively sets depths of faces
 */
-void setDepth(fac)
-face *fac;
+void setDepth(face *fac)
 {
   int i;
 
@@ -1014,9 +1012,7 @@ face *fac;
   does a topological sorting of the faces using graph setup by getAdjGraph()
   - returns a new set of pointers with deepest (1st to print) face first
 */
-face **depthSortFaces(faces, numfaces)
-face **faces;
-int numfaces;
+face **depthSortFaces(face **faces, int numfaces)
 {
   int f, i, facefound;
   face **rfaces;
@@ -1050,10 +1046,9 @@ int numfaces;
 /*
   sets up adjacency graph pointers in faces: pntr in i to j => face i behind j
 */
-void getAdjGraph(faces, numfaces, view, rhs, normal)
-face **faces;			/* array of face pntrs, faces[0] head of lst */
-int numfaces;
-double *view, rhs, *normal;
+void getAdjGraph(face **faces, int numfaces, double *view, double rhs,
+    double *normal)
+/* face **faces;			array of face pntrs, faces[0] head of lst */
 {
   int numbehind, f, i, check;
   face *fpcur, *fpchk, **behind;
@@ -1091,7 +1086,10 @@ double *view, rhs, *normal;
       for(fpchk = faces[0], numbehind = i = 0; fpchk != NULL; 
 	  fpchk = fpchk->next, i++) {
 	if(fpchk == fpcur) continue;	/* a face can't be behind itself */
-	if(is1stFaceDeeper(fpcur, fpchk, view) == TRUE) { 
+/* SRW -- error (c.g. line 1069(
+	if(is1stFaceDeeper(fpcur, fpchk, view) == TRUE) { */
+	if(is1stFaceDeeper(fpcur, fpchk, view, rhs, normal) == TRUE) { 
+/* end fix */
 	  behind[numbehind++] = fpchk;
 	}
       }

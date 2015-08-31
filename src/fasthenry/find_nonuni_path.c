@@ -1,13 +1,51 @@
-#include "gp.h"
 #include "induct.h"
+#include "gp.h"
 
-SPATH *path_through_nonuni_gp(nodein, nodeout, plane)
-     NODES *nodein, *nodeout;
-     GROUNDPLANE *plane;
+/* SRW */
+SPATH *path_through_nonuni_gp(NODES*, NODES*, GROUNDPLANE*);
+void clear_nonuni_marks(G_nodes*);
+G_nodes *find_nearest_nonuni_node(double, double, double, Nonuni_gp*);
+SPATH *get_a_nonuni_path(G_nodes*, G_nodes*, Nonuni_gp*, Llist*);
+void sort_nonuni_choices(nonuni_choice_list*, int);
+Llist *add_ptr_to_list(void*, Llist*);
+int add_nonuni_choice(nonuni_choice_list*, Llist*, SEGMENT**, G_nodes*,
+    double);
+int is_ptr_in_list(void*, Llist*);
+Gcell *get_containing_cell(double, double, Gcell*);
+Gcell *get_containing_grid_cell(double, double, Gcell*);
+Gcell *get_containing_bi_cell(double, double, Gcell*);
+int is_in_cell(double, double, Gcell*);
+G_nodes *find_nearest_edge_node(double, double, Gcell*);
+G_nodes *scan_edge(double, double, G_nodes*, char);
+double get_node_dist(double, double, G_nodes*);
+double get_dist(double, double);
+int make_nonuni_Mlist(GROUNDPLANE*, MELEMENT**);
+void make_children_meshes(Gcell*, MELEMENT**, int*);
+void make_grid_children_meshes(Grid_2d*, MELEMENT**, int*);
+int make_leaf_mesh(Gcell*, MELEMENT**);
+MELEMENT *add_edge_segs_to_list(G_nodes*, G_nodes*, char, int, MELEMENT*);
+NODES *get_or_make_nearest_node(char*, int, double, double, double, SYS*,
+    Nonuni_gp*, NPATH*);
+NODES *make_new_node_with_nonuni(G_nodes*, char*, int, double, double, double,
+    SYS*, Nonuni_gp*);
+NODES *get_nonuni_node_from_list(G_nodes*, NPATH*);
+Llist *get_nodes_inside_rect(double, double, double, double, Gcell*, Llist**);
+Llist *bi_get_nodes_inside_rect(double, double, double, double, Gcell*,
+    Llist**);
+Llist *grid_get_nodes_inside_rect(double, double, double, double, Gcell*,
+    Llist**);
+void get_grid_indices(Gcell*, double, double, int*, int*);
+int intersection(double, double, double, double, double, double, double,
+    double);
+Llist *which_nodes_inside(double, double, double, double, Gcell*, Llist**);
+void free_Llist(Llist*);
+
+
+SPATH *path_through_nonuni_gp(NODES *nodein, NODES *nodeout, GROUNDPLANE *plane)
 {
   G_nodes *in, *out;
   Nonuni_gp *gp = plane->nonuni;
-  SPATH *path, *get_a_nonuni_path();
+  SPATH *path;
 
   if (nodein->gp_node != NULL)
     in = nodein->gp_node;
@@ -41,8 +79,7 @@ SPATH *path_through_nonuni_gp(nodein, nodeout, plane)
 }
 
 /* clear all the flags as NOT_CHECKED */
-clear_nonuni_marks(node)
-     G_nodes *node;
+void clear_nonuni_marks(G_nodes *node)
 {
   while(node != NULL) {
     node->flag = NOT_CHECKED;
@@ -51,9 +88,8 @@ clear_nonuni_marks(node)
 }
 
 /*find the nearest node in the leaf cell that contains this global xyz point */
-G_nodes *find_nearest_nonuni_node(xg, yg, zg, gp)
-     double xg, yg, zg;
-     Nonuni_gp *gp;
+G_nodes *find_nearest_nonuni_node(double xg, double yg, double zg,
+    Nonuni_gp *gp)
 {
   Gcell *nearest;
   G_nodes *node;
@@ -73,10 +109,8 @@ G_nodes *find_nearest_nonuni_node(xg, yg, zg, gp)
 
 }
      
-SPATH *get_a_nonuni_path(node, node_goal, plane, nodes_so_far)
-     G_nodes *node, *node_goal;
-     Nonuni_gp *plane;
-     Llist *nodes_so_far;
+SPATH *get_a_nonuni_path(G_nodes *node, G_nodes *node_goal, Nonuni_gp *plane,
+    Llist *nodes_so_far)
 {
 #define MAXchoices 4
   nonuni_choice_list choices[MAXchoices];
@@ -161,9 +195,7 @@ SPATH *get_a_nonuni_path(node, node_goal, plane, nodes_so_far)
 }
 
 /* sort choices DECREASING by rank.  Not the most efficient */
-sort_nonuni_choices(choices, num)
-     nonuni_choice_list *choices;
-     int num;
+void sort_nonuni_choices(nonuni_choice_list *choices, int num)
 {
   int i, j;
   nonuni_choice_list temp;
@@ -178,9 +210,7 @@ sort_nonuni_choices(choices, num)
 }
 	
 
-Llist *add_ptr_to_list(ptr, list)
-     void *ptr;
-     Llist *list;
+Llist *add_ptr_to_list(void *ptr, Llist *list)
 {
   Llist *new_llist;
 
@@ -193,12 +223,8 @@ Llist *add_ptr_to_list(ptr, list)
 }
 
 /* add or not a possible direction to search and rank it */
-int add_nonuni_choice(choice, nodes_so_far, segs, node, delta)
-     nonuni_choice_list *choice;
-     Llist *nodes_so_far;
-     SEGMENT **segs;
-     G_nodes *node;
-     double delta;
+int add_nonuni_choice(nonuni_choice_list *choice, Llist *nodes_so_far,
+    SEGMENT **segs, G_nodes *node, double delta)
 {
   if (segs != NULL && !is_ptr_in_list((void *)node, nodes_so_far)
       && node->flag == NOT_CHECKED) {
@@ -212,9 +238,7 @@ int add_nonuni_choice(choice, nodes_so_far, segs, node, delta)
     return 0;
 }
 
-is_ptr_in_list(ptr, list)
-     void *ptr;
-     Llist *list;
+int is_ptr_in_list(void *ptr, Llist *list)
 {
   while (list != NULL) {
     if (list->ptr == ptr)
@@ -226,12 +250,10 @@ is_ptr_in_list(ptr, list)
 }
       
 /* find the cell that contains this point */
-Gcell *get_containing_cell(x, y, cell)
-     double x,y;
-     Gcell *cell;
+Gcell *get_containing_cell(double x, double y, Gcell *cell)
 {
 
-  switch(get_children_type(cell)) {
+  switch(c_get_children_type(cell)) {
   case NONE:
     /* we are a leaf and the point is in us */
     return cell;
@@ -248,9 +270,7 @@ Gcell *get_containing_cell(x, y, cell)
 }
 
 /* figure out which of the grid of children contains (x,y) */
-Gcell *get_containing_grid_cell( x, y, cell )
-     double x, y;
-     Gcell *cell;
+Gcell *get_containing_grid_cell(double x, double y, Gcell *cell)
 {
   double xn, yn;  /* normalized coords */
   Grid_2d *grid;
@@ -284,9 +304,7 @@ Gcell *get_containing_grid_cell( x, y, cell )
 
 
 /* figure out which of the two children of cell contains (x,y) */
-Gcell *get_containing_bi_cell( x, y, cell)
-     double x, y;
-     Gcell *cell;
+Gcell *get_containing_bi_cell(double x, double y, Gcell *cell)
 {
   double xn, yn;  /* normalized coords */
   Bi *two_kids;
@@ -296,13 +314,13 @@ Gcell *get_containing_bi_cell( x, y, cell)
   xn = (x - cell->x0)/(cell->x1 - cell->x0);
   yn = (y - cell->y0)/(cell->y1 - cell->y0);
 
-  if (get_bi_type(two_kids) == NS) {
+  if (c_get_bi_type(two_kids) == NS) {
     if (yn > 0.5)
       return get_containing_cell(x,y,two_kids->child1);
     else
       return get_containing_cell(x,y,two_kids->child2);
   }
-  else if (get_bi_type(two_kids) == EW) {
+  else if (c_get_bi_type(two_kids) == EW) {
     if (xn > 0.5)
       return get_containing_cell(x,y,two_kids->child1);
     else
@@ -312,9 +330,7 @@ Gcell *get_containing_bi_cell( x, y, cell)
     GP_PANIC("get_containing bi_kids: Unknown bi_type!");
 }
 
-is_in_cell(x, y, cell)
-     double x,y;
-     Gcell *cell;
+int is_in_cell(double x, double y, Gcell *cell)
 {
   if (x < cell->x0 || x > cell->x1 || y < cell->y0 || y > cell->y1)
     return FALSE;
@@ -324,22 +340,20 @@ is_in_cell(x, y, cell)
 
 /* looks for the nearest node to x,y along the edges of the cell */
 /* Called by find_nearest_nonuni_node() and make_equiv_rect() */
-G_nodes *find_nearest_edge_node(x, y, cell)
-     double x,y;
-     Gcell *cell;
+G_nodes *find_nearest_edge_node(double x, double y, Gcell *cell)
 {
   double xn, yn;
-  double x0 = get_x0(cell);
-  double y0 = get_y0(cell);
-  double x1 = get_x1(cell);
-  double y1 = get_y1(cell);
+  double x0 = c_get_x0(cell);
+  double y0 = c_get_y0(cell);
+  double x1 = c_get_x1(cell);
+  double y1 = c_get_y1(cell);
   int is_y_bigger;
 
   G_nodes **nodes;
   int quad;  /* quadrant */
   char direction;
 
-  if (!is_leaf(cell))
+  if (!c_is_leaf(cell))
     GP_PANIC("find_nearest_edge_node: This isn't a leaf cell!");
 
   nodes = &(cell->bndry.nodes[0]);
@@ -396,10 +410,7 @@ G_nodes *find_nearest_edge_node(x, y, cell)
   return scan_edge(x, y, nodes[quad], direction);
 }
 
-G_nodes *scan_edge(x, y, node, dir)
-     double x,y;
-     G_nodes *node;
-     char dir;
+G_nodes *scan_edge(double x, double y, G_nodes *node, char dir)
 {
 
   /* scan adjacency direction from node on until we minimize distance */
@@ -421,22 +432,17 @@ G_nodes *scan_edge(x, y, node, dir)
   return node;
 }
 
-double get_node_dist(x,y,node)
-     double x,y;
-     G_nodes *node;
+double get_node_dist(double x, double y, G_nodes *node)
 {
   return get_dist(x - node->x, y - node->y);
 }
 
-double get_dist(x,y)
-     double x,y;
+double get_dist(double x, double y)
 {
   return sqrt(x*x + y*y);
 }
 
-int make_nonuni_Mlist(plane, pMlist)
-     GROUNDPLANE *plane;
-     MELEMENT **pMlist;
+int make_nonuni_Mlist(GROUNDPLANE *plane, MELEMENT **pMlist)
 {
   int counter = 0;
 
@@ -455,12 +461,9 @@ int make_nonuni_Mlist(plane, pMlist)
   return counter;
 }
 
-make_children_meshes(cell, pMlist, pcount)
-     Gcell *cell;
-     MELEMENT **pMlist;
-     int *pcount;
+void make_children_meshes(Gcell *cell, MELEMENT **pMlist, int *pcount)
 {
-  switch (get_children_type(cell)) {
+  switch (c_get_children_type(cell)) {
   case NONE:
     *pcount += make_leaf_mesh(cell, &(pMlist[*pcount]));
     break;
@@ -477,10 +480,7 @@ make_children_meshes(cell, pMlist, pcount)
   }
 }
 
-make_grid_children_meshes( grid, pMlist, pcount)
-     Grid_2d *grid;
-     MELEMENT **pMlist;
-     int *pcount;
+void make_grid_children_meshes(Grid_2d *grid, MELEMENT **pMlist, int *pcount)
 {
   int i, j;
 
@@ -489,16 +489,14 @@ make_grid_children_meshes( grid, pMlist, pcount)
       make_children_meshes( grid->kids[i][j], pMlist, pcount);
 }
     
-make_leaf_mesh(cell, pMlist)
-     Gcell *cell;
-     MELEMENT **pMlist;
+int make_leaf_mesh(Gcell *cell, MELEMENT **pMlist)
 {
   G_nodes **nodes;
   int bad;
 
   *pMlist = NULL;
 
-  if (!is_leaf(cell))
+  if (!c_is_leaf(cell))
     GP_PANIC("make_leaf_mesh: not a leaf");
 
   nodes = cell->bndry.nodes;
@@ -508,7 +506,7 @@ make_leaf_mesh(cell, pMlist)
     /* this is a hole on an edge.  If it's not on an edge, we
        must report an error since we haven't implemented a hole consisting
        of multiple cells (only one mesh for the lot) */
-    if (!is_hole(cell))
+    if (!c_is_hole(cell))
       GP_PANIC("make_leaf_mesh: NULL segments bordering non-hole cell!");
 
     bad = FALSE;
@@ -543,11 +541,8 @@ make_leaf_mesh(cell, pMlist)
 
 }
 
-MELEMENT *add_edge_segs_to_list(node0, node1, dir, signofelem, mfirst)
-     G_nodes *node0, *node1;
-     char dir;
-     int signofelem;
-     MELEMENT *mfirst;
+MELEMENT *add_edge_segs_to_list(G_nodes *node0, G_nodes *node1, char dir,
+    int signofelem, MELEMENT *mfirst)
 {
   G_nodes *node;
   MELEMENT *plist = mfirst;
@@ -570,18 +565,12 @@ MELEMENT *add_edge_segs_to_list(node0, node1, dir, signofelem, mfirst)
   
 }
 
-NODES *get_or_make_nearest_node(name, index, x, y, z, indsys, gp, node_list)
-     char *name;
-     int index;
-     double x,y,z;
-     SYS *indsys;
-     Nonuni_gp *gp;
-     NPATH *node_list;
+NODES *get_or_make_nearest_node(char *name, int index, double x, double y,
+    double z, SYS *indsys, Nonuni_gp *gp, NPATH *node_list)
 {
   G_nodes *nonuni_node;
   NODES *node;
   NPATH *nodeL;
-  NODES *makenode();
 
   nonuni_node = find_nearest_nonuni_node(x, y, z, gp);
 
@@ -608,16 +597,10 @@ NODES *get_or_make_nearest_node(name, index, x, y, z, indsys, gp, node_list)
 }
 
 /* make a new NORMAL node that is derived from a nonuni_node */
-NODES *make_new_node_with_nonuni(nonuni_node, name, index, x, y, z, indsys, gp)
-     G_nodes *nonuni_node;
-     char *name;
-     int index;
-     double x,y,z;
-     SYS *indsys;
-     Nonuni_gp *gp;
+NODES *make_new_node_with_nonuni(G_nodes *nonuni_node, char *name, int index,
+    double x, double y, double z, SYS *indsys, Nonuni_gp *gp)
 {
   NODES *node;
-  NODES *makenode();
 
   /* make a new one */
   node = makenode(name, index, x, y, z, NORMAL, indsys);
@@ -630,9 +613,7 @@ NODES *make_new_node_with_nonuni(nonuni_node, name, index, x, y, z, indsys, gp)
 /* Note: you used to compare getrealnode(nodeL->node)->gp_node != nonuni_node
    but you took out getrealnode for equiv_rect. Hopefully that won't 
    break anything */
-NODES *get_nonuni_node_from_list(nonuni_node, nodeL)
-    G_nodes *nonuni_node;
-    NPATH *nodeL;    
+NODES *get_nonuni_node_from_list(G_nodes *nonuni_node, NPATH *nodeL)
 {
   
   while(nodeL != NULL && (nodeL->node)->gp_node != nonuni_node)
@@ -646,10 +627,8 @@ NODES *get_nonuni_node_from_list(nonuni_node, nodeL)
 
 /* return a linked list of all the nodes of the children of 
    this cell that are inside the rectangle with corners (x0,y0),(x1,y1) */
-Llist *get_nodes_inside_rect(x0, y0, x1, y1, cell, endoflist)
-     double x0,y0,x1,y1;
-     Gcell *cell;
-     Llist **endoflist;
+Llist *get_nodes_inside_rect(double x0, double y0, double x1, double y1,
+    Gcell *cell, Llist **endoflist)
 {
   Llist *nodelist;
 
@@ -657,7 +636,7 @@ Llist *get_nodes_inside_rect(x0, y0, x1, y1, cell, endoflist)
   if (intersection(x0,y0,x1,y1,cell->x0,cell->y0,cell->x1,cell->y1) == FALSE)
     return NULL;
 
-  switch(get_children_type(cell)) {
+  switch(c_get_children_type(cell)) {
   case NONE:
     /* we are a leaf. figure which nodes are inside */
     return which_nodes_inside(x0,y0,x1,y1,cell, endoflist);
@@ -673,10 +652,8 @@ Llist *get_nodes_inside_rect(x0, y0, x1, y1, cell, endoflist)
   }
 }
 
-Llist *bi_get_nodes_inside_rect( x0, y0, x1, y1, cell, endoflist)
-    double x0, y0, x1, y1;
-    Gcell *cell;
-    Llist **endoflist;
+Llist *bi_get_nodes_inside_rect(double x0, double y0, double x1, double y1,
+    Gcell *cell, Llist **endoflist)
 {
   Bi *bi = (Bi *)(cell->children);
   Llist *one;
@@ -705,10 +682,8 @@ Llist *bi_get_nodes_inside_rect( x0, y0, x1, y1, cell, endoflist)
   
 }
 
-Llist *grid_get_nodes_inside_rect( x0, y0, x1, y1, cell, endoflist)
-    double x0, y0, x1, y1;
-    Gcell *cell;
-    Llist **endoflist;
+Llist *grid_get_nodes_inside_rect(double x0, double y0, double x1, double y1,
+    Gcell *cell, Llist **endoflist)
 {
   Grid_2d *grid = (Grid_2d *)cell->children;
   Llist *current;
@@ -745,10 +720,7 @@ Llist *grid_get_nodes_inside_rect( x0, y0, x1, y1, cell, endoflist)
 }
 
 /* returns the cell indices that contain (x,y) */
-get_grid_indices(cell, x, y, pi, pj)
-    Gcell *cell;
-    double x,y;
-    int *pi, *pj;
+void get_grid_indices(Gcell *cell, double x, double y, int *pi, int *pj)
 {
   Grid_2d *grid = (Grid_2d *)cell->children;
   double xn, yn;  /* normalized coords */
@@ -775,11 +747,14 @@ get_grid_indices(cell, x, y, pi, pj)
 
 /* returns TRUE if the two rectangles overlap.  
    lower left=(x0,y0) upper right = (x1,y1) */
-intersection(x0,y0,x1,y1,cx0,cy0,cx1,cy1)
-     double x0,y0,x1,y1,cx0,cy0,cx1,cy1;
+int intersection(double x0, double y0, double x1, double y1,
+    double cx0, double cy0, double cx1, double cy1)
 {
   if ((x0 < cx0 && x1 < cx0) || (x0 > cx1 && x1 > cx1)
-      && (y0 < cy0 && y1 < cy0) || (y0 > cy1 && y1 > cy1)) 
+/* SRW - fixed error here 
+      && (y0 < cy0 && y1 < cy0) || (y0 > cy1 && y1 > cy1))
+*/
+      || (y0 < cy0 && y1 < cy0) || (y0 > cy1 && y1 > cy1))
     return FALSE;
   else
     return TRUE;
@@ -787,14 +762,12 @@ intersection(x0,y0,x1,y1,cx0,cy0,cx1,cy1)
 }
 
 /* returns a linked list of the nodes of this cell contained in the rectangle*/
-Llist *which_nodes_inside(x0,y0,x1,y1,cell, endoflist)
-    double x0, y0, x1, y1;
-    Gcell *cell;
-    Llist **endoflist;
+Llist *which_nodes_inside(double x0, double y0, double x1, double y1,
+    Gcell *cell, Llist **endoflist)
 {
   Llist *list = NULL;
 
-  if (!is_leaf(cell))
+  if (!c_is_leaf(cell))
     GP_PANIC("which_nodes_inside: non-leaf cell!");
 
   /* is SW inside */
@@ -828,8 +801,7 @@ Llist *which_nodes_inside(x0,y0,x1,y1,cell, endoflist)
   return list;
 }
 
-free_Llist(list)
-     Llist *list;
+void free_Llist(Llist *list)
 {
   Llist *node;
 

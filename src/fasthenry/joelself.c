@@ -11,14 +11,49 @@
   ? 0 : (  ((x) > (y)) ? 1 : -1 )  )
 
 #define nearzero(x) (fabs(x) < EPS)
+
+/* SRW */
+double self(double, double, double);
+int edges_parallel(FILAMENT*, FILAMENT*, double*, int*);
+void get_wid(FILAMENT*, double*);
+void get_height(FILAMENT*, double*, double*);
+double exact_mutual(FILAMENT*, FILAMENT*, int, double*, double*,
+    enum degen_type, enum degen_type);
+void fill_4(double*, double, double, double);
+double eval_eq(double, double, double, double);
+double log_term(double, double, double, double, double);
+double tan_term(double, double, double, double, double);
+int lookup(FILAMENT*, FILAMENT*, int, double*, double*, double*, double*,
+    int*, Table***, int*);
+void fill_dims(FILAMENT*, FILAMENT*, double*, double*, double*, int);
+void fill_dims_seg(FILAMENT*, FILAMENT*, double*, double*, double*, int);
+int find_dims(double*, int, Table**, double*, int*, Table***);
+void put_in_table(FILAMENT*, FILAMENT*, int, double, double*, int, Table**,
+    int);
+void init_table(void);
+int get_table_mem(void);
+void destroy_table(void);
+char *AllocAnEntry(AllocInfo*);
+void DestroyEntries(AllocInfo*);
+int MemoryForEntries(AllocInfo*);
+double brick_to_brick(double, double, double, double, double, double, double,
+    double, double);
+double flat_to_flat_tape(double, double, double, double, double, double,
+    double);
+double eval_eq_tape(double, double, double, double);
+double flat_to_skinny_tape(double, double, double, double, double, double,
+    double);
+double eval_eq_tape2(double, double, double, double);
+double tan_tape(double, double, double, double);
+double tape_to_fil(double, double, double, double, double, double);
+double brick_to_fil(double, double, double, double, double, double, double);
+
   
 /* self inductance */
-double self(W,L,T)
-double W,L,T; 
+double self(double W, double L, double T)
 {
 
     double w,t,aw,at,ar,r, z;
-    double asinh(), atan(), sqrt(); 
 
     w = W/L; 
     t = T/L; 
@@ -45,11 +80,9 @@ double W,L,T;
 }
 
 /* This assumes the lengths of the fils are parallel and returns 1 if the 
-   side faces are parallel also */
-edges_parallel(fil_j, fil_m, wid1, whperp)
-FILAMENT *fil_j, *fil_m;
-int *whperp;
-double *wid1;
+   side faces are parallel also
+*/
+int edges_parallel(FILAMENT *fil_j, FILAMENT *fil_m, double *wid1, int *whperp)
 {
   double *wid_j = fil_j->segm->widthdir;
   double *wid_m = fil_m->segm->widthdir;
@@ -89,9 +122,7 @@ double *wid1;
 }
 
 /* calculates direction of width if not specified */
-get_wid(fil, wid)
-FILAMENT *fil;
-double *wid;
+void get_wid(FILAMENT *fil, double *wid)
 {
 
   double wx,wy,wz;
@@ -124,9 +155,7 @@ double *wid;
 }
 
 /* calculates direction of height */
-get_height(fil, wid, height)
-FILAMENT *fil;
-double *wid, *height;
+void get_height(FILAMENT *fil, double *wid, double *height)
 {
   double wx = wid[XX];
   double wy = wid[YY];
@@ -147,12 +176,11 @@ double *wid, *height;
 }
 
 /* exact mutual inductance based on C. Hoer and C.Love, 
-   Journal of the National Bureau of Standards-C,  Vol. 69C, p 127-137, 1965.*/
-double exact_mutual(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m)
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double *x_j, *y_j;  /* unit vectors in the fil coord sys */
-enum degen_type deg_j, deg_m;
+   Journal of the National Bureau of Standards-C,  Vol. 69C, p 127-137, 1965.
+*/
+double exact_mutual(FILAMENT *fil_j, FILAMENT *fil_m, int whperp, double *x_j,
+    double *y_j, enum degen_type deg_j, enum degen_type deg_m)
+/* x_j, y_j are unit vectors in the fil coord sys */
 {
   double z_j[3];  /* unit vectors in the filament coord sys*/
   double origin[3];
@@ -161,7 +189,7 @@ enum degen_type deg_j, deg_m;
   double endx, endy, endz;
   int sign, sign2;
   double q[4], r[4], s[4];
-  double totalM, eval_eq();
+  double totalM;
   int i,j,k;
   int a_deg, b_deg, c_deg, d_deg;
   extern int forced;
@@ -301,8 +329,7 @@ enum degen_type deg_j, deg_m;
 /*  return sign*MUOVER4PI*totalM/(a*b*c*d); */
 }
 
-fill_4(vec, E,a,d)
-double *vec, E,a,d;
+void fill_4(double *vec, double E, double a, double d)
 {
   vec[0] = E - a;
   vec[1] = E + d - a;
@@ -310,8 +337,7 @@ double *vec, E,a,d;
   vec[3] = E;
 }
 
-double eval_eq(x,y,z,ref_len)
-double x,y,z, ref_len;
+double eval_eq(double x, double y, double z, double ref_len)
 {
   static double one_60 = 1.0/60.0;
   static double one_6 = 1.0/6.0;
@@ -320,7 +346,6 @@ double x,y,z, ref_len;
   double len, xsq, ysq, zsq;
   int num_nearzero;
   int num_nearzero_sq;
-  double log_term(), tan_term();
   double one_over_ref_len;
   double one_over_ref_len_sq; 
 
@@ -356,16 +381,14 @@ double x,y,z, ref_len;
   return retval;
 }
 
-double log_term(x, xsq, ysq, zsq, len)
-double x, xsq, ysq, zsq, len;
+double log_term(double x, double xsq, double ysq, double zsq, double len)
 {
   double retval;
   retval = ((6*zsq - ysq)*ysq - zsq*zsq)*x*log( (x + len)/sqrt(ysq + zsq));
   return retval;
 }
 
-double tan_term(x,y,z,zsq,len)
-double x,y,z,zsq,len;
+double tan_term(double x, double y, double z, double zsq, double len)
 {
   double retval;
   retval =  x*y*z*zsq*atan(x*y/(z*len));
@@ -373,8 +396,7 @@ double x,y,z,zsq,len;
 }
 
 /*  now a macro
-nearzero(x)
-double x;
+int nearzero(double x)
 {
   return (fabs(x) < EPS);
 }
@@ -395,16 +417,11 @@ AllocInfo double_alloc;
 
 /* lookup mutual term in table */
 
-lookup(fil_j, fil_m, whperp, widj, heightj, retval, dims, dim_count, lastptr,
-       p_num_dims)
+int lookup(FILAMENT *fil_j, FILAMENT *fil_m, int whperp, double *widj,
+    double *heightj, double *retval, double *dims, int *dim_count,
+    Table ***lastptr, int *p_num_dims)
 
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double *widj, *heightj;   /* width and height vectors */
-double *retval;
-double *dims;
-Table ***lastptr;
-int *dim_count, *p_num_dims;
+/* widjm heightj arewidth and height vectors */
 {
   int num_dims = NUM_DIMS;
   Table **s_table;
@@ -457,10 +474,10 @@ int *dim_count, *p_num_dims;
 
 /* this fills the vector dims with the dimension information for fil_j
    and fil_m to later determine if the pair has been previous computed and
-   is in the lookup table.  All dims should be positive!! */
-fill_dims(fil_j, fil_m, widthj, heightj, dims,num_dims)
-FILAMENT *fil_j, *fil_m;
-double *dims, *widthj, *heightj;
+   is in the lookup table.  All dims should be positive!!
+*/
+void fill_dims(FILAMENT *fil_j, FILAMENT *fil_m, double *widthj,
+    double *heightj, double *dims, int num_dims)
 {
   int j_first;
   int is_same;
@@ -533,12 +550,13 @@ double *dims, *widthj, *heightj;
     exit(1);
   }
 }
+
 /* this fills the vector dims with the dimension information for fil_j
    and fil_m to later determine if the pair has been previous computed and
-   is in the lookup table.  It is for fils on the same seg only. */
-fill_dims_seg(fil_j, fil_m, widthj, heightj, dims,num_dims)
-FILAMENT *fil_j, *fil_m;
-double *dims, *widthj, *heightj;
+   is in the lookup table.  It is for fils on the same seg only.
+*/
+void fill_dims_seg(FILAMENT *fil_j, FILAMENT *fil_m, double *widthj,
+    double *heightj, double *dims, int num_dims)
 {
   int j_first;
   int is_same;
@@ -585,8 +603,7 @@ double *dims, *widthj, *heightj;
 }
   
 /*
-int compare(x, y, eps)
-double x,y,eps;
+int compare(double x, double y, double eps)
 {
   if ( (x==0 && y==0) || (fabs(x - y)/fabs(x+y) < eps))
     return 0;
@@ -597,12 +614,8 @@ double x,y,eps;
 }
 */
 
-find_dims(dims, num_dims, a_table, retval, ret_dim_count, ret_lastptr)
-double *dims;
-int num_dims;
-double *retval;
-int *ret_dim_count;
-Table ***ret_lastptr, **a_table;
+int find_dims(double *dims, int num_dims, Table **a_table, double *retval,
+    int *ret_dim_count, Table ***ret_lastptr)
 {
   Table *entry, **lastptr;
   int is_same, maybe_its_there;
@@ -650,13 +663,8 @@ Table ***ret_lastptr, **a_table;
   return 0;
 }
       
-put_in_table(fil_j, fil_m, whperp, mutterm, dims, dim_count, lastptr, num_dims)
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double mutterm;
-double *dims;
-int dim_count, num_dims;
-Table **lastptr;
+void put_in_table(FILAMENT *fil_j, FILAMENT *fil_m, int whperp, double mutterm,
+    double *dims, int dim_count, Table **lastptr, int num_dims)
 {
   Table *entry;
   int i;
@@ -692,7 +700,7 @@ Table **lastptr;
 #define ALLOCBLOCK 256 
 
 /* initialize info for allocating table so we can free it later */
-init_table()
+void init_table(void)
 {
   table_alloc.size = sizeof(Table);
   table_alloc.blocksize = ALLOCBLOCK;
@@ -704,21 +712,20 @@ init_table()
   double_alloc.head = NULL;
 }
 
-get_table_mem()
+int get_table_mem(void)
 {
   return MemoryForEntries(&table_alloc) + MemoryForEntries(&double_alloc);
 }
 
-destroy_table()
+void destroy_table(void)
 {
-  DestroyEntries(table_alloc);
-  DestroyEntries(double_alloc);
+  DestroyEntries(&table_alloc);
+  DestroyEntries(&double_alloc);
 }
 
 
 /* allocates table entries in blocks for more efficient memory */
-char *AllocAnEntry(allocptr)
-AllocInfo *allocptr;
+char *AllocAnEntry(AllocInfo *allocptr)
 {
   int blocksize, size;
   AllocList *elem;
@@ -744,12 +751,11 @@ AllocInfo *allocptr;
   }
 }
 
-DestroyEntries(allocinfo)
-AllocInfo allocinfo;
+void DestroyEntries(AllocInfo *allocinfo)
 {
   AllocList *lastelem, *head;
 
-  head = allocinfo.head;
+  head = allocinfo->head;
 
   while(head != NULL) {
     lastelem = head;
@@ -758,12 +764,11 @@ AllocInfo allocinfo;
     free(lastelem);
   }
 
-  allocinfo.head = NULL;
-  allocinfo.elems_left = 0;
+  allocinfo->head = NULL;
+  allocinfo->elems_left = 0;
 }
 
-MemoryForEntries(allocptr)
-AllocInfo *allocptr;
+int MemoryForEntries(AllocInfo *allocptr)
 {
   AllocList *entry;
   int count = 0;
@@ -774,12 +779,11 @@ AllocInfo *allocptr;
   return count*allocptr->blocksize*allocptr->size;
 }
 
-double brick_to_brick(E,a,d,P,b,c,l3,l1,l2)
-double E,a,d,P,b,c,l3,l1,l2;
+double brick_to_brick(double E, double a, double d, double P, double b,
+    double c, double l3, double l1, double l2)
 {
   double q[4], r[4], s[4], totalM;
   int i,j,k, sign2;
-  double eval_eq();
 
   fill_4(q, E,a,d);
   fill_4(r, P,b,c);
@@ -797,12 +801,11 @@ double E,a,d,P,b,c,l3,l1,l2;
   return totalM;
 }
 
-double flat_to_flat_tape(E,a,d,P,l3,l1,l2)
-double E,a,d,P,l3,l1,l2;
+double flat_to_flat_tape(double E, double a, double d, double P, double l3,
+    double l1, double l2)
 {
   double q[4], s[4], totalM;
   int i,k, sign2;
-  double eval_eq_tape();
 
   fill_4(q, E,a,d);
   fill_4(s, l3,l1,l2);
@@ -818,8 +821,7 @@ double E,a,d,P,l3,l1,l2;
   return totalM;
 }
 
-double eval_eq_tape(x,y,z,ref_len)
-double x,y,z, ref_len;
+double eval_eq_tape(double x, double y, double z, double ref_len)
 {
   static double one_6 = 1.0/6.0;
   static double one_3 = 1.0/3.0;
@@ -852,12 +854,11 @@ double x,y,z, ref_len;
   return retval;
 }
 
-double flat_to_skinny_tape(E,a,P,c,l3,l1,l2)
-double E,a,P,c,l3,l1,l2;
+double flat_to_skinny_tape(double E, double a, double P, double c, double l3,
+    double l1, double l2)
 {
   double q[2], r[2], s[4], totalM;
   int i,j,k, sign2;
-  double eval_eq_tape2();
 
   q[0] = E;
   q[1] = E - a;
@@ -877,8 +878,7 @@ double E,a,P,c,l3,l1,l2;
   return totalM;
 }
 
-double eval_eq_tape2(x,y,z,ref_len)
-double x,y,z, ref_len;
+double eval_eq_tape2(double x, double y, double z, double ref_len)
 {
   static double one_6 = 1.0/6.0;
   static double one_3 = 1.0/3.0;
@@ -887,7 +887,6 @@ double x,y,z, ref_len;
   double retval;
   double len, xsq, ysq, zsq;
   double one_over_ref_len, one_over_ref_len_sq;
-  double tan_tape();
   int nzxsq, nzysq, nzzsq;
 
   one_over_ref_len = 1.0/MAX(ref_len, (fabs(x) + fabs(y) + fabs(z)));
@@ -928,14 +927,13 @@ double x,y,z, ref_len;
   return retval;
 }
 
-double tan_tape(x,y,z,len)
-double x,y,z,len;
+double tan_tape(double x, double y, double z, double len)
 {
   return atan(x*y/(z*len));
 }
 
-double tape_to_fil(E,a,P,l3,l1,l2)
-double E,a,P,l3,l1,l2;
+double tape_to_fil(double E, double a, double P, double l3, double l1,
+    double l2)
 {
   /* I have not implemented this degenerate case.  It should be done
      by fourfil() and never get to this point */
@@ -943,8 +941,8 @@ double E,a,P,l3,l1,l2;
   exit(1);
 }
 
-double brick_to_fil(E,a,P,b,l3,l1,l2)
-double E,a,P,b,l3,l1,l2;
+double brick_to_fil(double E, double a, double P, double b, double l3,
+    double l1, double l2)
 {
   /* I have not implemented this degenerate case.  It should be done
      by fourfil() and never get to this point */

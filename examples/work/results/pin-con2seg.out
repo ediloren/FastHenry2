@@ -1,0 +1,319 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:45 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../pin-con2seg.inp
+Title:
+***Two segments from:  PACKAGE INDUCTANCE - 35 of 68 pins***
+
+all lengths multiplied by 2.54e-05 to convert to meters
+Total number of filaments before multipole refine: 30
+Total number of filaments after multipole refine: 240
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 3
+  Total number of filaments: 240
+No expansions at level 3 (lowest)
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 0 
+Number of filaments:        240
+Number of segments:          16
+Number of nodes:             18
+Number of meshes:           226
+          ----from tree:                   2 
+          ----from planes: (before holes)  0 
+Number of conductors:         2   (rows of matrix in Zc.mat) 
+Number of columns:            2   (columns of matrix in Zc.mat) 
+Number of real nodes:        18
+filling M...
+filling R and L...
+Total Memory allocated: 538 kilobytes
+Frequency = 10
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 21.5443
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 46.4159
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 100
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 215.443
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 464.159
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 1000
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 2154.43
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 4641.59
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 10000
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 21544.3
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 
+Frequency = 46415.9
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 
+Frequency = 100000
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 
+Frequency = 215443
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 
+Frequency = 464159
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 
+Frequency = 1e+06
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 
+Frequency = 2.15443e+06
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 
+Frequency = 4.64159e+06
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 
+Frequency = 1e+07
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 
+Frequency = 2.15443e+07
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 
+Frequency = 4.64159e+07
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 
+Frequency = 1e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
+Frequency = 2.15443e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 4.64159e+08
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 1e+09
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 2.15443e+09
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 4.64159e+09
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 1e+10
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 2.15443e+10
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 4.64159e+10
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 1e+11
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 2.15443e+11
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 4.64159e+11
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+Frequency = 1e+12
+Forming sparse matrix preconditioner..
+conductor 0 from node n17b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+conductor 1 from node n16b
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0
+        Multipole setup 0.01115
+        Scanning graph  5e-06
+        Form A M and Z  7.5e-05
+        form M'ZM       2.6e-05
+        Form precond    0.00778
+        GMRES time      0.244076
+   Total:               0.263112

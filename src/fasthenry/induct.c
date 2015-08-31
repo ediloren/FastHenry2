@@ -1,17 +1,13 @@
 /* This is the main part of the code */
 
 #include "induct.h"
+#include "sparse/spMatrix.h"
 #include <string.h>
-
-/* these are missing in some math.h files */
-extern double asinh();
-extern double atanh();
+#include <ctype.h>
 
 #define MAXPRINT 1
 #define MAXCHARS 400
 #define TIMESIZE 10
-
-static int notblankline();
 
 FILE *fp, *fp2, *fp3, *fptemp, *fb, *fROM;
 int num_exact_mutual;
@@ -31,16 +27,44 @@ int machine = 0000;
 int machine = 1000;
 #endif
 
+/* SRW */
+charge *assignFil(SEGMENT*, int*, charge*);
+double **MatrixAlloc(int, int, int);
+void fillA(SYS*);
+void old_fillM(SYS*);
+void fillZ(SYS*);
 #if SUPERCON == ON
-void fillZ_diag(SYS *indsys, double omega);
-void set_rvals(SYS *indsys, double omega);
+void fillZ_diag(SYS*, double);
+void set_rvals(SYS*, double);
 #endif
+double resistance(FILAMENT*, double);
+/* int matherr(struct exception*); */
+int countlines(FILE*);
+static int local_notblankline(char*);
+void savemats(SYS*);
+void savecmplx(FILE*, char*, CX**, int, int);
+void savecmplx2(FILE*, char*, CX**, int, int);
+void formMZMt(SYS*);
+void oldformMZMt(SYS*);
+char* MattAlloc(int, int);
+void formMtrans(SYS*);
+void compare_meshes(MELEMENT*, MELEMENT*);
+void cx_dumpMat_totextfile(FILE*, CX**, int, int);
+void dumpMat_totextfile(FILE*, double**, int, int);
+void dumpVec_totextfile(FILE*, double*, int);
+void fillMrow(MELEMENT**, int, double*);
+void dump_to_Ycond(FILE*, int, SYS*);
+void saveCarray(FILE*, char*, double**, int, int);
+int nnz_inM(MELEMENT**, int);
+void dump_M_to_text(FILE*, MELEMENT**, int, int);
+void dump_M_to_matlab(FILE*, MELEMENT**, int, int, char*);
+void pick_ground_nodes(SYS*);
+int pick_subset(strlist*, SYS*);
+void concat4(char*, char*, char*, char*);
 
 
 int
-main(argc, argv)
-int argc;
-char *argv[];
+main(int argc, char **argv)
 {
 
   double width, height, length, freq, freqlast;
@@ -72,7 +96,6 @@ char *argv[];
   int actual_order;
 
   int num_planes, nonp, planemeshes, tree_meshes;           /* CMS 6/7/92 */
-  void fillgrids();                               /* function in addgroundplane.c */
 
   int *meshsect;
   double fmin, fmax, logofstep;
@@ -82,7 +105,7 @@ char *argv[];
   extern long memcount;
 
   charge *chglist, *chgend, chgdummy;
-  ssystem *sys, *SetupMulti();
+  ssystem *sys;
 
   memcount = 0;
 
@@ -361,7 +384,7 @@ char *argv[];
     if (!dont_form_Z)
       indsys->Z = MatrixAlloc(num_fils, num_fils, sizeof(double));
 
-    /* let's save space and allocate this later
+    /* let's save space and allocate this later */
     /* indsys->MtZM = (CX **)MatrixAlloc(num_mesh, num_mesh, sizeof(CX)); */
   }
   indsys->FinalY = (CX **)MatrixAlloc(num_extern, num_sub_extern, sizeof(CX));
@@ -451,7 +474,7 @@ char *argv[];
   if (indsys->opts->debug == ON) 
     printf("Time to Form M and Z: %lg\n",dtime);
 
-  printf("Total Memory allocated: %d kilobytes\n",memcount/1024);
+  printf("Total Memory allocated: %ld kilobytes\n",memcount/1024);
 
   if (indsys->opts->debug == ON) 
     printf("Memory used and freed by lookup table: %d kilobytes\n",
@@ -528,12 +551,12 @@ char *argv[];
       formMLMt(indsys);      /*form (M^t)*(L)*M and store in indys->MtZM*/
       
 
-      actual_order = ArnoldiROM(B, C, (double **)NULL, MRMt, num_mesh,
+      actual_order = ArnoldiROM(B, C, (double **)NULL, (char**)MRMt, num_mesh,
                                 num_extern, num_extern, opts->orderROM, 
                                 realMatVect, indsys, sys, chglist);
     }
     else if (indsys->opts->mat_vect_prod == MULTIPOLE)
-      actual_order = ArnoldiROM(B, C, (double **)NULL, MRMt, num_mesh, 
+      actual_order = ArnoldiROM(B, C, (double **)NULL, (char**)MRMt, num_mesh, 
                                 num_extern, num_extern, opts->orderROM, 
                                 realComputePsi, indsys, sys, chglist); 
 
@@ -762,14 +785,14 @@ char *argv[];
 	    x0[k] = vect[k];
 	}
 	else if (indsys->precond_type == SPARSE)
-	  spSolve(indsys->sparMatrix, x0, x0);
+	  spSolve(indsys->sparMatrix, (spREAL*)x0, (spREAL*)x0);
 	  
       }
       else 
         if (!dont_form_Z)
           cx_lu_solve(MtZM, x0, b, num_mesh);
         else 
-          spSolve(indsys->sparMatrix, b, x0);
+          spSolve(indsys->sparMatrix, (spREAL*)b, (spREAL*)x0);
 
       if (opts->dumpMats & GRIDS)
 	/* Do stuff to look at groundplane current distribution */
@@ -861,10 +884,7 @@ char *argv[];
 }
 
 /* this will divide a rectangular segment into many filaments */
-charge *assignFil(seg, num_fils, chgptr)
-SEGMENT *seg;
-int *num_fils;
-charge *chgptr;
+charge *assignFil(SEGMENT *seg, int *num_fils, charge *chgptr)
 {
 
   int i,j,k;
@@ -1133,8 +1153,7 @@ charge *chgptr;
 }
 
 
-double **MatrixAlloc(rows, cols, size)
-int rows, cols, size;
+double **MatrixAlloc(int rows, int cols, int size)
 {
 
   double **temp;
@@ -1156,8 +1175,7 @@ int rows, cols, size;
   return(temp);
 }
 
-void fillA(indsys)
-SYS *indsys;
+void fillA(SYS *indsys)
 {
   SEGMENT *seg;
   NODES *node1, *node2, *node;
@@ -1208,13 +1226,11 @@ SYS *indsys;
 /* Here, M*Im = Ib  where Im are the mesh currents, and Ib the branch */
 /* 6/92 I added Mlist which is a vector of linked lists to meshes. 
    This replaces M.  But I keep M around for checking things in matlab. */
-void old_fillM(indsys)
-SYS *indsys;
+void old_fillM(SYS *indsys)
 {
 }
     
-void fillZ(indsys)
-SYS *indsys;
+void fillZ(SYS *indsys)
 {
   int i, j, k, m;
   FILAMENT *fil_j, *fil_m;
@@ -1365,39 +1381,37 @@ void set_rvals(SYS *indsys, double omega)
 #endif
 
 /* calculates resistance of filament */
-double resistance(fil, sigma)
-FILAMENT *fil;
-double sigma;  /* conductivitiy */
+double resistance(FILAMENT *fil, double sigma)
+/* double sigma;  conductivitiy */
 {
   return  fil->length/(sigma * fil->area);
 }
 
 /* mutual inductance functions moved to mutual.c */
 
-int matherr(exc)
-struct exception *exc;
+/*
+int matherr(struct exception *exc)
 {
   printf("Err in math\n");
   return(0);
 }
+*/
 
 /* This counts the nonblank lines of the file  fp (unused) */
-int countlines(fp)
-FILE *fp;
+int countlines(FILE *fp)
 {
   int count;
   char temp[MAXCHARS], *returnstring;
 
   count = 0;
   while( fgets(temp,MAXCHARS, fp) != NULL)
-    if ( notblankline(temp) ) count++;
+    if ( local_notblankline(temp) ) count++;
 
   return count;
 }
 
 /* returns 1 if string contains a nonspace character */
-static int notblankline(string)
-char *string;
+static int local_notblankline(char *string)
 {
    while( *string!='\0' && isspace(*string))
      string++;
@@ -1408,8 +1422,7 @@ char *string;
 
 /* This saves various matrices to files and optionally calls fillA() if
    the incidence matrix, A, is requested */
-savemats(indsys)
-SYS *indsys;
+void savemats(SYS *indsys)
 {
   int i, j;
   FILE *fp, *fp2;
@@ -1635,11 +1648,7 @@ SYS *indsys;
   }
 }
 
-savecmplx(fp, name, Z, rows, cols)
-FILE *fp;
-char *name;
-CX **Z;
-int rows, cols;
+void savecmplx(FILE *fp, char *name, CX **Z, int rows, int cols)
 {
   int i,j;
   int machine;
@@ -1663,11 +1672,7 @@ int rows, cols;
 }
 
 /* saves a complex matrix more efficiently? */
-savecmplx2(fp, name, Z, rows, cols)
-FILE *fp;
-char *name;
-CX **Z;
-int rows, cols;
+void savecmplx2(FILE *fp, char *name, CX **Z, int rows, int cols)
 {
   int i,j;
   int machine;
@@ -1702,8 +1707,7 @@ int rows, cols;
 }
 
 /* This computes the product M*Z*Mt in a better way than oldformMZMt */
-formMZMt(indsys)
-SYS *indsys;
+void formMZMt(SYS *indsys)
 {
   int m,n,p;
   double tempsum, tempR, tempsumR;
@@ -1766,8 +1770,7 @@ SYS *indsys;
     }
 }
 
-oldformMZMt(indsys)
-SYS *indsys;
+void oldformMZMt(SYS *indsys)
 {
   int m,n,p;
   double tempsum;
@@ -1854,8 +1857,7 @@ SYS *indsys;
   */
 }
 
-char* MattAlloc(number, size)
-int number, size;
+char* MattAlloc(int number, int size)
 {
 
   char *blah;
@@ -1875,15 +1877,13 @@ int number, size;
     a linked list of its rows. */
 /* Note: This uses the same struct as Mlist but in reality, each linked list
    is composed of mesh indices, not fil indices. (filindex is a mesh index) */
-formMtrans(indsys)
-SYS *indsys;
+void formMtrans(SYS *indsys)
 {
   int i, j, count;
   MELEMENT *m, *mt, *mt2, mtdum;
   MELEMENT **Mlist, **Mtrans, **Mtrans_check;
   int meshes, fils;
   int last_filindex;
-  MELEMENT *create_melem();
 
   fils = indsys->num_fils;
   meshes = indsys->num_mesh;
@@ -1947,8 +1947,7 @@ SYS *indsys;
       
 }
 
-compare_meshes(mesh1, mesh2)
-MELEMENT *mesh1, *mesh2;
+void compare_meshes(MELEMENT *mesh1, MELEMENT *mesh2)
 {
 
   while(mesh1 != NULL && mesh2 != NULL && mesh1->filindex == mesh2->filindex && mesh1->sign == mesh2->sign) {
@@ -1962,10 +1961,7 @@ MELEMENT *mesh1, *mesh2;
   }
 }
 
-cx_dumpMat_totextfile(fp, Z, rows, cols)
-FILE *fp;
-CX **Z;
-int rows, cols;
+void cx_dumpMat_totextfile(FILE *fp, CX **Z, int rows, int cols)
 {
   int i, j;
 
@@ -1977,10 +1973,7 @@ int rows, cols;
   return;
 }
 
-dumpMat_totextfile(fp, A, rows, cols)
-FILE *fp;
-double **A;
-int rows, cols;
+void dumpMat_totextfile(FILE *fp, double **A, int rows, int cols)
 {
   int i, j;
 
@@ -1992,18 +1985,12 @@ int rows, cols;
   return;
 }
 
-dumpVec_totextfile(fp2, Vec, size)
-FILE *fp2;
-double *Vec;
-int size;
+void dumpVec_totextfile(FILE *fp2, double *Vec, int size)
 {
   dumpMat_totextfile(fp2, &Vec, 1, size);
 }
 
-fillMrow(Mlist, mesh, Mrow)
-MELEMENT **Mlist;
-int mesh;
-double *Mrow;
+void fillMrow(MELEMENT **Mlist, int mesh, double *Mrow)
 {
   int i;
   MELEMENT *melem;
@@ -2017,10 +2004,7 @@ double *Mrow;
     Mrow[melem->filindex] = melem->sign;
 }
 
-dump_to_Ycond(fp, cond, indsys)
-FILE *fp;
-int cond;
-SYS *indsys;
+void dump_to_Ycond(FILE *fp, int cond, SYS *indsys)
 {
   static char fname[20], tempstr[5];
   int maxiters = indsys->opts->maxiters;
@@ -2050,11 +2034,7 @@ SYS *indsys;
 
 }
 
-saveCarray(fp, fname, Arr, rows, cols)
-FILE *fp;
-char *fname;
-double **Arr;
-int rows, cols;
+void saveCarray(FILE *fp, char *fname, double **Arr, int rows, int cols)
 {
   int i;
   int machine;
@@ -2070,9 +2050,7 @@ int rows, cols;
   }
 }
 
-int nnz_inM(Mlist, num_mesh)
-MELEMENT **Mlist;
-int num_mesh;
+int nnz_inM(MELEMENT **Mlist, int num_mesh)
 {
   int counter, i;
   MELEMENT *mesh;
@@ -2086,10 +2064,7 @@ int num_mesh;
   return counter;
 }
 
-dump_M_to_text(fp, Mlist, num_mesh, nnz)
-FILE *fp;
-MELEMENT **Mlist;
-int num_mesh, nnz;
+void dump_M_to_text(FILE *fp, MELEMENT **Mlist, int num_mesh, int nnz)
 {
   int counter, i;
   MELEMENT *mesh;
@@ -2107,11 +2082,8 @@ int num_mesh, nnz;
   
 }
 
-dump_M_to_matlab(fp, Mlist, num_mesh, nnz, mname)
-FILE *fp;
-MELEMENT **Mlist;
-int num_mesh, nnz;
-char *mname;
+void dump_M_to_matlab(FILE *fp, MELEMENT **Mlist, int num_mesh, int nnz,
+    char *mname)
 {
 
   double onerow[3];
@@ -2135,8 +2107,7 @@ char *mname;
 }  
 
 /* this picks one node in each tree to be a ground node */
-pick_ground_nodes(indsys)
-SYS *indsys;
+void pick_ground_nodes(SYS *indsys)
 {
   TREE *atree;
   SEGMENT *seg;
@@ -2159,9 +2130,7 @@ SYS *indsys;
   }
 }
 
-int pick_subset(portlist, indsys)
-strlist *portlist;
-SYS *indsys;
+int pick_subset(strlist *portlist, SYS *indsys)
 {
   strlist *oneport;
   EXTERNAL *ext;
@@ -2192,8 +2161,7 @@ SYS *indsys;
 }
 
 /* concatenates so that s1 = s1 + s2 + s3 + s4 */
-concat4(s1,s2,s3,s4)
-char *s1, *s2, *s3, *s4;
+void concat4(char *s1, char *s2, char *s3, char *s4)
 {
   s1[0] = '\0';
   strcat(s1,s2);

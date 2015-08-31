@@ -1,0 +1,8 @@
+#! /bin/sh
+
+# Run all of the example .inp files.
+
+for a in ../*.inp; do
+    ../../bin/fasthenry $a 2>&1 | tee `basename $a inp`out
+    mv Zc.mat `basename $a inp`mat
+done

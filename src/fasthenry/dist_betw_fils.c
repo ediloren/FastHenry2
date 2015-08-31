@@ -5,17 +5,26 @@
 /* this is where the Gaussian Quadrature are defined */
 double **Gweight, **Gpoint;
 
-double dist_between();
-double min_endpt_sep();
-double dist_betw_pt_and_fil();
+/* SRW */
+double dist_betw_fils(FILAMENT*, FILAMENT*, int*);
+void getD(FILAMENT*, double*);
+void getr(double*, double*, double*, double*, double, double*);
+double vdotp(double*, double*);
+double dist_between(double, double, double, double, double, double);
+double min_endpt_sep(FILAMENT*, FILAMENT*);
+double dist_betw_pt_and_fil(FILAMENT*, double*, double*, double, FILAMENT*,
+    double);
+double aspectratio(FILAMENT*);
+void fill_Gquad(void);
+void findnfils(FILAMENT*, FILAMENT*, int);
+void gquad_weights(int, double*, double*);
+
 
 /* The line defined by fil1 is r = s1 + t1*D1 where s1 is the vector 
    (fil1->x[0], y[0], z[0]) and D1 is (x[1] - x[0], y[1] - y[0], z[1] - z[0]).
     t1 is a scalar from 0 to 1.  Similarly for fil2 */
 
-double dist_betw_fils(fil1, fil2, parallel)
-FILAMENT *fil1, *fil2;
-int *parallel;
+double dist_betw_fils(FILAMENT *fil1, FILAMENT *fil2, int *parallel)
 {
   double k1,k2,k3,k4,c1,c2,c3,c4,a1,a2,a3,b1,b2,b3;
   double x1,y1,z1,x2,y2,z2;
@@ -78,39 +87,33 @@ int *parallel;
   
 }
 
-getD(fil, D)
-FILAMENT *fil;
-double *D;
+void getD(FILAMENT *fil, double *D)
 {
   D[XX] = fil->x[1] - fil->x[0];
   D[YY] = fil->y[1] - fil->y[0];
   D[ZZ] = fil->z[1] - fil->z[0];
 }
 
-getr(x,y,z,s,t,D)
-double *x,*y,*z;
-double *s,t,*D;
+void getr(double *x, double *y, double *z, double *s, double t, double *D)
 {
   *x = s[XX] + t*D[XX];
   *y = s[YY] + t*D[YY];
   *z = s[ZZ] + t*D[ZZ];
 }
 
-double vdotp(v1, v2)
-double *v1,*v2;
+double vdotp(double *v1, double *v2)
 {
   return v1[XX]*v2[XX] + v1[YY]*v2[YY] + v1[ZZ]*v2[ZZ];
 }
 
-double dist_between(x1,y1,z1,x2,y2,z2)
-double x1,y1,z1,x2,y2,z2;
+double dist_between(double x1, double y1, double z1, double x2, double y2,
+    double z2)
 {
   return sqrt(SQUARE(x1 - x2) + SQUARE(y1 - y2) + SQUARE(z1 - z2));
 }
 
 /* returns the minimum distance between an endpt of fil1 and one of fil2 */
-double min_endpt_sep(fil1,fil2)
-FILAMENT *fil1, *fil2;
+double min_endpt_sep(FILAMENT *fil1, FILAMENT *fil2)
 {
   double min, tmp;
   int idx1, idx2;
@@ -143,21 +146,31 @@ FILAMENT *fil1, *fil2;
 
 /* this finds the shortest distance between the line defined by
    r = s + tnew*D, t in [0,1] (which is along fil_line) and the endpoint
-   on fil which is closer to fil_line (determined by the value of t) */
-double dist_betw_pt_and_fil(fil_line, D, s, DD, fil,t)
-FILAMENT *fil_line, *fil;
-double *D, *s, t, DD;
+   on fil which is closer to fil_line (determined by the value of t)
+*/
+double dist_betw_pt_and_fil(FILAMENT *fil_line, double *D, double *s,
+    double DD, FILAMENT *fil, double t)
 {
   double e[3], sme[3], x,y,z;
   double tnew, Dsme;
   int idx;
 
-  if (t < 0) {
+/* SRW --
+  Strangely, this was failing for MinGW-4.5/Windows-8.1 at times, with
+  t printed as 1.  There seems to be floating point truncation issues
+  with this combo in general, e.g., results that are slightly
+  different from Linux/OS X.  Including the equality condition fixes
+  the problem.
+*/
+
+/*  if (t < 0) { */
+  if (t <= 0) {
     e[XX] = fil->x[0];
     e[YY] = fil->y[0];
     e[ZZ] = fil->z[0];
   }
-  else if (t > 1) {
+/*  else if (t > 1) { */
+  else if (t >= 1) {
     e[XX] = fil->x[1];
     e[YY] = fil->y[1];
     e[ZZ] = fil->z[1];
@@ -193,8 +206,7 @@ double *D, *s, t, DD;
   }
 }
 
-double aspectratio(fil)
-FILAMENT *fil;
+double aspectratio(FILAMENT *fil)
 {
   double rat;
 
@@ -205,7 +217,7 @@ FILAMENT *fil;
     return 1.0/rat;
 }
 
-fill_Gquad()
+void fill_Gquad(void)
 {
   int i,j;
 
@@ -225,9 +237,7 @@ fill_Gquad()
     gquad_weights(i,Gpoint[i] - 1, Gweight[i] - 1);
 }
 
-findnfils(fil, subfils, nfils)
-FILAMENT *fil, *subfils;
-int nfils;
+void findnfils(FILAMENT *fil, FILAMENT *subfils, int nfils)
 {
   double hx,hy,hz,mag,wx,wy,wz,dx,dy,dz;
   int i,j;
@@ -306,9 +316,7 @@ main()
 }
 #endif 
 
-gquad_weights(N,p,w)
-int N;
-double *p,*w;
+void gquad_weights(int N, double *p, double *w)
 {
   int i;
 

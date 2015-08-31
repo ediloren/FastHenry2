@@ -1,0 +1,4 @@
+This directory will contain the program binaries.  It should be added
+to your shell search path, of alternatively the programs can be moved
+to another location that is already in the search path, perhaps
+/usr/local/bin.

@@ -3,17 +3,20 @@
    and once for imaginary */
 
 #include "induct.h"
+#include "sparse/spMatrix.h"
+
+/* SRW */
+void SetupComputePsi(CX*, ssystem*, CX*, int, charge*, double, double*, SYS*);
+void realmatCXvec(CX*, double**, CX*, int);
+void fixEvalDirect(charge**, int, int*, charge**, int, double**);
+
 
 /* Vs will contain the result,  Im is the 'q',  Size is the size of vectors. */
 /* This will alter Im.  Im = Precond*Im */
-SetupComputePsi(Vs, sys, Im, size, chglist, w, R, indsys)
-CX *Vs, *Im;
-int size;
-ssystem *sys;
-charge *chglist;
-double w;  /* radian frequency */
-double *R;  /* resistance vector */
-SYS *indsys;
+void SetupComputePsi(CX *Vs, ssystem *sys, CX *Im, int size, charge *chglist,
+    double w, double *R, SYS *indsys)
+/* double w;  radian frequency */
+/* double *R; resistance vector */
 {
   extern double dirtime;
   double *q, *p;
@@ -55,7 +58,7 @@ SYS *indsys;
       Im[i] = ctemp[i];
   }
   else if (indsys->precond_type == SPARSE) 
-    spSolve(indsys->sparMatrix, Im, Im);
+    spSolve(indsys->sparMatrix, (spREAL*)Im, (spREAL*)Im);
 
   /* do  Ib = Mtrans*Im */
   for(i = 0; i < branches; i++) {
@@ -180,7 +183,7 @@ SYS *indsys;
 #if OPCNT == ON
   printf("Inductance (mesh to branch) mults: %d\n",ind_opcnt_mult);
   printf("Just doing MRMtIm: %d\n",ind_opcnt_real);
-   printops();
+  printops();
   exit(0);
 #endif
 
@@ -213,10 +216,7 @@ SYS *indsys;
 #endif
 }
 
-realmatCXvec(y, A, x, size)
-CX *y, *x;
-double **A;
-int size;
+void realmatCXvec(CX *y, double **A, CX *x, int size)
 {
   int i, j;
   CX temp;
@@ -239,11 +239,8 @@ int size;
    must also be divided out 
 */
 
-fixEvalDirect(qchgs, numqchgs, is_dummy, pchgs, numpchgs, mat)
-charge **qchgs, **pchgs;
-int numqchgs, numpchgs;
-int *is_dummy;
-double **mat;
+void fixEvalDirect(charge **qchgs, int numqchgs, int *is_dummy,
+    charge **pchgs, int numpchgs, double **mat)
 {
   int i,j, k;
   double dotprod, magi, magj;

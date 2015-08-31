@@ -1,15 +1,18 @@
 /* Produces a fasthenry input file of filaments on a UNIFORM
    plane discretization */
 
+/* to build: cc -o make_nonuniform make_nonuniform.c -lm */
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 FILE *f_uni, *f_nonuni;
-char *MattAlloc();
 
-main(argc, argv)
-int argc;
-char *argv[];
+double **MatrixAlloc(int, int, int);
+char* MattAlloc(int, int);
+
+int main(int argc, char **argv)
 {
   int i,j;
   double min_len, x_len, y_len, thickness, z, x_cur;
@@ -88,8 +91,7 @@ char *argv[];
   fclose(f_nonuni);
 }
 
-double **MatrixAlloc(rows, cols, size)
-int rows, cols, size;
+double **MatrixAlloc(int rows, int cols, int size)
 {
 
   double **temp;
@@ -111,8 +113,7 @@ int rows, cols, size;
   return(temp);
 }
 
-char* MattAlloc(number, size)
-int number, size;
+char* MattAlloc(int number, int size)
 {
 
   char *blah;

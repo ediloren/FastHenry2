@@ -8,10 +8,31 @@
 #include <math.h>
 #include "induct.h"
 
+/* SRW */
+int is_next_word(char*, char*);
+int is_hole(NODES*);
+HoleList *make_holelist(HoleList*, char*, double, double, double, double, int*);
+int skipspace(char*);
+int eos(char);
+void hole_error(char*, char*, HoleList*);
+int is_one_of(char, char*);
+void delete_node(NODES*);
+void make_holes(HoleList*, GROUNDPLANE*);
+void hole_point(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_rect(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_circle(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user1(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user2(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user3(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user4(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user5(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user6(HoleList*, GROUNDPLANE*, double, double, double, double);
+void hole_user7(HoleList*, GROUNDPLANE*, double, double, double, double);
+
+
 /* returns TRUE if the next word in line matches str. */
 /* (strips leading spaces from line, but not str) */
-is_next_word(str, line)
-char *str, *line;
+int is_next_word(char *str, char *line)
 {
 
   /* skip leading spaces */
@@ -33,8 +54,7 @@ char *str, *line;
 }
 
 /* has the node been removed because it is part of a ground plane hole? */
-is_hole(node)
-NODES *node;
+int is_hole(NODES *node)
 {
   return (node->type == GPHOLE);
 }
@@ -42,11 +62,8 @@ NODES *node;
 #define MAXNAME 20
 
 /* this turns the info in line into a HoleList element */
-HoleList *make_holelist(hole_head, line, units, relx, rely, relz, skip)
-HoleList *hole_head;
-char *line;
-double units, relx, rely, relz;
-int *skip;
+HoleList *make_holelist(HoleList *hole_head, char *line, double units,
+    double relx, double rely, double relz, int *skip)
 {
   char name[MAXNAME];
   int skip1, skip2, skip3, skip4;
@@ -128,8 +145,7 @@ int *skip;
 
 }
 
-skipspace(line)
-char *line;
+int skipspace(char *line)
 {
   int skip = 0;
 
@@ -142,15 +158,12 @@ char *line;
 }
   
 /* End of string test */
-eos(chr)
-char chr;
+int eos(char chr)
 {
   return (chr == '\0');
 }
 
-hole_error(errstr, line, holep)
-char *errstr, *line;
-HoleList *holep;
+void hole_error(char *errstr, char *line, HoleList *holep)
 {
   fprintf(stderr, "While reading in a %s hole:\n",holep->func);
   fprintf(stderr, "%s\n%s",errstr,line);
@@ -159,8 +172,7 @@ HoleList *holep;
   exit(1);
 }
   
-is_one_of(letter, one_of)
-char letter, *one_of;
+int is_one_of(char letter, char *one_of)
 {
   for( ; *one_of != '\0'; one_of++)
     if (letter == *one_of)
@@ -169,16 +181,13 @@ char letter, *one_of;
   return 1==0;
 }
 
-delete_node(node)
-NODES *node;
+void delete_node(NODES *node)
 {
   node->type = GPHOLE;
 }
 
 /* This calls the functions which make the holes */
-make_holes(holep, gp)
-GROUNDPLANE *gp;
-HoleList *holep;
+void make_holes(HoleList *holep, GROUNDPLANE *gp)
 {
   double relx = holep->relx;
   double rely = holep->rely;
@@ -212,10 +221,8 @@ HoleList *holep;
 /* This makes a hole by removing one node nearest to the (x,y,z) given
    by holes->vals;
 */
-hole_point(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_point(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
   double *vals = holep->vals;
   int i1,j1;
@@ -232,10 +239,8 @@ double relx,rely,relz,units;
    The 6 values in holep->vals are two (x,y,z) pairs which represent
    opposite corners of the rectangle.
 */
-hole_rect(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_rect(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
   NODES *node1, *node2;
   int i1, j1, i2, j2;
@@ -279,10 +284,8 @@ double relx,rely,relz,units;
    It takes 4 values in holep->vals.  The first three are (x,y,z) of 
    the center and the last is the radius, R.
 */
-hole_circle(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_circle(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
   NODES *node1, *node2, *nodec;
   int i1, j1, i2, j2;
@@ -343,52 +346,38 @@ double relx,rely,relz,units;
   }
 }
 
-hole_user1(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user1(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user2(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user2(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user3(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user3(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user4(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user4(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user5(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user5(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user6(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user6(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 
-hole_user7(holep, gp, relx, rely, relz, units)
-GROUNDPLANE *gp;
-HoleList *holep;
-double relx,rely,relz,units;
+void hole_user7(HoleList *holep, GROUNDPLANE *gp, double relx, double rely,
+    double relz, double units)
 {
 }
 

@@ -6,11 +6,20 @@
 static directops=0, upops=0, downops=0, evalops=0, evaldops=0, evalmops=0;
 #endif
 
+/* SRW */
+void mulDirect(ssystem*);
+void mulPrecond(ssystem*, int);
+void mulUp(ssystem*);
+void mulEval(ssystem*);
+void mulDown(ssystem*);
+#if OPCNT == ON
+void printops(void);
+#endif
+
 /* 
 Compute the direct piece. 
 */
-mulDirect(sys)
-ssystem *sys;
+void mulDirect(ssystem *sys)
 {
 int i, j, k, dsize, *is_dummy, *is_dielec;
 double pc, *p, *q, *qn, *pn, **mat;
@@ -59,9 +68,7 @@ cube *nextc;
 /*
 Block diagonal or Overlapped Preconditioner.
 */
-mulPrecond(sys, type)
-ssystem *sys;
-int type;
+void mulPrecond(ssystem *sys, int type)
 {
   int i, j, k, dsize, *is_dummy;
   double pc, *p, *q, *qn, *pn, **mat;
@@ -117,8 +124,7 @@ int type;
 /* 
 Loop through upward pass. 
 */
-mulUp(sys)
-ssystem *sys;
+void mulUp(ssystem *sys)
 {
 int i, j, k, l;
 int msize;
@@ -155,8 +161,7 @@ cube *nextc;
 /*
   evaluation pass - use after mulDown or alone. 
 */
-void mulEval(sys)
-ssystem *sys;
+void mulEval(ssystem *sys)
 {
   int i, j, k, size, *is_dielec;
   cube *nc;
@@ -199,8 +204,7 @@ ssystem *sys;
 /* 
 Loop through downward pass. 
 */
-mulDown(sys)
-ssystem *sys;
+void mulDown(ssystem *sys)
 {
   cube *nc;
   int depth, i, j, k, lsize;
@@ -232,7 +236,7 @@ ssystem *sys;
 
 
 #if OPCNT == ON
-printops()
+void printops(void)
 {
   printf("Number of Direct Multi-Adds = %d\n", directops);
   printf("Number of Upward Pass Multi-Adds = %d\n", upops);

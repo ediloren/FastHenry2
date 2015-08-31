@@ -13,6 +13,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "cmplx.h"
 #define LINEMAX 100000
@@ -26,11 +27,10 @@ typedef struct _Zlist {
   struct _Zlist *next;
 } Zlist;
 
-Zlist *ReadZc();
+Zlist *ReadZc(FILE*);
+void printerr(double, int, int);
 
-main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char **argv)
 {
   FILE *fp;
   Zlist *Zc, *oneZ;
@@ -109,8 +109,7 @@ char *argv[];
 
 }
 
-Zlist *ReadZc(fp)
-FILE *fp;
+Zlist *ReadZc(FILE *fp)
 {
   static char line[LINEMAX];
   char *ptr;
@@ -169,9 +168,7 @@ FILE *fp;
   return Zc;
 }
 
-printerr(freq, row, col)
-double freq;
-int row, col;
+void printerr(double freq, int row, int col)
 {
   fprintf(stderr, "Error reading value in matrix for frequency %lg at row %d, col %d\n", freq, row, col);
   exit(1);

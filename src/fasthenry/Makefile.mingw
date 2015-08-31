@@ -1,4 +1,6 @@
-CFLAGS = -O -DOTHER -DNO_SBRK -DNO_ATANH -DNO_ISNAN -DNO_GETHOSTNAME
+# CFLAGS = -O -DOTHER -DNO_ATANH -DNO_ISNAN -DNO_GETHOSTNAME
+# NO reason to use this file, MinGW no longer requires these defines.
+CFLAGS = -O -DFOUR
 
 SHELL = /bin/sh
 RM = /bin/rm

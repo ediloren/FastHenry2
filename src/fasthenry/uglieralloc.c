@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+/* SRW */
+#define NO_SBRK
 
 #define NALLOC 8184		/* >= sizeof(HEADER)*NALLOC bytes sbrk()'d */
 #define MAGICN 0xaaaaaaaaL	/* used to check fidelity of allocated blks */
@@ -60,10 +64,6 @@ typedef union header HEADER;
   - an alternative to mocore() but should only be used if sbrk() doesnt zero
 */
 #define MORECORE(SIZE) (HEADER *)calloc(1, SIZE*sizeof(HEADER))
-/*
-char *calloc();
-char *malloc();
-*/
 
 static HEADER *base = NULL;    	/* base of allocated block list */
 static HEADER *allocp = NULL;	/* last allocated block */
@@ -72,12 +72,20 @@ static unsigned int sizeofHDR = sizeof(HEADER);
 static HEADER *lastblock = NULL;       /* pointer to last allocated block */
                                 /* for freeing purposes */
 
+/* SRW */
+static HEADER *mocore(unsigned int);
+void fill_it(void*, char, int);
+void ufree(void);
+char *ualloc(unsigned int);
+void ualloc_verify(void);
+void uallocEfcy(long);
+
+
 /*
   asks operating system for more memory which is added to the top block
   - memory not zeroed out
 */
-static HEADER *mocore(nu)
-unsigned int nu;
+static HEADER *mocore(unsigned int nu)
 {
   HEADER *cp;
 
@@ -96,10 +104,7 @@ unsigned int nu;
 }
 
 /* fills space with value */
-fill_it(mem, k, nbytes)
-void *mem;
-char k;
-int nbytes;
+void fill_it(void *mem, char k, int nbytes)
 {
   /* printf("will fill: %x + 1 = %x\n",(HEADER *)mem - 1, (HEADER *)mem);*/
   memset( mem, k, nbytes);
@@ -107,7 +112,7 @@ int nbytes;
 
 /* frees lastblock and  the linked list of each block before it
    */
-void ufree()
+void ufree(void)
 {
   HEADER *ptr, *next;
 
@@ -136,10 +141,8 @@ void ufree()
   - ultimately uses mocore(), since no frees are done (sbrk() zeros added
     memory) this allocator performs like calloc() w/no explicit assigns to 0
 */
-char *ualloc(nbytes)
-unsigned int nbytes;
+char *ualloc(unsigned int nbytes)
 {
-  HEADER *mocore();
   HEADER *p, *q;
   int nunits;			/* size in number of sizeof(HEADER)'s */
   int brkunits;			/* number to add to heap */
@@ -250,7 +253,7 @@ unsigned int nbytes;
   - checks if length corresponds to pointers (UGDEBG == 1 or 2)
   - prints information about list of allocated blocks (UGDEBG == 2)
 */
-void ualloc_verify()
+void ualloc_verify(void)
 {
   HEADER *p;
   int cnt = 1;
@@ -293,8 +296,7 @@ void ualloc_verify()
         memory lost in each header struct (a problem with many small things)
   - if base == NULL (not using ugly allocator), final break value is printed
 */
-void uallocEfcy(memcount)
-long memcount;
+void uallocEfcy(long memcount)
 {
 #ifdef NO_SBRK
   return;
@@ -306,11 +308,10 @@ long memcount;
   int first = 1;
 #endif
   int total;
-  char *sbrk();
 
-  total = (int)(sbrk(0) - (char *)base);
+  total = (int)((char*)sbrk(0) - (char*)base);
 
-  if(base == NULL) fprintf(stdout, "(top of memory = 0x%x", sbrk(0));
+  if(base == NULL) fprintf(stdout, "(top of memory = 0x%lx", (long)sbrk(0));
   else fprintf(stdout, "(%.3g%% efficiency",
 	       100*((double)memcount)/((double)total));
 

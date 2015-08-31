@@ -5,15 +5,31 @@
 
 cube *cstack[1024];		/* Stack used in several routines. */
 
+/* SRW */
+ssystem *mulInit(int, int, int, charge*, SYS*, int);
+int placeq(int, ssystem*, charge*, SYS*, int);
+static void placeqold(ssystem*, charge*);
+void getrelations(ssystem*);
+void removeabandoned(ssystem*);
+void setPosition(ssystem*);
+void indexkid(ssystem*, cube*, int*, int*);
+void setExact(ssystem*, int);
+void getnbrs(ssystem*);
+int cntDwnwdChg(cube*, int);
+void linkcubes(ssystem*);
+void setMaxq(ssystem*);
+void markUp(cube*, int);
+int getInter(cube*, ssystem*);
+void getAllInter(ssystem*);
+void set_vector_masks(ssystem*);
+
+
 /*
   sets up the partitioning of space and room for charges and expansions
 */
-ssystem *mulInit(autom, depth, order, charges, indsys, pseudo_lev)
-int autom;			/* ON => choose depth automatically */
-int depth, order;
-charge *charges;
-SYS *indsys;
-int pseudo_lev;
+ssystem *mulInit(int autom, int depth, int order, charge *charges, SYS *indsys,
+    int pseudo_lev)
+/* int autom;			ON => choose depth automatically */
 {
   ssystem *sys;
   int qindex=1, cindex=1;
@@ -75,21 +91,16 @@ int pseudo_lev;
   - this routine is still called to set automatic levels if ADAPT is OFF,
      ie even when the calculation is not adaptive, so results can be compared
 */
-int placeq(flag, sys, charges, indsys, pseudo_lev)
-int flag;			/* ON => set depth automatically */
-ssystem *sys;
-charge *charges;
-SYS *indsys;
-int pseudo_lev;
+int placeq(int flag, ssystem *sys, charge *charges, SYS *indsys, int pseudo_lev)
+/* int flag;			ON => set depth automatically */
 {
-  int i, j, k, l, side, totalq, isexact, multerms(), depth;
+  int i, j, k, l, side, totalq, isexact, depth;
   int xindex, yindex, zindex, limit = multerms(sys->order), compflag;
   int exact_cubes_this_level, cubes_this_level;
   double length0, length, exact_ratio;
-  double minx, maxx, miny, maxy, minz, maxz, tilelength(), maxTileLength;
+  double minx, maxx, miny, maxy, minz, maxz, maxTileLength;
   charge *nextq, *compq;
   cube *****cubes, *nextc;
-  char *hack_path();
   SEGMENT *seg, *lastseg;
   NODES *nextn;
   FILAMENT *fil;
@@ -510,12 +521,10 @@ int pseudo_lev;
 /* 
 Place the charges in the cube structure. 
 */
-static placeqold(sys, charges)
-ssystem *sys;
-charge *charges;
+static void placeqold(ssystem *sys, charge *charges)
 {
 double length;
-double minx, maxx, miny, maxy, minz, maxz, tilelength();
+double minx, maxx, miny, maxy, minz, maxz;
 int depth=sys->depth;
 int j, k, l, xindex, yindex, zindex, side = sys->side;
 int totalq;
@@ -609,8 +618,7 @@ cube *nextc, *****cubes = sys->cubes;
 /*
 GetRelations allocates parents links the children. 
 */
-getrelations(sys)
-ssystem *sys;
+void getrelations(ssystem *sys)
 {
 cube *nextc, *parent, *****cubes = sys->cubes;
 int i, j, k, l, side;
@@ -650,8 +658,7 @@ int i, j, k, l, side;
 
 /* remove abandoned cubes */
 
-removeabandoned(sys)
-ssystem *sys;
+void removeabandoned(ssystem *sys)
 {
 cube *nextc, *parent, *****cubes = sys->cubes;
 int i, j, k, l, side, num_real_kids, m;
@@ -693,8 +700,7 @@ int i, j, k, l, side, num_real_kids, m;
 /*
 Set the position coordinates of the cubes.
 */
-setPosition(sys)
-ssystem *sys;
+void setPosition(ssystem *sys)
 {
 int i, j, k, l;
 int side = sys->side;
@@ -730,10 +736,7 @@ psuedo-adaptive scheme.  Also get the pointer to the appropriate section
 of the charge and potential vector.  Uses the eval vector for the potential
 coeffs at the lowest level.  Also index the lowest level cubes.
 */
-indexkid(sys, dad, pqindex, pcindex)
-ssystem *sys;
-cube *dad;
-int *pqindex, *pcindex;
+void indexkid(ssystem *sys, cube *dad, int *pqindex, int *pcindex)
 {
   int i;
   
@@ -768,14 +771,12 @@ potential vector.  Otherwise, the number of nonzero kids is counted
 and put in upnumvects as usual.  
 */
 /* added 30Mar91: provisions for loc_exact and mul_exact */
-setExact(sys, numterms)
-ssystem *sys;
-int numterms;
+void setExact(ssystem *sys, int numterms)
 {
 int i, j, k, l, m, n;
 int side = sys->side;
 int depth = sys->depth;
-int numchgs, num_eval_pnts, first, multerms();
+int numchgs, num_eval_pnts, first;
 cube *nc, *nkid, *****cubes = sys->cubes;
 int all_mul_exact, all_loc_exact, p, num_real_panels;
 int num_lexact, num_mexact;
@@ -898,8 +899,7 @@ int num_lexact, num_mexact;
 Find all the nearest neighbors.
 At the bottom level, get neighbors due to a parents being exact.
 */
-getnbrs(sys)
-ssystem *sys;
+void getnbrs(ssystem *sys)
 {
 cube *nc, *np, *****cubes = sys->cubes;
 int depth = sys->depth;
@@ -954,9 +954,8 @@ being exact.
 /*
   returns the number of charges in the lowest level cubes contained in "cp"
 */
-int cntDwnwdChg(cp, depth)
-int depth;			/* number of lowest level */
-cube *cp;
+int cntDwnwdChg(cube *cp, int depth)
+/* int depth;			number of lowest level */
 {
   int i;
   int cnt;
@@ -974,8 +973,7 @@ for the cubes requiring local expansion work, one for the cubes requiring
 direct methods and one for cubes with potential evaluation points. 
 Note, upnumvects and exact must be set!!!
 */
-linkcubes(sys)
-ssystem *sys;
+void linkcubes(ssystem *sys)
 {
   cube *nc, **plnc, **pdnc, **pmnc, *****cubes = sys->cubes;
   int i, j, k, l, cnt = 0;
@@ -1029,8 +1027,7 @@ ssystem *sys;
 /*
 Determine maximum number of chgs contained in a single cube.
 */
-setMaxq(sys)
-ssystem *sys;
+void setMaxq(ssystem *sys)
 {
   int i, j, k, l, side, p, kids_are_exact, all_null, depth = sys->depth;
   int mul_maxq, mul_maxlq, loc_maxq, loc_maxlq, num_chgs, real_panel_cnt;
@@ -1122,9 +1119,7 @@ ssystem *sys;
 /* 
   markup sets the flag to "flag" in the child and its nearest nbrs
 */
-markUp(child, flag)
-cube *child;
-int flag;
+void markUp(cube *child, int flag)
 {
   int i,j;
   cube *nc, *np;
@@ -1140,9 +1135,7 @@ int flag;
    for cube "child", excluding only empty cubes
   -interaction list pointer is saved in the interList cube struct field
 */
-getInter(child,sys)
-cube *child;
-ssystem *sys;
+int getInter(cube *child, ssystem *sys)
 {
   int i, j, vects, usekids, lc, jc, kc, ln, jn, kn;
   int numnbr = (child->parent)->numnbrs; /* number of neighbors */
@@ -1212,8 +1205,7 @@ ssystem *sys;
 /*
   generates explicit, true interaction lists for all non-empty cubes w/lev > 1
 */
-getAllInter(sys)
-ssystem *sys;
+void getAllInter(ssystem *sys)
 {
   int i, j, k, l, side, depth = sys->depth;
   cube *nc, *****cubes = sys->cubes;
@@ -1234,8 +1226,7 @@ ssystem *sys;
   - mask vectors are redundant (could read flags in charge struct) 
   - done for speed in potential eval loop
 */
-set_vector_masks(sys)
-ssystem *sys;
+void set_vector_masks(ssystem *sys)
 {
   int i;
   cube *cp;

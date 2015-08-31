@@ -6,11 +6,14 @@
 #include <ctype.h>
 #define MAXLINE 10000
 
-char *getoneline();
+/* SRW */
+char *getoneline(FILE*);
+int notblankline(char*);
+void get_root(char*, char*);
+void remove_returns(char*);
 
-main(argc, argv)
-int argc;
-char *argv[];
+
+int main(int argc, chr **argv)
 {
 
   char *line[2], name[1000], nameroot[1000];
@@ -63,8 +66,7 @@ char *argv[];
 }
 
 
-char *getoneline(fp)
-FILE *fp;
+char *getoneline(FILE *fp)
 {
   static char line[MAXLINE] = { '\0' };
   char *retchar;
@@ -82,8 +84,7 @@ FILE *fp;
     return line;
 }
 
-int notblankline(string)
-char *string;
+int notblankline(char *string)
 {
    while( *string!='\0' && isspace(*string))
      string++;
@@ -92,8 +93,7 @@ char *string;
      else return 1;
 }
 
-get_root(src, dest)
-char *src, *dest;
+void get_root(char *src, char *dest)
 {
 
   while(*src != '.' && *src != '\0')
@@ -105,8 +105,7 @@ char *src, *dest;
   }
 }
 
-remove_returns(src)
-char *src;
+void remove_returns(char *src)
 {
   while(*src != '\0') {
     if (*src == '\n')

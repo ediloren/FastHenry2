@@ -1,0 +1,64 @@
+Warning: ground plane node nbin coincident with another node
+Warning: ground plane node nbout coincident with another node
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:03 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../broken.inp
+Title:
+*Broken plane with two traces above it
+
+all lengths multiplied by 2.54e-05 to convert to meters
+Total number of filaments before multipole refine: 444
+Total number of filaments after multipole refine: 450
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 3
+  Total number of filaments: 450
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 2 
+Number of filaments:        450
+Number of segments:         450
+Number of nodes:            256
+Number of meshes:           203
+          ----from tree:                   3 
+          ----from planes: (before holes)  200 
+Number of conductors:         2   (rows of matrix in Zc.mat) 
+Number of columns:            2   (columns of matrix in Zc.mat) 
+Number of real nodes:       250
+filling M...
+filling R and L...
+Total Memory allocated: 1497 kilobytes
+Frequency = 0.1
+Forming sparse matrix preconditioner..
+conductor 0 from node nb1
+Calling gmres...
+1 2 
+conductor 1 from node na1
+Calling gmres...
+1 2 
+Frequency = 1e+19
+Forming sparse matrix preconditioner..
+conductor 0 from node nb1
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 
+conductor 1 from node na1
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0
+        Multipole setup 0.027631
+        Scanning graph  1.2e-05
+        Form A M and Z  0.000153
+        form M'ZM       7e-06
+        Form precond    0.002596
+        GMRES time      0.029645
+   Total:               0.060044

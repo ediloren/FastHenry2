@@ -23,9 +23,6 @@
  *  spcCreateElement
  *  spcLinkRows
  */
-static void Translate();
-static EnlargeMatrix();
-static ExpandTranslationArrays();
 
 
 /*
@@ -72,6 +69,9 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
+static void Translate( MatrixPtr, int*, int* );
+static void EnlargeMatrix( MatrixPtr, int );
+static void ExpandTranslationArrays( MatrixPtr, int );
 
 
 
@@ -91,9 +91,8 @@ static char RCSid[] =
  */
 
 void
-spClear( eMatrix )
+spClear( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register  ElementPtr  pElement;
@@ -185,15 +184,11 @@ register  int  I;
  */
 
 RealNumber *
-spGetElement( eMatrix, Row, Col )
+spGetElement( char *eMatrix, int Row, int Col )
 
-char *eMatrix;
-int  Row, Col;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 RealNumber  *pElement;
-ElementPtr spcFindElementInCol();
-void  Translate();
 
 /* Begin `spGetElement'. */
     ASSERT( IS_SPARSE( Matrix ) AND Row >= 0 AND Col >= 0 );
@@ -291,16 +286,11 @@ void  Translate();
  */
 
 ElementPtr
-spcFindElementInCol( Matrix, LastAddr, Row, Col, CreateIfMissing )
+spcFindElementInCol( MatrixPtr Matrix, ElementPtr *LastAddr, int Row, int Col,
+    BOOLEAN CreateIfMissing )
 
-MatrixPtr Matrix;
-register ElementPtr *LastAddr;
-register int  Row;
-int  Col;
-BOOLEAN  CreateIfMissing;
 {
 register  ElementPtr  pElement;
-ElementPtr  spcCreateElement();
 
 /* Begin `spcFindElementInCol'. */
     pElement = *LastAddr;
@@ -369,10 +359,8 @@ ElementPtr  spcCreateElement();
  */
 
 static void
-Translate( Matrix, Row, Col )
+Translate( MatrixPtr Matrix, int *Row, int *Col )
 
-MatrixPtr Matrix;
-int  *Row, *Col;
 {
 register int IntRow, IntCol, ExtRow, ExtCol;
 
@@ -481,11 +469,9 @@ register int IntRow, IntCol, ExtRow, ExtCol;
  */
 
 int
-spGetAdmittance( Matrix, Node1, Node2, Template )
+spGetAdmittance( char *Matrix, int Node1, int Node2,
+    struct spTemplate *Template )
 
-char  *Matrix;
-int  Node1, Node2;
-struct  spTemplate  *Template;
 {
 
 /* Begin `spGetAdmittance'. */
@@ -569,11 +555,9 @@ struct  spTemplate  *Template;
  */
 
 int
-spGetQuad( Matrix, Row1, Row2, Col1, Col2, Template )
+spGetQuad( char *Matrix, int Row1, int Row2, int Col1, int Col2,
+    struct spTemplate *Template )
 
-char  *Matrix;
-int  Row1, Row2, Col1, Col2;
-struct  spTemplate  *Template;
 {
 /* Begin `spGetQuad'. */
     Template->Element1 = spGetElement( Matrix, Row1, Col1);
@@ -644,11 +628,8 @@ struct  spTemplate  *Template;
  */
 
 int
-spGetOnes(Matrix, Pos, Neg, Eqn, Template)
+spGetOnes(char *Matrix, int Pos, int Neg, int Eqn, struct spTemplate *Template)
 
-char  *Matrix;
-int  Pos, Neg, Eqn;
-struct  spTemplate  *Template;
 {
 /* Begin `spGetOnes'. */
     Template->Element4Negated = spGetElement( Matrix, Neg, Eqn );
@@ -714,16 +695,12 @@ struct  spTemplate  *Template;
  */
 
 ElementPtr
-spcCreateElement( Matrix, Row, Col, LastAddr, Fillin )
+spcCreateElement( MatrixPtr Matrix, int Row, int Col, ElementPtr *LastAddr,
+    BOOLEAN Fillin )
 
-MatrixPtr Matrix;
-int  Row;
-register int  Col;
-register ElementPtr  *LastAddr;
-BOOLEAN Fillin;
 {
 register  ElementPtr  pElement, pLastElement;
-ElementPtr  pCreatedElement, spcGetElement(), spcGetFillin();
+ElementPtr  pCreatedElement;
 
 /* Begin `spcCreateElement'. */
 
@@ -860,9 +837,8 @@ ElementPtr  pCreatedElement, spcGetElement(), spcGetFillin();
  *      Column currently being operated upon.
  */
 
-spcLinkRows( Matrix )
+void spcLinkRows( MatrixPtr Matrix )
 
-MatrixPtr Matrix;
 {
 register  ElementPtr  pElement, *FirstInRowEntry;
 register  ArrayOfElementPtrs  FirstInRowArray;
@@ -910,11 +886,9 @@ register  int  Col;
  *     The allocated size of the matrix before it is expanded.
  */
 
-static
-EnlargeMatrix( Matrix, NewSize )
+static void
+EnlargeMatrix( MatrixPtr Matrix, int NewSize )
 
-MatrixPtr Matrix;
-register int  NewSize;
 {
 register int I, OldAllocatedSize = Matrix->AllocatedSize;
 
@@ -999,11 +973,9 @@ register int I, OldAllocatedSize = Matrix->AllocatedSize;
  *     The allocated size of the translation arrays before being expanded.
  */
 
-static
-ExpandTranslationArrays( Matrix, NewSize )
+static void
+ExpandTranslationArrays( MatrixPtr Matrix, int NewSize )
 
-MatrixPtr Matrix;
-register int  NewSize;
 {
 register int I, OldAllocatedSize = Matrix->AllocatedExtSize;
 
@@ -1078,10 +1050,8 @@ register int I, OldAllocatedSize = Matrix->AllocatedExtSize;
  */
 
 void
-spInstallInitInfo( pElement, pInitInfo )
+spInstallInitInfo( RealNumber *pElement, char *pInitInfo )
 
-RealNumber *pElement;
-char *pInitInfo;
 {
 /* Begin `spInstallInitInfo'. */
     ASSERT(pElement != NULL);
@@ -1091,9 +1061,8 @@ char *pInitInfo;
 
 
 char *
-spGetInitInfo( pElement )
+spGetInitInfo( RealNumber *pElement )
 
-RealNumber *pElement;
 {
 /* Begin `spGetInitInfo'. */
     ASSERT(pElement != NULL);
@@ -1103,10 +1072,8 @@ RealNumber *pElement;
 
 
 int
-spInitialize( eMatrix, pInit )
+spInitialize( char *eMatrix, InitFunc pInit )
 
-char *eMatrix;
-int (*pInit)();
 {
 MatrixPtr Matrix = (MatrixPtr)eMatrix;
 register ElementPtr pElement;

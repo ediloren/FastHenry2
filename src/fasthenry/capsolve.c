@@ -2,6 +2,10 @@
    # ***** */
 #include "mulGlobal.h"
 
+/* SRW */
+void computePsi(ssystem*, double*, double*, int, charge*);
+
+
 /* 
 ComputePsi computes the potential from the charge vector, or may
 include a preconditioner.  It is assumed that the vectors for the
@@ -9,11 +13,7 @@ charge and potential have already been set up and that the potential
 vector has been zeroed.  ARBITRARY VECTORS CAN NOT BE USED.
 */
 
-computePsi(sys, q, p, size, chglist)
-ssystem *sys;
-double *q, *p;
-int size;
-charge *chglist;
+void computePsi(ssystem *sys, double *q, double *p, int size, charge *chglist)
 {
   extern double dirtime, uptime, downtime, evaltime, prectime;
   extern int real_size;

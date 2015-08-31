@@ -35,6 +35,9 @@ of this software.
 #include "mulGlobal.h"
 #include "zbufGlobal.h"
 
+/* SRW */
+void dump_ps_geometry(charge*, double*, int, int);
+
 /*#if CAPVEW == ON*/
 /*
   main interface between old zbuf code and fastcap
@@ -45,17 +48,14 @@ of this software.
   - file name used is <ps_file_base><iter>.ps; ps_file_base is either
     the list file base, the input file base or "stdin" (see get_ps_file_info())
 */
-void dump_ps_geometry(chglist, q, cond, use_ttl_chg)
-charge *chglist;
-double *q;
-int cond;
+void dump_ps_geometry(charge *chglist, double *q, int cond, int use_ttl_chg)
 {
   int i, j, k, numlines, numfaces, use_density;
-  face **faces, **sfaces, **fastcap2faces(), **depthSortFaces();
-  double normal[3], rhs, temp, dot(), *getAvg();
-  double *avg, pnt[3], radius, getSphere(), getNormal();
+  face **faces, **sfaces;
+  double normal[3], rhs, temp;
+  double *avg, pnt[3], radius;
   charge *cur_chg;
-  line **lines, **getLines();
+  line **lines;
   FILE *fp;
   char str[BUFSIZ];
 

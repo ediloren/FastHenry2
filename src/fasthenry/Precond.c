@@ -6,7 +6,8 @@
 is the default.  Most of this code is if'd out for this precond */
 
 #include "induct.h"
-#include "sparse/spMatrix.h"  /* SRW */
+#include "sparse/spMatrix.h"
+
 #define PARTMESH OFF    /* this should always be OFF */
 
 /* turn on positive definite preconditioner */
@@ -30,11 +31,18 @@ is the default.  Most of this code is if'd out for this precond */
 
 FILE *fp;
 static char outfname[80];
-	
-indPrecond(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+
+/* SRW */
+void indPrecond(ssystem*, SYS*, double);
+void multPrecond(PRE_ELEMENT**, CX*, CX*, int);
+MELEMENT *getnext(MELEMENT*, int*);
+void cx_invert_dup(CX**, int, DUPS*);
+void mark_dup_mesh(MELEMENT**, int*, int, DUPS*, int*);
+void dumpPrecond(PRE_ELEMENT**, int, char*);
+void indPrecond_direct(ssystem*, SYS*, double);
+
+
+void indPrecond(ssystem *sys, SYS *indsys, double w)
 {
   cube *nc, *nnbr, *nnnbr;
   static double **mat = NULL, **nmat;
@@ -66,7 +74,6 @@ double w;
                             /* number in mat if in fillist.  */
                             /* fillist and findx are inverses of each other */
 
-  MELEMENT *getnext();
 
   int num_mesh = indsys->num_mesh;
   int num_fils = indsys->num_fils;
@@ -396,13 +403,13 @@ double w;
        if (mat[i][j] != 0.0) {
 	for(mtranj=Mtrans[fillist[j]]; mtranj != NULL; mtranj = mtranj->mnext)
 	  {
-	    if (filcount[mtranj->filindex] > 0 && !posdef
-		|| filcount2[mtranj->filindex] > 0 && posdef) {  
+	    if ((filcount[mtranj->filindex] > 0 && !posdef)
+		|| (filcount2[mtranj->filindex] > 0 && posdef)) {  
 	      mcol = indx[mtranj->filindex];
 	      for(mtrani=Mtrans[fillist[i]]; mtrani!=NULL;mtrani=mtrani->mnext)
 		{
-		  if (filcount[mtrani->filindex] > 0 && !posdef
-		      || filcount2[mtrani->filindex] > 0 && posdef) {  
+		  if ((filcount[mtrani->filindex] > 0 && !posdef)
+		      || (filcount2[mtrani->filindex] > 0 && posdef)) {  
 		    mrow = indx[mtrani->filindex];
 		    meshmat[mrow][mcol].imag 
 		      += w*mtrani->sign*mat[i][j]*mtranj->sign;
@@ -602,10 +609,7 @@ double w;
 
 /* multiplies x times the preconditioner and returns in result */
 
-multPrecond(Precond, x, result, size)
-PRE_ELEMENT **Precond;
-CX *x, *result;
-int size;
+void multPrecond(PRE_ELEMENT **Precond, CX *x, CX *result, int size)
 {
 
   PRE_ELEMENT *pre;
@@ -623,9 +627,7 @@ int size;
 
 /* if mel->filindex is not in the cube and nearest nbrs (findx == -1), skip */
 /* to the next element which is */
-MELEMENT *getnext(mel, findx)
- MELEMENT *mel;
- int *findx;
+MELEMENT *getnext(MELEMENT *mel, int *findx)
 {
   while(mel != NULL && findx[mel->filindex] == -1)
     mel = mel->mnext; 
@@ -636,10 +638,7 @@ MELEMENT *getnext(mel, findx)
   In-place inverts a matrix using guass-jordan. 
   Skips rows and columns with is_dup[i].sign != 1.
 */
-cx_invert_dup(mat, size, is_dup)
-CX **mat;
-int size;
-DUPS *is_dup;
+void cx_invert_dup(CX **mat, int size, DUPS *is_dup)
 {
   int i, j, k;
   CX normal, multiplier, tmp;
@@ -681,11 +680,8 @@ DUPS *is_dup;
    so when we form the preconditioner later, the duplicate mesh will
    get the same entry as the original */
 
-mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx)
-MELEMENT **Mlist;
-int *meshnum, meshsize, *findx;
-DUPS *is_dup;
-
+void mark_dup_mesh(MELEMENT **Mlist, int *meshnum, int meshsize,
+    DUPS *is_dup, int *findx)
 {
   int i,j;
   MELEMENT *meli, *melj;
@@ -723,10 +719,7 @@ DUPS *is_dup;
     } /* for i*/
 }
 
-dumpPrecond(Precond, size, suffix)
-PRE_ELEMENT **Precond;
-int size;
-char *suffix;
+void dumpPrecond(PRE_ELEMENT **Precond, int size, char *suffix)
 {
   FILE *fp;
   int i,j;
@@ -779,10 +772,7 @@ char *suffix;
 
   
   
-indPrecond_direct(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+void indPrecond_direct(ssystem *sys, SYS *indsys, double w)
 {
   cube *nc, *nnbr, *nnnbr;
   int nsize, nnsize;

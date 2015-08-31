@@ -1,0 +1,8 @@
+Row 2:  nb1  to  nbin, port name: trace2
+Row 1:  na1  to  nain, port name: trace1
+Impedance matrix for frequency = 0.1 2 x 2
+     0.0859369  +1.32848e-08j     0.0010876  +4.56457e-09j 
+    0.0010876  +4.56458e-09j     0.0859369  +1.32847e-08j 
+Impedance matrix for frequency = 1e+19 2 x 2
+     0.0914132  +8.10665e+11j    0.00638049  -4.57036e+10j 
+   0.00638021  -4.56953e+10j     0.0914132  +8.10646e+11j 

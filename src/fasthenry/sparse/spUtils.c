@@ -23,10 +23,6 @@
  *
  *  >>> Other functions contained in this file:
  */
-static CountTwins();
-static SwapCols();
-static ScaleComplexMatrix();
-static ComplexMatrixMultiply();
 
 
 /*
@@ -71,7 +67,22 @@ static char RCSid[] =
 #include "spMatrix.h"
 #include "spDefs.h"
 
-static RealNumber ComplexCondition();
+static int CountTwins( MatrixPtr, int, ElementPtr*, ElementPtr* );
+static void SwapCols( MatrixPtr, ElementPtr, ElementPtr );
+#if spCOMPLEX AND SCALING
+static void ScaleComplexMatrix( MatrixPtr, RealVector, RealVector );
+#endif
+#if spCOMPLEX AND MULTIPLICATION
+static void ComplexMatrixMultiply( MatrixPtr, RealVector, RealVector
+    IMAG_VECTORS );
+#endif
+#if spCOMPLEX AND MULTIPLICATION AND TRANSPOSE
+static void ComplexTransposedMatrixMultiply( MatrixPtr, RealVector,
+    RealVector IMAG_VECTORS );
+#endif
+#if spCOMPLEX
+static RealNumber ComplexCondition( MatrixPtr, RealNumber, int* );
+#endif
 
 
 
@@ -168,9 +179,8 @@ static RealNumber ComplexCondition();
  */
 
 void
-spMNA_Preorder( eMatrix )
+spMNA_Preorder( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register  int  J, Size;
@@ -230,11 +240,9 @@ BOOLEAN  Swapped, AnotherPassNeeded;
  */
 
 static int
-CountTwins( Matrix, Col, ppTwin1, ppTwin2 )
+CountTwins( MatrixPtr Matrix, int Col, ElementPtr *ppTwin1,
+    ElementPtr *ppTwin2 )
 
-MatrixPtr Matrix;
-int Col;
-ElementPtr *ppTwin1, *ppTwin2;
 {
 int Row, Twins = 0;
 ElementPtr pTwin1, pTwin2;
@@ -270,11 +278,9 @@ ElementPtr pTwin1, pTwin2;
  *  linked.
  */
 
-static
-SwapCols( Matrix, pTwin1, pTwin2 )
+static void
+SwapCols( MatrixPtr Matrix, ElementPtr pTwin1, ElementPtr pTwin2 )
 
-MatrixPtr Matrix;
-ElementPtr pTwin1, pTwin2;
 {
 int Col1 = pTwin1->Col, Col2 = pTwin2->Col;
 
@@ -360,10 +366,9 @@ int Col1 = pTwin1->Col, Col2 = pTwin2->Col;
  */
 
 void
-spScale( eMatrix, RHS_ScaleFactors, SolutionScaleFactors )
+spScale( char *eMatrix, RealVector RHS_ScaleFactors,
+    RealVector SolutionScaleFactors )
 
-char *eMatrix;
-register  RealVector  RHS_ScaleFactors, SolutionScaleFactors;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register ElementPtr  pElement;
@@ -488,10 +493,9 @@ void ScaleComplexMatrix();
  */
 
 static void
-ScaleComplexMatrix( Matrix, RHS_ScaleFactors, SolutionScaleFactors )
+ScaleComplexMatrix( MatrixPtr Matrix, RealVector RHS_ScaleFactors,
+    RealVector SolutionScaleFactors )
 
-MatrixPtr  Matrix;
-register  RealVector  RHS_ScaleFactors, SolutionScaleFactors;
 {
 register ElementPtr  pElement;
 register int  I, lSize, *pExtOrder;
@@ -577,10 +581,8 @@ RealNumber  ScaleFactor;
  */
 
 void
-spMultiply( eMatrix, RHS, Solution IMAG_VECTORS )
+spMultiply( char *eMatrix, RealVector RHS, RealVector Solution IMAG_VECTORS )
 
-char *eMatrix;
-RealVector RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  RealVector  Vector;
@@ -595,7 +597,7 @@ extern void ComplexMatrixMultiply();
 
 #if spCOMPLEX
     if (Matrix->Complex)
-    {   ComplexMatrixMultiply( Matrix, RHS, Solution IMAG_VECTORS );
+    {   ComplexMatrixMultiply( Matrix, RHS, Solution IMAG_VECTORS_C );
         return;
     }
 #endif
@@ -671,10 +673,9 @@ extern void ComplexMatrixMultiply();
  */
 
 static void
-ComplexMatrixMultiply( Matrix, RHS, Solution IMAG_VECTORS )
+ComplexMatrixMultiply( MatrixPtr Matrix, RealVector RHS,
+    RealVector Solution IMAG_VECTORS )
 
-MatrixPtr  Matrix;
-RealVector RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  ComplexVector  Vector;
@@ -769,10 +770,9 @@ register  int  I, *pExtOrder;
  */
 
 void
-spMultTransposed( eMatrix, RHS, Solution IMAG_VECTORS )
+spMultTransposed( char *eMatrix, RealVector RHS, RealVector Solution
+    IMAG_VECTORS )
 
-char *eMatrix;
-RealVector RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  RealVector  Vector;
@@ -786,7 +786,8 @@ extern void ComplexTransposedMatrixMultiply();
 
 #if spCOMPLEX
     if (Matrix->Complex)
-    {   ComplexTransposedMatrixMultiply( Matrix, RHS, Solution IMAG_VECTORS );
+    {   ComplexTransposedMatrixMultiply( Matrix, RHS, Solution
+            IMAG_VECTORS_C );
         return;
     }
 #endif
@@ -862,10 +863,9 @@ extern void ComplexTransposedMatrixMultiply();
  */
 
 static void
-ComplexTransposedMatrixMultiply( Matrix, RHS, Solution IMAG_VECTORS )
+ComplexTransposedMatrixMultiply( MatrixPtr Matrix, RealVector RHS,
+    RealVector Solution IMAG_VECTORS )
 
-MatrixPtr  Matrix;
-RealVector RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  ComplexVector  Vector;
@@ -970,16 +970,13 @@ register  int  I, *pExtOrder;
 
 #if spCOMPLEX
 void
-spDeterminant( eMatrix, pExponent, pDeterminant, piDeterminant )
-RealNumber *piDeterminant;
+spDeterminant( char *eMatrix, int *pExponent, RealNumber *pDeterminant,
+    RealNumber *piDeterminant )
 #else
 void
-spDeterminant( eMatrix, pExponent, pDeterminant )
+spDeterminant( char *eMatrix, int *pExponent, RealNumber *pDeterminant )
 #endif
 
-char *eMatrix;
-register  RealNumber *pDeterminant;
-int  *pExponent;
 {
 register MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register int I, Size;
@@ -1127,9 +1124,8 @@ ComplexNumber Pivot, cDeterminant;
  */
 
 void
-spStripFills( eMatrix )
+spStripFills( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 struct FillinListNodeStruct  *pListNode;
@@ -1232,10 +1228,8 @@ struct FillinListNodeStruct  *pListNode;
  */
 
 void
-spDeleteRowAndCol( eMatrix, Row, Col )
+spDeleteRowAndCol( char *eMatrix, int Row, int Col )
 
-char *eMatrix;
-int  Row, Col;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register  ElementPtr  pElement, *ppElement, pLastElement;
@@ -1348,9 +1342,8 @@ ElementPtr  spcFindElementInCol();
  */
 
 RealNumber
-spPseudoCondition( eMatrix )
+spPseudoCondition( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register int I;
@@ -1439,11 +1432,8 @@ RealNumber MaxPivot, MinPivot, Mag;
  */
 
 RealNumber
-spCondition( eMatrix, NormOfMatrix, pError )
+spCondition( char *eMatrix, RealNumber NormOfMatrix, int *pError )
 
-char *eMatrix;
-RealNumber NormOfMatrix;
-int *pError;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register ElementPtr pElement;
@@ -1650,11 +1640,8 @@ RealNumber Linpack, OLeary, InvNormOfInverse, ComplexCondition();
  */
 
 static RealNumber
-ComplexCondition( Matrix, NormOfMatrix, pError )
+ComplexCondition( MatrixPtr Matrix, RealNumber NormOfMatrix, int *pError )
 
-MatrixPtr Matrix;
-RealNumber NormOfMatrix;
-int *pError;
 {
 register ElementPtr pElement;
 register ComplexVector T, Tm;
@@ -1844,9 +1831,8 @@ ComplexNumber Wp, Wm;
  */
 
 RealNumber
-spNorm( eMatrix )
+spNorm( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register ElementPtr pElement;
@@ -1961,9 +1947,8 @@ RealNumber Max = 0.0, AbsRowSum;
  */
 
 RealNumber
-spLargestElement( eMatrix )
+spLargestElement( char *eMatrix )
 
-char *eMatrix;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register int I;
@@ -2080,10 +2065,8 @@ register ElementPtr pElement, pDiag;
  */
 
 RealNumber
-spRoundoff( eMatrix, Rho )
+spRoundoff( char *eMatrix, RealNumber Rho )
 
-char *eMatrix;
-RealNumber Rho;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register ElementPtr pElement;

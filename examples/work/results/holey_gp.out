@@ -1,0 +1,57 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:05:43 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../holey_gp.inp
+Title:
+* A FastHenry example using a reference plane
+
+all lengths multiplied by 2.54e-05 to convert to meters
+Total number of filaments before multipole refine: 2828
+Total number of filaments after multipole refine: 3260
+
+Multipole Summary
+  Expansion order: 2
+  Number of partitioning levels: 5
+  Total number of filaments: 3260
+Percentage of multiplies done by multipole: 100%
+Scanning graph to find fundamental circuits...
+Number of Groundplanes : 1 
+Number of filaments:       3260
+Number of segments:        2868
+Number of nodes:           2761
+Number of meshes:          3001
+          ----from tree:                   8 
+          ----from planes: (before holes)  2601 
+Number of conductors:         1   (rows of matrix in Zc.mat) 
+Number of columns:            1   (columns of matrix in Zc.mat) 
+Number of real nodes:      2760
+filling M...
+Exact number of meshes after ground plane holes removed: 1646
+filling R and L...
+Total Memory allocated: 12029 kilobytes
+Frequency = 0.1
+Forming sparse matrix preconditioner..
+conductor 0 from node n1
+Calling gmres...
+1 2 
+Frequency = 1e+19
+Forming sparse matrix preconditioner..
+conductor 0 from node n1
+Calling gmres...
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+
+All impedance matrices dumped to file Zc.mat
+
+Times:  Read geometry   0.005749
+        Multipole setup 0.306575
+        Scanning graph  0.000611
+        Form A M and Z  0.001095
+        form M'ZM       5.9e-05
+        Form precond    0.0503
+        GMRES time      0.243406
+   Total:               0.607795

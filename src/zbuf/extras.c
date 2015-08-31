@@ -1,6 +1,7 @@
 #include "mulGlobal.h"
 #include "zbufGlobal.h"
 
+
 #define XI 0
 #define YI 1
 #define ZI 2
@@ -14,13 +15,22 @@
 
 #define ONE3 0.3333333333333
 
+/* SRW */
+void dumpCorners(FILE*, double**, int, int);
+void dumpConfig(FILE*, char*);
+void dump_face(FILE*, face*);
+void initcalcp(charge*);
+void Cross_Product(double*, double*, double*);
+double normalize(double*);
+void centroid(charge*, double);
+int planarize(charge*);
+int flip_normal(charge*);
+
+
 /*
   dumps a rows x cols matrix of doubles; assumes indices from zero 
 */
-void dumpCorners(fp, mat, rows, cols)
-int rows, cols;
-double **mat;
-FILE *fp;
+void dumpCorners(FILE *fp, double **mat, int rows, int cols)
 {
   int i, j;
   for(i = 0; i < rows; i++) {
@@ -36,9 +46,7 @@ FILE *fp;
 /* 
   dumps state of important compile flags
 */
-void dumpConfig(fp, name)
-char *name;
-FILE *fp;
+void dumpConfig(FILE *fp, char *name)
 {
   int size = -1;		/* for '#define MAXITER size' case */
 
@@ -148,14 +156,12 @@ FILE *fp;
 /*
   dump the contents of a face struct
 */
-void dump_face(fp, fac)
-face *fac;
-FILE *fp;
+void dump_face(FILE *fp, face *fac)
 {
   int i, j;
   face **behind = fac->behind;
 
-  fprintf(fp, "Face %d, %d sides, depth %d, mark %d, greylev %d\n", 
+  fprintf(fp, "Face %d, %d sides, depth %d, mark %d, greylev %g\n", 
 	  fac->index, fac->numsides, fac->depth, fac->mark, fac->greylev);
   fprintf(fp, "  plane: n = (%g %g %g) rhs = %g\n",
 	  fac->normal[0], fac->normal[1], fac->normal[2], fac->rhs);
@@ -170,13 +176,11 @@ FILE *fp;
   dumpCorners(fp, fac->c, fac->numsides, 3);
 }  
 
-initcalcp(panel_list)
-  charge *panel_list;
+void initcalcp(charge *panel_list)
 {
   charge *pq, *npq;
   double vtemp[3];
   double length, maxlength, minlength, length20, length31, sum, sum2, delta;
-  double normalize();
   int i, j, next;
 
   for(i=0, pq = panel_list; pq != NULL; pq = pq->next) i++;
@@ -299,16 +303,14 @@ initcalcp(panel_list)
 }
 
 /* Calculates result_vector = vector1 X vector2. */
-Cross_Product(vector1, vector2, result_vector)
-  double vector1[], vector2[], result_vector[];
+void Cross_Product(double *vector1, double *vector2, double *result_vector)
 {
   result_vector[XI] = vector1[YI]*vector2[ZI] - vector1[ZI]*vector2[YI];
   result_vector[YI] = vector1[ZI]*vector2[XI] - vector1[XI]*vector2[ZI];
   result_vector[ZI] = vector1[XI]*vector2[YI] - vector1[YI]*vector2[XI];
 }
 
-double normalize(vector)
-  double vector[3];
+double normalize(double *vector)
 {
   double length;
   int i;
@@ -328,9 +330,7 @@ first moments vanish.  Calculation begins by projection into the
 coordinate system defined by the panel normal as the z-axis and
 edge02 as the x-axis.
 */
-centroid(pp, x2)
-charge *pp;
-double x2;
+void centroid(charge *pp, double x2)
 {
   double vertex1[3], vertex3[3];
   double sum, dl, x1, y1, x3, y3, xc, yc;
@@ -362,8 +362,7 @@ double x2;
 Changes the corner points so that they lie in the plane defined by the
 panel diagonals and any midpoint of an edge.
 */
-planarize(pq)
-charge *pq;
+int planarize(charge *pq)
 {
   double origin[3], corner[3], delta[4][3], px, py, dx, dy, dz;
   int i, j, numcorners = pq->shape;
@@ -408,8 +407,7 @@ charge *pq;
   - this function uses 0.0 as a breakpoint when really machine precision
     weighted checks should be done (really not an issue if ref point far)
 */
-flip_normal(panel)
-charge *panel;
+int flip_normal(charge *panel)
 {
   int i;
   double x, y, z;

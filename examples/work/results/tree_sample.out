@@ -1,0 +1,17 @@
+Running FastHenry 3.0wr (29Sep96, mod 010114)
+  Date: Wed Jan  8 11:06:43 2014
+  Host: frost
+Solution technique: ITERATIVE
+Matrix vector product method: MULTIPOLE
+  Order of expansion: 2
+Preconditioner: ON
+Error tolerance: 0.001
+Reading from file: ../tree_sample.inp
+Title:
+*  A fasthenry input file for a nonuniform ground plane
+
+all lengths multiplied by 1 to convert to meters
+Couldn't open nonuniform hierarchy file tree_sample.hier for plane g1
+addexternal: No node read in yet named nin
+addexternal: No node read in yet named nin
+addexternal: No node read in yet named n3

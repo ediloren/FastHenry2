@@ -3,8 +3,6 @@
 #ifndef _GP_H
 #define _GP_H
 
-#include "induct.h"
-
 #define TRUE 1
 #define FALSE 0
 
@@ -219,59 +217,19 @@ typedef struct _nonuni_choice_list {
   double rank;                    /* weight for this choice */
 } nonuni_choice_list;
 
-G_nodes *add_to_gnodelist();
-G_edges *make_one_edge();
-G_edges *make_two_edge();
-G_nodes *get_other_gnode();
-Gcell *new_Gcells();
-Gcell *new_Gcell();
-G_nodes *new_Gnode();
-G_nodes *make_new_node();
-void *gp_malloc();
-G_nodes *get_adjacent_node();
-SEGMENT *make_one_seg();
-G_nodes *find_nearest_nonuni_node();
-Gcell *get_containing_cell();
-Gcell *get_containing_grid_cell();
-Gcell *get_containing_bi_cell();
-SPATH *get_a_nonuni_path();
-Llist *add_ptr_to_list();
-int add_nonuni_choice();
-G_nodes *find_nearest_edge_node();
-G_nodes *scan_edge();
-double get_node_dist();
-double get_dist();
-MELEMENT *add_edge_segs_to_list();
-double get_perimeter();
-NODES *get_nonuni_node_from_list();
-NODES *make_new_node_with_nonuni();
-Llist *get_nodes_inside_rect();
-Llist *bi_get_nodes_inside_rect();
-Llist *grid_get_nodes_inside_rect();
-Llist *which_nodes_inside();
 
-/* contact.c */
-G_nodes *find_mid_node();
-Gcell *find_next_cell_along_line();
-double edge_coord();
-Gcell *cut_cell();
-G_nodes *add_new_node();
-NODES *make_fastH_node();
-ContactList *make_contact_connection();
-Gcell *pick_cell_based_on_vec();
-
-#define get_x0(cell) (cell->x0)
-#define get_y0(cell) (cell->y0)
-#define get_x1(cell) (cell->x1)
-#define get_y1(cell) (cell->y1)
+#define c_get_x0(cell) (cell->x0)
+#define c_get_y0(cell) (cell->y0)
+#define c_get_x1(cell) (cell->x1)
+#define c_get_y1(cell) (cell->y1)
 
 /* could also check if children_type == NONE */
-#define is_leaf(cell) (cell->children == NULL)
-#define get_children_type(cell) (cell->children_type)
-#define get_bi_type(two) (two->type)
-#define is_hole(cell) (cell->ishole == TRUE)
+#define c_is_leaf(cell) (cell->children == NULL)
+#define c_get_children_type(cell) (cell->children_type)
+#define c_get_bi_type(two) (two->type)
+#define c_is_hole(cell) (cell->ishole == TRUE)
 
-#define GP_PANIC(str) { fprintf(stderr,"Internal error in nonuniform plane code: %s\n",str); debug_func(); exit(1); }
+#define GP_PANIC(str) { fprintf(stderr,"Internal error in nonuniform plane code: %s\n",str); /* debug_func(); */ exit(1); }
 
 #define DUMP_INDEX(ptr) {if ((ptr) == NULL) \
 			   fprintf(fp, "x "); \
@@ -288,5 +246,178 @@ Gcell *pick_cell_based_on_vec();
 
 /* return opposite direction to dir */
 #define opposite_dir(dir) ( (dir + 2)%4 )
+
+/* SRW -- prototypes */
+
+/* contact.c */
+ContactList *make_contactlist(ContactList*, char*, double, double, double,
+    double, int*);
+// void contact_error(char*, char*, ContactList*);
+// void contact_error2(char*, char*, char*);
+// void contact_warning(char*, ContactList*);
+// void regurg_contact(FILE*, ContactList*);
+void make_contacts(ContactList*, Nonuni_gp*);
+// void contact_point(ContactList*, Nonuni_gp*, double, double, double, double);
+// void contact_line(ContactList*, Nonuni_gp*, double, double, double, double);
+// void walk_along_line(double, double, double, double, double, double,
+//     double, double, Nonuni_gp*);
+// Gcell *find_next_cell_along_line(double, double, double, double, Gcell*,
+//     double*, double*);
+// void get_new_x_y(double, double, double, double, Gcell*, double*, double*,
+//     G_nodes**, char*);
+// double edge_coord(double, double, double, double, double);
+// Gcell *cut_cell(double, double, double, double, Gcell*, Nonuni_gp*);
+// void break_cell(Gcell*, char, Nonuni_gp*);
+// void update_bi_nodes(Gcell*, Nonuni_gp*);
+// void clear_edge_ptrs(Gcell*);
+// void fix_node_cell_ptrs(Gcell*);
+// void set_edge_nodes(G_nodes*, G_nodes*, char, char, char, Gcell*);
+// void find_or_make_node(Gcell*, Gcell*, Gcell*, char, char, double, double,
+//     Nonuni_gp*);
+// void fix_adjacency(G_nodes*, char, G_nodes*, G_nodes*);
+// G_nodes *find_mid_node(G_nodes*, char, G_nodes*);
+// void make_two_kids(Gcell*, char, Nonuni_gp*);
+// void contact_rect(ContactList*, Nonuni_gp*, double, double, double, double);
+// void cut_inside_rect(double, double, double, double, double, double, double,
+//     Nonuni_gp*);
+// void contact_decay_rect(ContactList*, Nonuni_gp*, double, double, double,
+//     double);
+// void do_decay_rect(double, double, double, double, double, double, double,
+//     double, double, Nonuni_gp*);
+// void limit_box(double, double, double, double, double, double, double,
+//     double, double*, double*, double*, double*);
+// void compute_new_widths(double*, double*, double*, double*);
+// void contact_equiv_rect(ContactList*, Nonuni_gp*, double, double, double,
+//     double);
+// void make_equiv_rect(double, double, double, double, double, Nonuni_gp*,
+//     char*); 
+// void walk_along_edge(double, double, double, double, Nonuni_gp*, char,
+//     NODES*, char*, double);
+// void equiv_nodes_on_edge(G_nodes*, char, G_nodes*, NODES*, Nonuni_gp*,
+//     char*, double);
+// NODES *make_fastH_node(G_nodes*, GROUNDPLANE*, Nonuni_gp*, double, double,
+//     double, char*);
+// void contact_initial_grid(ContactList*, Nonuni_gp*, double, double, double,
+//     double);
+// void make_initial_grid(Nonuni_gp*, int, int);
+// void update_grid_nodes(Gcell*, Nonuni_gp*);
+// void set_node_and_cell_info(G_nodes*, int, Gcell*);
+// void set_cell_node_adjacency(Gcell*);
+// void point_at_each_other(G_nodes*, int, G_nodes*);
+// G_nodes *add_new_node(double, double, int, Gcell*, int, Nonuni_gp*);
+// void make_grid_kids(Gcell*, int, int, Nonuni_gp*);
+// void contact_initial_mesh_grid(ContactList*, Nonuni_gp*, double, double,
+//     double, double);
+// void poke_holes(Nonuni_gp*);
+// ContactList *make_contact_connection(ContactList*, char*, double, double,
+//     double, double, int*);
+// void contact_trace(ContactList*, Nonuni_gp*, double, double, double, double);
+// void do_trace(double, double, double, double, double, double, double, double,
+//     Nonuni_gp*);
+// Gcell *pick_cell_based_on_vec(G_nodes*, double, double);
+
+/* find_nonuni_path.c */
+SPATH *path_through_nonuni_gp(NODES*, NODES*, GROUNDPLANE*);
+// void clear_nonuni_marks(G_nodes*);
+// G_nodes *find_nearest_nonuni_node(double, double, double, Nonuni_gp*);
+// SPATH *get_a_nonuni_path(G_nodes*, G_nodes*, Nonuni_gp*, Llist*);
+// void sort_nonuni_choices(nonuni_choice_list*, int);
+// Llist *add_ptr_to_list(void*, Llist*);
+// int add_nonuni_choice(nonuni_choice_list*, Llist*, SEGMENT**, G_nodes*,
+//     double);
+// int is_ptr_in_list(void*, Llist*);
+Gcell *get_containing_cell(double, double, Gcell*);
+// Gcell *get_containing_grid_cell(double, double, Gcell*);
+// Gcell *get_containing_bi_cell(double, double, Gcell*);
+int is_in_cell(double, double, Gcell*);
+// G_nodes *find_nearest_edge_node(double, double, Gcell*);
+G_nodes *scan_edge(double, double, G_nodes*, char);
+// double get_node_dist(double, double, G_nodes*);
+// double get_dist(double, double);
+int make_nonuni_Mlist(GROUNDPLANE*, MELEMENT**);
+// void make_children_meshes(Gcell*, MELEMENT**, int*);
+// void make_grid_children_meshes(Grid_2d*, MELEMENT**, int*);
+// int make_leaf_mesh(Gcell*, MELEMENT**);
+// MELEMENT *add_edge_segs_to_list(G_nodes*, G_nodes*, char, int, MELEMENT*);
+NODES *get_or_make_nearest_node(char*, int, double, double, double, SYS*,
+    Nonuni_gp*, NPATH*);
+NODES *make_new_node_with_nonuni(G_nodes*, char*, int, double, double, double,
+    SYS*, Nonuni_gp*);
+NODES *get_nonuni_node_from_list(G_nodes*, NPATH*);
+Llist *get_nodes_inside_rect(double, double, double, double, Gcell*, Llist**);
+// Llist *bi_get_nodes_inside_rect(double, double, double, double, Gcell*,
+//     Llist**);
+// Llist *grid_get_nodes_inside_rect(double, double, double, double, Gcell*,
+//     Llist**);
+// void get_grid_indices(Gcell*, double, double, int*, int*);
+// int intersection(double, double, double, double, double, double, double,
+//     double);
+// Llist *which_nodes_inside(double, double, double, double, Gcell*, Llist**);
+void free_Llist(Llist*);
+
+/* read_tree.c */
+int process_plane(GROUNDPLANE*, FILE*, SYS*);
+// void set_gp_coord_system(GROUNDPLANE*, Nonuni_gp*);
+void get_nonuni_coords(double, double, double, Nonuni_gp*, double*, double*,
+    double*);
+void get_global_coords(double, double, double, Nonuni_gp*, double*, double*,
+    double*);
+// void get_global_vec(double, double, double, Nonuni_gp*, double*, double*,
+//     double*);
+// int readTree(FILE*, Nonuni_gp*);
+void set_cell_coords(Gcell*, double, double, double, double);
+// void set_bi_coords(Bi*, double, double, double, double);
+// void set_grid_coords(Grid_2d*, double, double, double, double);
+// void process_tree(Nonuni_gp*);
+// void resolve_nodes(Gcell*, Info*);
+// void make_nodes(Gcell*, Info*);
+G_nodes *add_to_gnodelist(G_nodes*, G_nodes*);
+// void resolve_bi_children(Gcell*, Info*);
+// G_edges *make_one_edge(Gcell*, Gcell*, char);
+// G_edges *make_two_edge(Gcell*, Gcell*, Gcell*, char);
+// Gcell *new_Gcells(int, int);
+Gcell *new_Gcell(int);
+// void init_Gcell(Gcell*);
+// G_nodes *new_Gnode(int);
+G_nodes *make_new_node(double, double, int, Gcell*, int);
+void *gp_malloc(int);
+// void Combine_edges(Gcell*, char, Gcell*, char);
+// void combine_node_info(Gcell*, char, Gcell*, char);
+// void give_cell_adjaceny(Gcell*, char, Gcell*, char, G_nodes**, G_nodes**);
+// void combine_nodes(Gcell*, char, G_nodes*, G_nodes*);
+// void replace_node(G_nodes*, G_nodes*);
+// void kill_node(G_nodes*);
+// void delete_first_node(Nonuni_gp*);
+// void delete_dead_nodes(Nonuni_gp*);
+// void remove_and_free(G_nodes*);
+// void free_g_node(G_nodes*);
+// void determine_adjaceny(G_nodes*);
+// G_nodes *get_adjacent_node(G_nodes*, Gcell*, char, char, Gcell*, char, char);
+// G_nodes *get_other_gnode(Gcell*, char, char);
+// void compute_z_fils(Nonuni_gp*);
+// void generate_segs(Nonuni_gp*, SYS*);
+// void get_width_and_shift(char, G_nodes*, Gcell*, Gcell*, double*, double*);
+// void get_x_cell_vals(Gcell*, G_nodes*, Gcell*, double*, double*);
+// void get_y_cell_vals(Gcell*, G_nodes*, Gcell*, double*, double*);
+// void make_segs(char, G_nodes*, G_nodes*, double, double, double, Nonuni_gp*,
+//     SYS*);
+// SEGMENT *make_one_seg(double, double, double, double, double, double, double,
+//     double, double, double, double, Nonuni_gp*, SYS*, NODES**, NODES**);
+// void draw_one_seg(char, double, double, double, double, double, double, double,
+//     double, double, double, double, double, double, double, int, Nonuni_gp*);
+// void print_cell_and_kids(Gcell*);
+// void fprint_cell_and_kids(Gcell*, FILE*);
+// void fprint_bi_kids(Bi*, FILE*);
+// void dump_cell(Gcell*, FILE*);
+// void print_bi_addresses(Bi*, FILE*);
+// void print_node_list(G_nodes*);
+// void fprint_node_list(G_nodes*, FILE*);
+// void dump_node(G_nodes*,FILE*);
+// void dump_leaf_cells_to_file(Gcell*, char*);
+// void dump_leaf_cells(Gcell*, FILE*);
+// void dump_grid_leaf_cells(Grid_2d*, FILE*);
+// void print_leaf_cell(Gcell*, FILE*);
+void dump_nonuni_plane_currents(Nonuni_gp*, CX*, FILE*);
+double get_perimeter(G_nodes*);
 
 #endif /* _GP_H */

@@ -14,8 +14,6 @@
  *
  *  >>> Other functions contained in this file:
  */
-static void SolveComplexMatrix();
-static SolveComplexTransposedMatrix();
 
 
 /*
@@ -61,6 +59,10 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
+static void SolveComplexMatrix( MatrixPtr, RealVector, RealVector
+    IMAG_VECTORS );
+static void SolveComplexTransposedMatrix( MatrixPtr, RealVector, RealVector
+    IMAG_VECTORS );
 
 
 
@@ -127,10 +129,8 @@ static char RCSid[] =
 /*VARARGS3*/
 
 void
-spSolve( eMatrix, RHS, Solution IMAG_VECTORS )
+spSolve( char *eMatrix, RealVector RHS, RealVector Solution IMAG_VECTORS )
 
-char *eMatrix;
-RealVector  RHS, Solution IMAG_VECTORS;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register  ElementPtr  pElement;
@@ -138,14 +138,13 @@ register  RealVector  Intermediate;
 register  RealNumber  Temp;
 register  int  I, *pExtOrder, Size;
 ElementPtr  pPivot;
-void SolveComplexMatrix();
 
 /* Begin `spSolve'. */
     ASSERT( IS_VALID(Matrix) AND IS_FACTORED(Matrix) );
 
 #if spCOMPLEX
     if (Matrix->Complex)
-    {   SolveComplexMatrix( Matrix, RHS, Solution IMAG_VECTORS );
+    {   SolveComplexMatrix( Matrix, RHS, Solution IMAG_VECTORS_C );
         return;
     }
 #endif
@@ -274,10 +273,9 @@ void SolveComplexMatrix();
  */
 
 static void
-SolveComplexMatrix( Matrix, RHS, Solution IMAG_VECTORS )
+SolveComplexMatrix( MatrixPtr Matrix, RealVector RHS, RealVector Solution
+    IMAG_VECTORS )
 
-MatrixPtr  Matrix;
-RealVector  RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  ComplexVector  Intermediate;
@@ -445,10 +443,9 @@ ComplexNumber  Temp;
 /*VARARGS3*/
 
 void
-spSolveTransposed( eMatrix, RHS, Solution IMAG_VECTORS )
+spSolveTransposed( char *eMatrix, RealVector RHS, RealVector Solution
+    IMAG_VECTORS )
 
-char *eMatrix;
-RealVector  RHS, Solution IMAG_VECTORS;
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register  ElementPtr  pElement;
@@ -456,14 +453,13 @@ register  RealVector  Intermediate;
 register  int  I, *pExtOrder, Size;
 ElementPtr  pPivot;
 RealNumber  Temp;
-void SolveComplexTransposedMatrix();
 
 /* Begin `spSolveTransposed'. */
     ASSERT( IS_VALID(Matrix) AND IS_FACTORED(Matrix) );
 
 #if spCOMPLEX
     if (Matrix->Complex)
-    {   SolveComplexTransposedMatrix( Matrix, RHS, Solution IMAG_VECTORS );
+    {   SolveComplexTransposedMatrix( Matrix, RHS, Solution IMAG_VECTORS_C );
         return;
     }
 #endif
@@ -594,10 +590,9 @@ void SolveComplexTransposedMatrix();
  */
 
 static void
-SolveComplexTransposedMatrix(Matrix, RHS, Solution IMAG_VECTORS )
+SolveComplexTransposedMatrix( MatrixPtr Matrix, RealVector RHS,
+    RealVector Solution IMAG_VECTORS )
 
-MatrixPtr  Matrix;
-RealVector  RHS, Solution IMAG_VECTORS;
 {
 register  ElementPtr  pElement;
 register  ComplexVector  Intermediate;

@@ -76,8 +76,7 @@ static HEADER *lastblock = NULL;       /* pointer to last allocated block */
   asks operating system for more memory which is added to the top block
   - memory not zeroed out
 */
-static HEADER *mocore(nu)
-unsigned int nu;
+static HEADER *mocore(unsigned int nu)
 {
   HEADER *cp;
 
@@ -96,10 +95,7 @@ unsigned int nu;
 }
 
 /* fills space with value */
-fill_it(mem, k, nbytes)
-void *mem;
-char k;
-int nbytes;
+void fill_it(void *mem, char k, int nbytes)
 {
   /* printf("will fill: %x + 1 = %x\n",(HEADER *)mem - 1, (HEADER *)mem);*/
   memset( mem, k, nbytes);
@@ -136,8 +132,7 @@ void ufree()
   - ultimately uses mocore(), since no frees are done (sbrk() zeros added
     memory) this allocator performs like calloc() w/no explicit assigns to 0
 */
-char *ualloc(nbytes)
-unsigned int nbytes;
+char *ualloc(unsigned int nbytes)
 {
   HEADER *mocore();
   HEADER *p, *q;
@@ -293,8 +288,7 @@ void ualloc_verify()
         memory lost in each header struct (a problem with many small things)
   - if base == NULL (not using ugly allocator), final break value is printed
 */
-void uallocEfcy(memcount)
-long memcount;
+void uallocEfcy(long memcount)
 {
 #ifdef NO_SBRK
   return;
@@ -310,7 +304,7 @@ long memcount;
 
   total = (int)(sbrk(0) - (char *)base);
 
-  if(base == NULL) fprintf(stdout, "(top of memory = 0x%x", sbrk(0));
+  if(base == NULL) fprintf(stdout, "(top of memory = 0x%lx", (long)sbrk(0));
   else fprintf(stdout, "(%.3g%% efficiency",
 	       100*((double)memcount)/((double)total));
 

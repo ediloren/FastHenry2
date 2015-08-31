@@ -3,6 +3,7 @@
  code from olmulPrcond() */
 
 #include "induct.h"
+
 #define PARTMESH OFF
 
 /* This near picks up only the hamming distance one cubes. */    
@@ -23,10 +24,12 @@
 
 FILE *fp;
 
-bigmesh_direct(sys, indsys, w)
-ssystem *sys;
-SYS *indsys;
-double w;
+/* SRW */
+void bigmesh_direct(ssystem *sys, SYS *indsys, double w)
+int is_in_Precond(PRE_ELEMENT *prelist, int col, PRE_ELEMENT **last)
+
+
+void bigmesh_direct(ssystem *sys, SYS *indsys, double w)
 {
   cube *nc, *nnbr, *nnnbr;
   int nsize, nnsize;
@@ -126,9 +129,7 @@ double w;
 
 }  
 
-is_in_Precond(prelist, col, last)
-PRE_ELEMENT *prelist, **last;
-int col;
+int is_in_Precond(PRE_ELEMENT *prelist, int col, PRE_ELEMENT **last)
 {
   if (prelist == NULL) {
     *last = NULL;

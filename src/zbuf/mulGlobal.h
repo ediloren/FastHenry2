@@ -47,6 +47,7 @@ extern char *   realloc();
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 /* fastcap data structures */
 #include "mulStruct.h"
@@ -74,10 +75,20 @@ extern char *ualloc();  /* SRW */
   - MALLOC() used when memory can be anything
     core should be malloc() or ualloc()
 ***********************************************************************/
-/* #define CALCORE(NUM, TYPE) calloc((unsigned)(NUM),sizeof(TYPE)) */
+
+/* SRW - Default now is to use calloc/malloc rather than ualloc.  The
+ * sbrk function is deprecated in many operating systems. 11/16/13
+ */
+#define NO_SBRK
+#ifdef NO_SBRK
+#define sbrk(x) 0L
+#define CALCORE(NUM, TYPE) calloc((unsigned)(NUM),sizeof(TYPE))
+#define MALCORE malloc
+#else
 #define CALCORE(NUM, TYPE) ualloc((unsigned)(NUM)*sizeof(TYPE))
-/* #define MALCORE malloc */
 #define MALCORE ualloc
+#endif
+
 
 /* counts of memory usage by multipole matrix type */
 extern long memcount;
@@ -104,15 +115,11 @@ extern long memMSC;
 #define AQ2PD 8
 #define AMSC 9
 
-#ifdef NO_SBRK
-#define sbrk(x) 0
-#endif
-
 #define DUMPALLOCSIZ                                                   \
 {                                                                      \
   (void)fprintf(stderr,                                                \
-		"Total Memory Allocated: %d kilobytes (brk = 0x%x)\n", \
-		memcount/1024, sbrk(0));                               \
+		"Total Memory Allocated: %ld kilobytes (brk = 0x%lx)\n", \
+		memcount/1024, (long)sbrk(0));                               \
 }
 
 #define CALLOC(PNTR, NUM, TYPE, FLAG, MTYP)                                 \
@@ -125,7 +132,7 @@ extern long memMSC;
        (void)fprintf(stderr,                                                \
 	 "\nfastcap: out of memory in file `%s' at line %d\n",              \
 	       __FILE__, __LINE__);                                         \
-       (void)fprintf(stderr, " (NULL pointer on %d byte request)\n",        \
+       (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",        \
 		     (NUM)*sizeof(TYPE));                                   \
        DUMPALLOCSIZ;                                                        \
        DUMPRSS;                                                             \
@@ -162,7 +169,7 @@ extern long memMSC;
        (void)fprintf(stderr,                                                 \
 	 "\nfastcap: out of memory in file `%s' at line %d\n",               \
 	       __FILE__, __LINE__);                                          \
-       (void)fprintf(stderr, " (NULL pointer on %d byte request)\n",         \
+       (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",         \
 		     (NUM)*sizeof(TYPE));                                    \
        DUMPALLOCSIZ;                                                         \
        DUMPRSS;                                                              \
@@ -375,3 +382,79 @@ misc. global macros
 /* blkDirect.c related flags - used only when DIRSOL == ON || EXPGCR == ON */
 #define MAXSIZ 0		/* any more tiles than this uses matrix on disk
 				   for DIRSOL == ON or EXPGCR == ON */
+
+/* dump_struct.c */
+void dump_struct(charge*, double*);
+
+/* extras.c */
+void dumpCorners(FILE*, double**, int, int);
+// void dumpConfig(FILE*, char*);
+void initcalcp(charge*);
+// void Cross_Product(double*, double*, double*);
+// double normalize(double*);
+// void centroid(charge*, double);
+// int planarize(charge*);
+// int flip_normal(charge*);
+
+/* input.c */
+// void read_list_file(surface**, int*, char*, int);
+// void add_dummy_panels(charge*);
+char *hack_path(char*);
+// void reassign_cond_numbers(charge*, NAME*, char*);
+// void negate_cond_numbers(charge*, NAME*);
+// int dump_ilist(void);
+int want_this_iter(ITER*, int);
+void get_ps_file_base(char**, int);
+// charge *read_panels(surface*, Name**, int*);
+// int getUniqueCondNum(char*, Name*);
+// ITER *get_kill_num_list(Name*, char*);
+// void parse_command_line(char**, int, int*, int*, double*, int*, int*,
+//     char**, char**, int*);
+// surface *read_all_surfaces(char*, char*, int, char*, double);
+// surface *input_surfaces(char**, int, int*, int*, double*, int*, int*, char*);
+// void dumpSurfDat(surface*);
+// void remove_name(Name**, int);
+// void remove_conds(charge**, ITER*, Name**);
+// void resolve_kill_lists(ITER*, ITER*, ITER*, int);
+charge *input_problem(char**, int, int*, int*, double*, int*, int*, Name**,
+    int*);
+
+/* patran.c */
+charge *patfront(FILE*, int*, int, double*, Name**, int*, char*);
+// void input(FILE*, char*, int, double*);
+// void waste_line(int, FILE*);
+// void file_title(FILE*);
+// void summary_data(FILE*);
+// void node_data(FILE*, double*);
+// void element_data(FILE*);
+// void grid_data(FILE*, double*);
+// void patch_data(FILE*);
+// void CFEG_table(FILE*);
+// void name_data(FILE*);
+// void grid_equiv_check(void);
+// int if_same_coord(double*, double*);
+char *delcr(char*);
+// void fill_patch_patch_table(int*);
+// int if_same_grid(int, GRID*);
+// void assign_conductor(int*);
+// void depth_search(int*, int*, int);
+// char *getPatranName(int);
+// charge *make_charges_all_patches(Name**, int*, int, char*);
+// charge *make_charges_patch(int, int*, int);
+// void assign_names(void);
+
+/* quickif.c */
+// int alias_match(Name*, char*);
+// int alias_match_name(Name*, char*);
+// void add_to_alias(Name*, char*);
+char *last_alias(Name*);
+int getConductorNum(char*, Name**, int*);
+// int getConductorNumNoAdd(char*, Name*);
+// char *getConductorName(int, Name**);
+// int oldrenameConductor(char*, char*, Name**, int*);
+// int renameConductor(char*, char*, Name**, int*);
+charge *quickif(FILE*, char*, char*, int, double*, int*, Name**, char*);
+
+/* savemat.c */
+void savemat(FILE*, int, char*, int, int, int, double*, double*);
+

@@ -17,11 +17,19 @@ typedef struct _option {
   struct _option *next;
 } Option;
 
-Option *gather_opts();
+/* SRW */
+ind_opts *Parse_Command_Line(int, char**);
+Option *gather_opts(int, char**, char*);
+char *Pmalloc(int);
+int is_in_optstring(char, char*, int*);
+int checkarg(int, int, char**);
+void Describe_Usage(char*);
+int read_on_off(char*, int*);
+void add_to_subset_of_columns(char*, ind_opts*);
+void fix_and_print_opts(ind_opts*);
 
-ind_opts *Parse_Command_Line(argc, argv)
-int argc;
-char **argv;
+
+ind_opts *Parse_Command_Line(int argc, char **argv)
 {
   Option *opt_list;
   ind_opts *opts;
@@ -306,10 +314,7 @@ char **argv;
   return opts;
 }
 
-Option *gather_opts(argc, argv, optstring)
-int argc;
-char **argv;
-char *optstring;
+Option *gather_opts(int argc, char **argv, char *optstring)
 {
   Option *opt_list = NULL, *opt;
   int len, count, takearg;
@@ -365,8 +370,7 @@ char *optstring;
   return opt_list;
 }
 
-char *Pmalloc(size)
-int size;
+char *Pmalloc(int size)
 {
   char *blah;
 
@@ -380,9 +384,7 @@ int size;
   return blah;
 }
 
-is_in_optstring(op, string, takearg)
-char op, *string;
-int *takearg;
+int is_in_optstring(char op, char *string, int *takearg)
 {
   char *pos;
 
@@ -397,9 +399,7 @@ int *takearg;
   }
 }
 
-checkarg(index, argc, argv)
-int index, argc;
-char **argv;
+int checkarg(int index, int argc, char **argv)
 {
 
   if (index >= argc) {
@@ -415,8 +415,7 @@ char **argv;
   return GOOD;
 }
 
-Describe_Usage(name)
-char *name;
+void Describe_Usage(char *name)
 {
   fprintf(stderr, 
 "Usage: %s [<input file>] [<Options>]\n",name);
@@ -479,9 +478,7 @@ char *name;
 }
 
 /*
-main(argc, argv)
-int argc;
-char **argv;
+main(int argc, char **argv)
 {
 
   ind_opts *options;
@@ -493,9 +490,7 @@ char **argv;
 }
 */
 
-read_on_off(str, on_off)
-char *str;
-int *on_off;
+int read_on_off(char *str, int *on_off)
 {
   if(strcmp(str, "on") == 0) *on_off = ON;
   else if (strcmp(str, "off") == 0) *on_off = OFF;
@@ -504,9 +499,7 @@ int *on_off;
   return TRUE;
 }
 
-add_to_subset_of_columns(str, opts)
-char *str;
-ind_opts *opts;
+void add_to_subset_of_columns(char *str, ind_opts *opts)
 {
   strlist *oneport;
 
@@ -521,8 +514,7 @@ ind_opts *opts;
   opts->portlist = oneport;
 }
       
-fix_and_print_opts(opts)
-ind_opts *opts;
+void fix_and_print_opts(ind_opts *opts)
 {
   time_t clock;
   char hostname[BUFSIZ];

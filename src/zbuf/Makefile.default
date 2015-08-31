@@ -43,9 +43,9 @@ LIBS = -lm
 #  - also used to select the correct CC macro definition for AIX machines
 #
 # for generic machine use (timers not supported)
-CFLAGS = -O -DOTHER
+#CFLAGS = -O -DOTHER
 # for most machines running 4.2/3 use (only necessary if timers are needed)
-#CFLAGS = -O -DFOUR
+CFLAGS = -O -DFOUR
 # for most machines running System V use (only necessary if timers are needed)
 #CFLAGS = -O -DFIVE
 # for IBM AIX systems use

@@ -135,3 +135,62 @@ of this software.
 #define DEFAXE 1.0		/* default axes length (-x) */
 #define DEFUAX ZI		/* default upward-pointing axis (-u) */
 
+/* extras.c */
+void dump_face(FILE*, face*);
+
+/* zbuf.c */
+char *concat3(char*, char*, char*);
+double *get_q(char*, charge*);
+
+/* zbuf2fastcap.c */
+void dump_ps_geometry(charge*, double*, int, int);
+
+/* zbufInOut.c */
+void setupLine(double***, int, double, double, double, double, double,
+    double);
+void figure_grey_levels(face**, double*, charge*, int);
+void get_charge_densities(double*, char*, int);
+void getAbsCoord(double*, charge*, int);
+face **fastcap2faces(int*, charge*, double*, int);
+void readLines(FILE*, line**, line**, int*);
+line **getLines(char*, int*);
+void getBndingBox(face**, int, line**, int, int*, int*, FILE*, double***);
+void dumpAxes(double***, FILE*);
+void copyBody(FILE*);
+void numberFaces(face**, int, FILE*);
+void numberFace(face*, FILE*);
+void dumpAdjGraph(face**, int, FILE*);
+void dumpFaceText(face**, int, FILE*);
+void dump_line_as_ps(FILE*, char*, double, double, double);
+void dump_shading_key(FILE*, int, int, double, int);
+void numberLines(line**, int, FILE*);
+void dumpLines(FILE*, line**, int);
+void dumpPs(face**, int, line**, int, FILE*, char**, int, int);
+
+/* zbufProj.c */
+void image(face**, int, line**, int, double*, double, double*);
+void initFaces(face**, int, double*);
+void flatten(face**, int, line**, int, double, double, double*, double*);
+void makePos(face**, int, line**, int);
+void scale2d(face**, int, line**, int, double, double*);
+double *getAvg(face**, int, line**, int, int);
+double getSphere(double*, face**, int, line**, int);
+double getNormal(double*, double, double*, double*, double);
+
+/* zbufSort.c */
+int diff_is_zero(double, double, double);
+int diff_is_negative(double, double, double);
+double dot(double*, double*);
+void crossProd(double*, double*, double*);
+double getPlane(double*, double*, double*, double*);
+int whichSide(face*, face*);
+int doLinesIntersect(double*, double*, double*, double*, double*);
+int face_is_inside(double**, int, double**, int, double*);
+int is1stFaceDeeper(face*, face*, double*, double, double*);
+int isThereBoxOverlap(face*, face*, double*);
+int chkCycle(face*, face*, FILE*);
+void dumpCycles(face**, int, FILE*);
+void setDepth(face*);
+face **depthSortFaces(face**, int);
+void getAdjGraph(face**, int, double*, double, double*);
+

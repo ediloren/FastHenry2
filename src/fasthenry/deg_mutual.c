@@ -8,8 +8,17 @@
 #define WID 2
 #define HEIGHT 1
 
-enum degen_type find_deg_dims(fil)
-FILAMENT *fil;
+/* SRW */
+enum degen_type find_deg_dims(FILAMENT*);
+double compute_for_degenerate(FILAMENT*, FILAMENT*, int, double*, double*,
+    enum degen_type, enum degen_type, double);
+void setup_tape_to_tape(FILAMENT*, FILAMENT*, int, double*, double*,
+    enum degen_type, enum degen_type, FILAMENT*, FILAMENT*, double**, double**);
+double do_tape_to_brick(FILAMENT*, FILAMENT*, int, double*, double*,
+    enum degen_type, enum degen_type);
+
+
+enum degen_type find_deg_dims(FILAMENT *fil)
 {
   double max;
   
@@ -20,13 +29,10 @@ FILAMENT *fil;
          + (fil->height/max < DEG_TOL)*HEIGHT;
 }
 
-double compute_for_degenerate(fil_j, fil_m, whperp, x_j, y_j, 
-			      deg_j, deg_m, dist)
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double *x_j, *y_j;  /* unit vectors in the fil coord sys */
-enum degen_type deg_j, deg_m;
-double dist;
+double compute_for_degenerate(FILAMENT *fil_j, FILAMENT *fil_m, int whperp,
+    double *x_j, double *y_j, enum degen_type deg_j, enum degen_type deg_m,
+    double dist)
+/* double *x_j, *y_j;  unit vectors in the fil coord sys */
 {
 
   FILAMENT nfil_j, nfil_m;   /* new temp fils */
@@ -43,8 +49,8 @@ double dist;
 		       &nfil_j,&nfil_m, &nx_j, &ny_j);
     return exact_mutual(&nfil_j, &nfil_m, whperp, nx_j, ny_j, deg_j, deg_m);
   }
-  else if ( deg_m == brick && (deg_j == flat || deg_j == skinny)
-	   || deg_j == brick && (deg_m == flat || deg_m == skinny))
+  else if ( (deg_m == brick && (deg_j == flat || deg_j == skinny))
+	   || (deg_j == brick && (deg_m == flat || deg_m == skinny)))
     return do_tape_to_brick(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m);
   else if ( deg_j == too_long && deg_m == too_long)
     return fourfil(fil_j, fil_m);
@@ -55,12 +61,9 @@ double dist;
 
 }
 
-setup_tape_to_tape(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m,
-			  nfil_j, nfil_m, nx_j, ny_j)
-FILAMENT *fil_j, *fil_m, *nfil_j, *nfil_m;
-int whperp;
-double *x_j, *y_j, **nx_j, **ny_j;  /* unit vectors in the fil coord sys */
-enum degen_type deg_j, deg_m;
+void setup_tape_to_tape(FILAMENT *fil_j, FILAMENT *fil_m, int whperp,
+    double *x_j, double *y_j, enum degen_type deg_j, enum degen_type deg_m,
+    FILAMENT *nfil_j, FILAMENT *nfil_m, double **nx_j, double **ny_j)
 {
 
   if (deg_j == flat) {
@@ -84,11 +87,8 @@ enum degen_type deg_j, deg_m;
   }
 }
 
-double do_tape_to_brick(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m)
-FILAMENT *fil_j, *fil_m;
-int whperp;
-double *x_j, *y_j;  /* unit vectors in the fil coord sys */
-enum degen_type deg_j, deg_m;
+double do_tape_to_brick(FILAMENT *fil_j, FILAMENT *fil_m, int whperp,
+    double *x_j, double *y_j, enum degen_type deg_j, enum degen_type deg_m)
 {
 
   FILAMENT nfil_j, nfil_m;
