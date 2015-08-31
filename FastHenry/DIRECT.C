@@ -327,7 +327,7 @@ void expandMat(mat, size, comp_size, is_dummy, exp_rows)
 double **mat;
 int size, *is_dummy, exp_rows, comp_size;
 {
-  int i, j, k, next_rc;
+  int i, j, next_rc;
 
   if(exp_rows == TRUE || exp_rows == BOTH) {
     next_rc = comp_size - 1;

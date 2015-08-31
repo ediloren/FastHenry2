@@ -8,10 +8,10 @@ ssystem *SetupMulti(chglist, indsys)
 charge *chglist;
 SYS *indsys;
 {
-  int ttliter, i, j, num_cond;
+  int i, j;
   charge *nq, *input_problem();
   ssystem *sys, *mulInit();
-  double **capmat, dirtimesav, mulsetup, initalltime, ttlsetup, ttlsolve;
+  double dirtimesav, mulsetup, initalltime, ttlsetup, ttlsolve;
   double relperm;
   int autmom, autlev, numMom, numLev;
 
@@ -25,8 +25,6 @@ SYS *indsys;
   extern double prectime, conjtime, dirtime, multime, uptime, downtime;
   extern double evaltime, lutime, fullsoltime, prsetime;
   extern char *kill_name_list;
-
-  Name *name_list;
 
 #if DUMPPS == ON || DUMPPS == ALL
   char filename[BUFSIZ];
@@ -65,7 +63,9 @@ SYS *indsys;
   /* get the list of all panels in the problem */
   /* - many command line parameters having to do with the postscript
      file dumping interface are passed back via globals (see mulGlobal.c) */
-  /*  chglist = input_problem(argv, argc, &autmom, &autlev, &relperm, 
+  /* Name *name_list; 
+     int num_cond;
+    chglist = input_problem(argv, argc, &autmom, &autlev, &relperm, 
                               &numMom, &numLev, &name_list, &num_cond);
 */
   if(autmom == ON) numMom = DEFORD;
@@ -209,7 +209,7 @@ SYS *indsys;
   mulMatDirect(sys);		/* Compute the direct part matrices. */
 
   if (bFHContinue == FALSE) {		// Enrico 
-	return 1;
+	return sys;
   }
 
 #if DIRSOL == OFF		/* with DIRSOL just want to skip to solve */
@@ -241,7 +241,8 @@ SYS *indsys;
 #endif
 
 #endif				/* DIRSOL == OFF */
-  dumpnums(ON, eval_size, up_size); /* save num/type of pot. coeff calcs */
+  //dumpnums(ON, eval_size, up_size); /* save num/type of pot. coeff calcs */
+  dumpnums(ON, eval_size); /* save num/type of pot. coeff calcs */
 
   dirtimesav = dirtime;		/* save direct matrix setup time */
   dirtime = 0.0;		/* make way for direct solve time */
@@ -272,12 +273,13 @@ SYS *indsys;
   mulMatEval(sys);		/* set up matrices for evaluation pass */
 
   if (bFHContinue == FALSE) {		// Enrico 
-	return 1;
+	return sys;
   }
   /* stoptimer */
   mulsetup = dtime;		/* save multipole matrix setup time */
 
-  dumpnums(OFF, eval_size, up_size);	/* dump num/type of pot. coeff calcs */
+  //dumpnums(OFF, eval_size, up_size);	/* dump num/type of pot. coeff calcs */
+  dumpnums(OFF, eval_size);	/* dump num/type of pot. coeff calcs */
 
 #if DUMPPS == ALL
   dump_ps_mat(filename, 0, 0, eval_size, eval_size, argv, argc, CLOSE);
@@ -293,6 +295,8 @@ SYS *indsys;
 
 #endif				/* DIRSOL == ON */
 /*
+double **capmat;
+int ttliter;
   viewprintf(stdout, "\nITERATION DATA");
   ttliter = capsolve(&capmat, sys, chglist, eval_size, up_size, num_cond,
 		     name_list);

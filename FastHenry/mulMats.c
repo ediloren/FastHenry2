@@ -163,10 +163,8 @@ ssystem *sys;
   cube *nc, *kid, *kidnbr;
   double **mat, **nbrmat;
   int i, j, k, l, kidi;
-  int kidsize, nbrsize, size, row, col, first, offset;
-  double **ludecomp(), factor;
-  charge *pc;
-  surface *surf;
+  int kidsize, nbrsize, size, row, col, first;
+  double **ludecomp();
 
   viewprintf(stderr,"This Preconditioner is not used in FastHenry\n");
   FHExit(FH_GENERIC_ERROR);
@@ -272,7 +270,7 @@ ssystem *sys;
   int nj, nk, nl, offset, noffset;
   // Enrico, removed unused vars
   //int *nc_dummy, *nnbr_dummy, *nnnbr_dummy;
-  int dindex, *nc_dummy, *nnbr_dummy, *nnnbr_dummy;
+  int *nc_dummy, *nnbr_dummy, *nnnbr_dummy;
   static int *is_dummy;		/* local dummy flag vector, stays around */
   // Enrico, see header
   //static int big_mat_size = 0;	// size of previous mat

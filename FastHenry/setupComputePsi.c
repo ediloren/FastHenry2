@@ -6,6 +6,8 @@
  
 #include "induct.h"
 
+#include "Sparse/spMatrix.h"
+
 // Enrico, static vars moved to file scope to be initialized
 static CX *Ib = NULL, *Vb = NULL, *Vdirect = NULL;
 static double eps = EPS;
@@ -30,11 +32,9 @@ SYS *indsys;
   CX temp;
   MELEMENT *mtemp;
   charge *chg;
-  int i, j;
+  int i;
   double rtemp;
   MELEMENT **Mtrans, **Mlist;
-  double maxdiff,pdiff;
-  int maxindx;
   int ind_opcnt_mult = 0, ind_opcnt_real = 0;
 
   branches = indsys->num_fils;
@@ -193,6 +193,9 @@ SYS *indsys;
 #endif
 
 #ifdef NODEBUG
+  int maxindx;
+  double maxdiff,pdiff;
+
   /* for debugging, compare to direct Vb = ZM Ib */
   realmatCXvec(Vdirect, indsys->Z, Ib, branches);
   maxdiff = 0; 
@@ -219,6 +222,8 @@ SYS *indsys;
 
 
 #endif
+
+  return 0;
 }
 
 realmatCXvec(y, A, x, size)

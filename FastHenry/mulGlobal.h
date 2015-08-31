@@ -36,6 +36,23 @@ operation of Software or Licensed Program(s) by LICENSEE or its customers.
 /* # ***** sort to /src/header
    # ***** */
 
+// includes for POSIX creat(), write(), close(), open(), read(), sbrk(), abort()
+//
+// #defines are to avoid the compiler warnings that the POSIX name for creat(), write(), etc.
+// are deprecated, and you should use _creat(), etc.; and that these functions are unsafe
+// 
+// Remark: MUST be at the beginning of the file, before any stdc or crt include
+#define _CRT_NONSTDC_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
+#include <io.h>
+// this last include is for abort() only
+#include <stdlib.h>
+// VS does not appear to have a proper include for sbrk(), though this functions is correctly linked;
+// so prototypes are added manually:
+void *sbrk(intptr_t increment);
+
+#include <string.h>
+
 /* for NWS-3860 compatability */
 #ifdef NEWS
 /*
@@ -55,6 +72,37 @@ extern char *   realloc();
 
 /* execution time macros */
 #include "resusage.h"
+
+
+// prototypes for functions defined in uglieralloc.c
+void dfree(void *pointer);
+char *dalloc(unsigned int nbytes);
+void *drealloc(void *pointer, unsigned int size);
+// prototypes for functions defined in mulDo.c
+void mulDirect(ssystem *sys);
+void mulEval(ssystem *sys);
+void mulUp(ssystem *sys);
+void mulDown(ssystem *sys);
+int multerms(int order);
+// prototypes of functions defined in mulLocal.c
+void evalFacFra(double **array, int order);
+// prototypes of functions defined in direct.c
+void solve(double **mat, double *x, double *b, int size);
+int compressMat(double **mat, int size, int *is_dummy, int comp_rows);
+void invert(double **mat, int size, int *reorder);
+void expandMat(double **mat, int size, int comp_size, int *is_dummy, int exp_rows);
+// prototypes of functions defined in mulMulti.c
+int multerms(int order);
+void mulMultiAlloc(int maxchgs, int order, int depth);
+void xyz2sphere(double x, double y, double z, double x0, double y0, double z0, double *rho, double *cosA, double *beta);
+int costerms(int order);
+int sinterms(int order);
+void evalLegendre(double cosA, double *vector, int order);
+// prototypes of functions defined in mulMats.c
+void mulMatDirect(ssystem *sys);
+void mulMatUp(ssystem *sys);
+void mulMatDown(ssystem *sys);
+void mulMatEval(ssystem *sys);
 
 /* time variables/structs */
 #ifndef _TIME_                  /* if not on a Sun4 */

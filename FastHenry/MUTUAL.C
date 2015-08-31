@@ -3,11 +3,17 @@
 
 #include "induct.h"
 
+#include "FHWindow.h" // Enrico
+
 /* these are missing in some math.h files */
-extern double asinh();
-extern double atanh();
+// not true anymore - available in math.h
+//extern double asinh();
+//extern double atanh();
 
 int realcos_error = 0;
+
+// function prototypes
+void print_infinity_warning(FILAMENT *fil1, FILAMENT *fil2);
 
 /* calculates mutual inductance of "filaments" with width and height */
 /* as a combination of filament approximations                       */
@@ -16,11 +22,8 @@ double mutual(fil_j, fil_m)
 FILAMENT *fil_j, *fil_m;
 {
   double totalM;
-  int i,j,ij;
-  double aspect_j, aspect_m;
   //static double cutoff = 3; // Enrico, removed because not used
-  int nfilsj, nfilsm;
-  double dist, rj, rm, sum1, sum2;
+  double dist, rj, rm;
   int parallel, whperp;
   int edge_par, num_dims;
   extern double **Gweight;    /* gaussian quad weights. */
@@ -107,6 +110,11 @@ FILAMENT *fil_j, *fil_m;
 #if 1==0
     /* gaussian quadrature.  exact expression used instead */
     else { 
+		int nfilsj, nfilsm;
+		double sum1, sum2;
+		double aspect_j, aspect_m;
+		int i, j;
+
       /* one of the fils has a high aspect ratio. Let's do 1-D Gaussian quad */
       nfilsj = MIN((int)aspect_j, MAXsubfils);
       nfilsm = MIN((int)aspect_m, MAXsubfils);
@@ -128,7 +136,7 @@ FILAMENT *fil_j, *fil_m;
   }
 }
 
-print_infinity_warning(fil1, fil2)
+void print_infinity_warning(fil1, fil2)
      FILAMENT *fil1, *fil2;
 {
   FILAMENT *fil;
@@ -212,9 +220,10 @@ double selfterm(fil)
 FILAMENT *fil;
 {
    double self();
-   double approx, joelself;
+   double joelself;
 
-/*   approx = fil->length*MUOVER4PI*2
+/*   double approx;
+     approx = fil->length*MUOVER4PI*2
                *(log(2*fil->length/(K*(fil->width + fil->height))) - 1); */
    joelself = MU0*self(fil->width, fil->length, fil->height);
 /*   printf("Joel's function: %lg,  my approx: %lg\n",joelself, approx); */
@@ -236,8 +245,6 @@ FILAMENT *fil1, *fil2;
 
   double omega,M;
   int signofM;
-
-  double junk;
 
   /* for parallel filaments */
   double ux, uy, uz, Rx, Ry, Rz, x1_0, x1_1, x2_0, x2_1, magu;

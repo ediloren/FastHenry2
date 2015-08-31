@@ -3,6 +3,8 @@
 
 #include "induct.h"
 
+#include "FHWindow.h"
+
 /* this function estimates the size of the matrix which will be inverted
   for this cube for the preconditioner.  Since M has not been formed, and 
   the size of the preconditioner is based on meshes, not filaments/charges,
@@ -63,7 +65,7 @@ SYS *indsys;
   return rat;
 }
 
-is_gp_charge(chg)
+int is_gp_charge(chg)
 charge *chg;
 {
   if (chg->fil->segm->node[0]->gp == NULL)

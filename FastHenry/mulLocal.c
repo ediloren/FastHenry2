@@ -307,7 +307,7 @@ double x, y, z;
 charge **chgs;
 int numchgs, order, *is_dummy;
 {
-  int i, j, k, kold, n, m, start;
+  int i, j, n, m;
   int cterms = costerms(order), terms = multerms(order);
   double **mat, temp, fact();
   double cosA;			/* cosine of elevation coordinate */
@@ -413,7 +413,7 @@ int numchgs, order;
   double cosTh;			/* cosine of elevation coordinate */
   double fact();
   extern double *Irn, *Mphi, *phi, *Ir;
-  int i, j, k, m, n, kold, start;
+  int i, j, k, m, n, kold;
   int cterms = costerms(order), terms = multerms(order);
 
   CALLOC(mat, numchgs, double*, ON, AL2P);

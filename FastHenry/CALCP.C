@@ -2,6 +2,7 @@
    interaction exactly */
 
 #include "induct.h"
+#include "../FHWindow.h"
 
 static int num2nd=0, num4th=0, numexact=0;
 static int num2ndsav=0, num4thsav=0, numexactsav=0;
@@ -24,7 +25,7 @@ double *pfd;   /* left over from fastcap */
 } 
 
 /* from the fastcap calcp */
-dumpnums(flag, size)
+void dumpnums(flag, size)
 int flag, size;
 {
   double total;

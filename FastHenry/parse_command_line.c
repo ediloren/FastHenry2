@@ -318,7 +318,8 @@ char **argv;
 char *optstring;
 {
   Option *opt_list = NULL, *opt;
-  int len, count, takearg;
+  int count, takearg;
+  size_t len;
 
   count = 1;
 
@@ -387,7 +388,7 @@ int size;
   return blah;
 }
 
-is_in_optstring(op, string, takearg)
+int is_in_optstring(op, string, takearg)
 char op, *string;
 int *takearg;
 {
@@ -406,7 +407,7 @@ int *takearg;
   }
 }
 
-checkarg(index, argc, argv)
+int checkarg(index, argc, argv)
 int index, argc;
 char **argv;
 {
@@ -424,7 +425,7 @@ char **argv;
   return GOOD;
 }
 
-Describe_Usage(name)
+void Describe_Usage(name)
 char *name;
 {
   viewprintf(stderr, 
@@ -503,7 +504,7 @@ char **argv;
 }
 */
 
-read_on_off(str, on_off)
+int read_on_off(str, on_off)
 char *str;
 int *on_off;
 {
@@ -514,7 +515,7 @@ int *on_off;
   return TRUE;
 }
 
-add_to_subset_of_columns(str, opts)
+void add_to_subset_of_columns(str, opts)
 char *str;
 ind_opts *opts;
 {
@@ -531,11 +532,10 @@ ind_opts *opts;
   opts->portlist = oneport;
 }
       
-fix_and_print_opts(opts)
+void fix_and_print_opts(opts)
 ind_opts *opts;
 {
   time_t clock;
-  char hostname[BUFSIZ];
 
   /* print sw copyright info */          /* Enrico */
   viewprintf(stdout, "\nFastHenry 3.0, (c) by M.I.T.\n");
@@ -546,6 +546,7 @@ ind_opts *opts;
   time(&clock);
   viewprintf(stdout, "  Date: %s", ctime(&clock));
 #ifndef NO_GETHOSTNAME
+  char hostname[BUFSIZ];
 #ifndef SOLARIS
   if(gethostname(hostname, BUFSIZ) != -1)
       viewprintf(stdout, "  Host: %s\n", hostname);

@@ -1,14 +1,22 @@
 /* This is the main part of the code */
 
-// include to use path manipulation routines, Enrico
-#include <stdlib.h>
 
 #include "FHWindow.h" // Enrico
 #include "induct.h"
 
+#include "Sparse/spMatrix.h"
+
+// include to use path manipulation routines, Enrico
+#include <stdlib.h>
+// include for _chdir()
+#include <direct.h>
+// include for isspace()
+#include <ctype.h>
+
 /* these are missing in some math.h files */
-extern double asinh();
-extern double atanh();
+// Not needed anymore, included in standard math.h
+//extern double asinh();
+//extern double atanh();
 
 #define MAXPRINT 1
 #define MAXCHARS 400
@@ -41,24 +49,37 @@ int machine = 0000;
 int machine = 1000;
 #endif
 
+// function prototypes
+int pick_subset(strlist *portlist, SYS *indsys);
+void formMtrans(SYS *indsys);
+void savemats(SYS *indsys);
+void formMZMt(SYS *indsys);
+void dump_M_to_text(FILE *fp, MELEMENT **Mlist, int num_mesh, int nnz);
+void dump_M_to_matlab(FILE *fp, MELEMENT **Mlist, int num_mesh, int nnz, char *mname);
+void dumpMat_totextfile(FILE *fp, double **A, int rows, int cols);
+void dumpVec_totextfile(FILE *fp2, double *Vec, int size);
+void cx_dumpMat_totextfile(FILE *fp, CX **Z, int rows, int cols);
+void saveCarray(FILE *fp, char *fname, double **Arr, int rows, int cols);
+void dump_to_Ycond(FILE *fp, int cond, SYS *indsys);
+void fillMrow(MELEMENT **Mlist, int mesh, double *Mrow);
+void fillA(SYS *indsys);
+void fillZ(SYS *indsys);
+int nnz_inM(MELEMENT **Mlist, int num_mesh);
+void pick_ground_nodes(SYS *indsys);
+void savecmplx2(FILE *fp, char *name, CX **Z, int rows, int cols);
+
 
 int fastHenryMain(argc, argv)
 int argc;
 char *argv[];
 {
 
-  double width, height, length, freq, freqlast;
-  int Linc, Winc, Hinc, filnum;
-  double ratio;
+  double freq;
   GROUNDPLANE *plane;                   /* CMS 7/7/92 */
-  FILAMENT *tmpf;
-  SEGMENT  *tmps;
   SEGMENT *seg;
   NODES *node;
   int i,j,k,m, last, err;
   char fname[80], tempstr[10];
-  double r_height, r_width;
-  CX dumb;
   CX *vect, **pvect;         /* space needed by gmres */
   double tol = 1e-8;
   double ftimes[TIMESIZE];
@@ -71,8 +92,7 @@ char *argv[];
   double totaltime;
   int dont_form_Z;       /* if fmin=0, don't from the L matrix */
   char *MRMt;            /* may be needed if ROM is requested */
-  double **MRMtinvMLMt, **B, **C;
-  double **romB, **romC;
+  double **B, **C;
   int actual_order;
 
   int num_planes, nonp, planemeshes, tree_meshes;           /* CMS 6/7/92 */
@@ -117,7 +137,7 @@ char *argv[];
 
   indsys->opts = Parse_Command_Line(argc, argv);
 
-  /*indsys->r_height = indsys->r_width = indsys->opts->filratio;*/
+  /*  indsys->r_height = indsys->r_width = indsys->opts->filratio;*/
 
   /* set the type equal to that specified on command line for now */
   indsys->precond_type = indsys->opts->precond;
@@ -526,7 +546,6 @@ char *argv[];
 
   /* Model Order Reduction: create, compute and print the model if requested */
   if (opts->orderROM > 0) {
-    double *dtemp;
 
     /* create the matrix whose inverse we will need */
     createMRMt(&MRMt, indsys);
@@ -1045,7 +1064,7 @@ charge *chgptr;
 {
 
   int i,j,k;
-  double x,y,z, delw, delh;
+  double delw, delh;
   double hx, hy, hz;
   int temp, counter;
   int Hinc, Winc;
@@ -1337,7 +1356,7 @@ void fillA(indsys)
 SYS *indsys;
 {
   SEGMENT *seg;
-  NODES *node1, *node2, *node;
+  NODES *node1, *node2;
   MELEMENT **Alist;
   int i, counter;
   FILAMENT *fil;
@@ -1393,13 +1412,11 @@ SYS *indsys;
 void fillZ(indsys)
 SYS *indsys;
 {
-  int i, j, k, m;
+  int j, m;
   FILAMENT *fil_j, *fil_m;
   int filnum_j, filnum_m;
-  double w;
   SEGMENT *seg1, *seg2;
-  double **Z, *R, freq;
-  int num_segs;
+  double **Z, *R;
 
   Z = indsys->Z;
   R = indsys->R;
@@ -1451,7 +1468,7 @@ int countlines(fp)
 FILE *fp;
 {
   int count;
-  char temp[MAXCHARS], *returnstring;
+  char temp[MAXCHARS];
 
   count = 0;
   while( fgets(temp,MAXCHARS, fp) != NULL)
@@ -1473,7 +1490,7 @@ char *string;
 
 /* This saves various matrices to files and optionally calls fillA() if
    the incidence matrix, A, is requested */
-savemats(indsys)
+void savemats(indsys)
 SYS *indsys;
 {
   int i, j;
@@ -1484,9 +1501,8 @@ SYS *indsys;
   int num_mesh, num_fils, num_real_nodes;
   double *Mrow;   /* one row of M */
   double **Z, *R;
-  int machine, counter, nnz, nnz0;
+  int machine, nnz, nnz0;
   ind_opts *opts;
-  MELEMENT *mesh;
   MELEMENT **Mlist = indsys->Mlist;
   MELEMENT **Alist;
 
@@ -1705,7 +1721,7 @@ SYS *indsys;
   }
 }
 
-savecmplx(fp, name, Z, rows, cols)
+void savecmplx(fp, name, Z, rows, cols)
 FILE *fp;
 char *name;
 CX **Z;
@@ -1736,7 +1752,7 @@ int rows, cols;
 }
 
 /* saves a complex matrix more efficiently? */
-savecmplx2(fp, name, Z, rows, cols)
+void savecmplx2(fp, name, Z, rows, cols)
 FILE *fp;
 char *name;
 CX **Z;
@@ -1778,19 +1794,18 @@ int rows, cols;
 }
 
 /* This computes the product M*Z*Mt in a better way than oldformMZMt */
-formMZMt(indsys)
+void formMZMt(indsys)
 SYS *indsys;
 {
-  int m,n,p;
-  double tempsum, tempR, tempsumR;
+  double tempsum, tempR;
   // Enrico, moved to file scope
   // static double *tcol = NULL;   /* temporary storage for extra rows */
-  int i,j, k, mesh, mesh2, nodeindx;
+  int i, j, mesh, mesh2;
   int nfils, nmesh;
   MELEMENT *melem, *melem2;
   MELEMENT *mt, *mt2;    /* elements of M transpose */
   double **M, **L, *R;
-  CX **Zm, *tempZ;
+  CX **Zm;
   int rows, cols, num_mesh;
   MELEMENT **Mlist, **Mt;
 
@@ -1846,11 +1861,10 @@ SYS *indsys;
 oldformMZMt(indsys)
 SYS *indsys;
 {
-  int m,n,p;
   double tempsum;
   // Enrico, moved to file scope
   //static CX **trows = NULL;   /* temporary storage for extra rows */
-  int i,j, k, mesh, nodeindx;
+  int i, j, mesh;
   int nfils, nmesh;
   MELEMENT *melem, *melem2;
   double **M, **L, *R;
@@ -1953,12 +1967,12 @@ int number, size;
     a linked list of its rows. */
 /* Note: This uses the same struct as Mlist but in reality, each linked list
    is composed of mesh indices, not fil indices. (filindex is a mesh index) */
-formMtrans(indsys)
+void formMtrans(indsys)
 SYS *indsys;
 {
-  int i, j, count;
-  MELEMENT *m, *mt, *mt2, mtdum;
-  MELEMENT **Mlist, **Mtrans, **Mtrans_check;
+  int i, j;
+  MELEMENT *m, *mt;
+  MELEMENT **Mlist, **Mtrans;
   int meshes, fils;
   int last_filindex;
   MELEMENT *create_melem();
@@ -2040,7 +2054,7 @@ MELEMENT *mesh1, *mesh2;
   }
 }
 
-cx_dumpMat_totextfile(fp, Z, rows, cols)
+void cx_dumpMat_totextfile(fp, Z, rows, cols)
 FILE *fp;
 CX **Z;
 int rows, cols;
@@ -2055,7 +2069,7 @@ int rows, cols;
   return;
 }
 
-dumpMat_totextfile(fp, A, rows, cols)
+void dumpMat_totextfile(fp, A, rows, cols)
 FILE *fp;
 double **A;
 int rows, cols;
@@ -2070,7 +2084,7 @@ int rows, cols;
   return;
 }
 
-dumpVec_totextfile(fp2, Vec, size)
+void dumpVec_totextfile(fp2, Vec, size)
 FILE *fp2;
 double *Vec;
 int size;
@@ -2078,12 +2092,11 @@ int size;
   dumpMat_totextfile(fp2, &Vec, 1, size);
 }
 
-fillMrow(Mlist, mesh, Mrow)
+void fillMrow(Mlist, mesh, Mrow)
 MELEMENT **Mlist;
 int mesh;
 double *Mrow;
 {
-  int i;
   MELEMENT *melem;
 
   if (mesh != 0)
@@ -2095,7 +2108,7 @@ double *Mrow;
     Mrow[melem->filindex] = melem->sign;
 }
 
-dump_to_Ycond(fp, cond, indsys)
+void dump_to_Ycond(fp, cond, indsys)
 FILE *fp;
 int cond;
 SYS *indsys;
@@ -2128,7 +2141,7 @@ SYS *indsys;
 
 }
 
-saveCarray(fp, fname, Arr, rows, cols)
+void saveCarray(fp, fname, Arr, rows, cols)
 FILE *fp;
 char *fname;
 double **Arr;
@@ -2167,7 +2180,7 @@ int num_mesh;
   return counter;
 }
 
-dump_M_to_text(fp, Mlist, num_mesh, nnz)
+void dump_M_to_text(fp, Mlist, num_mesh, nnz)
 FILE *fp;
 MELEMENT **Mlist;
 int num_mesh, nnz;
@@ -2188,7 +2201,7 @@ int num_mesh, nnz;
   
 }
 
-dump_M_to_matlab(fp, Mlist, num_mesh, nnz, mname)
+void dump_M_to_matlab(fp, Mlist, num_mesh, nnz, mname)
 FILE *fp;
 MELEMENT **Mlist;
 int num_mesh, nnz;
@@ -2216,12 +2229,10 @@ char *mname;
 }  
 
 /* this picks one node in each tree to be a ground node */
-pick_ground_nodes(indsys)
+void pick_ground_nodes(indsys)
 SYS *indsys;
 {
   TREE *atree;
-  SEGMENT *seg;
-  seg_ptr segp;
   char type;
   NODES *node;
 
@@ -2273,7 +2284,7 @@ SYS *indsys;
 }
 
 /* concatenates so that s1 = s1 + s2 + s3 + s4 */
-concat4(s1,s2,s3,s4)
+void concat4(s1,s2,s3,s4)
 char *s1, *s2, *s3, *s4;
 {
   s1[0] = '\0';

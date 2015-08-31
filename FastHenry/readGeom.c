@@ -2,12 +2,14 @@
 
 #include "FHWindow.h" // Enrico
 
+#include "induct.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <malloc.h>
 #include <math.h>
-#include "induct.h"
+
 
 #define MAXLINE 1000
 #define XX 0
@@ -46,6 +48,18 @@ static char s_line[MAXLINE] = { '\0' };
 int plane_count;                     /* CMS 7/1/92 */
 int sizenodes = 0;
 int sizesegs = 0;
+
+// function prototypes
+int dodot(char *line, SYS *indsys);
+int addnode(char *line, SYS *indsys, NODES **retnode, int type);
+int addseg(char *line, SYS *indsys, int type, SEGMENT **retseg);
+int changeunits(char *line, SYS *indsys);
+int addgroundplane(char *line, SYS *indsys, GROUNDPLANE **retplane);
+int nothing(char *line);
+int addexternal(char *line, SYS *indsys);
+int choosefreqs(char *line, SYS *indsys);
+int dodefault(char *line);
+void savealine(char *line);
 
 int readGeom(fp, indsys)
 FILE *fp;
@@ -106,7 +120,7 @@ SYS *indsys;
   return end;
 }
 
-dodot(line,indsys)
+int dodot(line,indsys)
 char *line;
 SYS *indsys;
 {
@@ -121,7 +135,7 @@ SYS *indsys;
   else if (_strnicmp("equ",line, 3) == 0)
     end = equivnodes(line, indsys);
   else if (_strnicmp("def",line, 3) == 0)
-    end = dodefault(line, indsys);
+    end = dodefault(line);
   else if (_strnicmp("end",line, 3) == 0)
     end = 2;
   else {
@@ -131,7 +145,7 @@ SYS *indsys;
   return end;
 }
 
-changeunits(line, indsys)
+int changeunits(line, indsys)
 char *line;
 SYS *indsys;
 {
@@ -172,31 +186,21 @@ SYS *indsys;
   return 0;
 }
 
-addexternal(line, indsys)
+int addexternal(line, indsys)
 char *line;
 SYS *indsys;
 {
   int skip, i;
   NODES *node[2];
-  SEGMENT *seg;
   static char name[80];
   static char names[2][80];
   static char portname[80];
-  SPATH *pathtail;
-  NPATH *npathtail;
   PSEUDO_SEG *Vsource;
   int err;
   EXTERNAL *ext;
 
   /* new variables CMS 6/1/92 ---------------------------------------*/
-  int nodes1, nodes2, inconnectread, outconnectread, j;
-  int deco1, deco2, counter1, counter2;
-  int beg0, beg1, end0, end1, done;
-  double dumb, temp1, temp2, temp3, input[3], output[3];
   char *templine;
-  GROUNDPLANE *plane;
-  NODES *outnode, *innode, *finode, *pnode;
-  SPATH *pathpointer;
 
   int equivnodes();
   
@@ -272,7 +276,7 @@ The name is already used for port between %s and %s\n",
   return err;
 }
 
-choosefreqs(line, indsys)
+int choosefreqs(line, indsys)
 char *line;
 SYS *indsys;
 {
@@ -338,7 +342,7 @@ char *line;
 SYS *indsys;
 {
 
-  int skip, i;
+  int skip;
   char name1[80], name2[80];
   NODES *realnode, *equivnode;
 
@@ -388,7 +392,7 @@ SYS *indsys;
   return 0;
 }
 
-dodefault(line)
+int dodefault(line)
 char *line;
 {
   int skip;
@@ -466,7 +470,7 @@ char *line;
   return 0;
 }
 
-addnode(line,indsys,retnode, type)
+int addnode(line,indsys,retnode, type)
 char *line;
 SYS *indsys;
 NODES **retnode;
@@ -605,14 +609,14 @@ SYS *indsys;
   return node;
 }
 
-addseg(line, indsys, type, retseg)
+int addseg(line, indsys, type, retseg)
 char *line;
 SYS *indsys;
 int type;                     /* CMS 8/21/92 -- type of thing the seg is in */
 SEGMENT **retseg;
 {
   double dumb, *tmp;
-  int skip, i, j, dumbi;
+  int skip, j, dumbi;
   int hread, wread, hincread, wincread, sigmaread, wxread, wyread, wzread,
       rwread, rhread;
   SEGMENT *seg;
@@ -622,18 +626,12 @@ SEGMENT **retseg;
    char *segname;
    double *widthdir;   /*if width is not || to x-y plane and perpendicular to*/
                        /* the length, then this is 3 element vector in       */
-                       /* in the direction of width*/
-   int number;         /* an arbitrary number for the segment */
-   double length;      
-   double area;        /* area of cross section */
+                       /* in the direction of width*/  
    double width, height;  /*width and height to cross section */
    int hinc, winc;             /* number of filament divisions in each dir */
    NODES *node[2];                /* nodes at the ends */
    double sigma;               /* conductivity */
-   int num_fils;               /* hinc*winc */
    double rh,rw;           /* for assignFil(), ratio of adjacent fils */
-   FILAMENT *filaments;        /* this segment's filaments */
-   struct pathlist *loops;   /* loops in which this segment is a member */
 
   hread = wread = hincread = wincread = sigmaread = wxread 
     = wyread = wzread = rwread = rhread = 0;
@@ -922,7 +920,7 @@ SEGMENT *makeseg(name, node0, node1, height, width, sigma, hinc, winc,
   SPATH *path_through_gp();
 
 
-addgroundplane(line, indsys, retplane)
+int addgroundplane(line, indsys, retplane)
 char *line;
 SYS *indsys;
 GROUNDPLANE **retplane;
@@ -933,7 +931,6 @@ GROUNDPLANE **retplane;
   int xred = 0, yred = 0, zred = 0, segheiread = 0, rhread = 0;
   int segread1 = 0, segread2 = 0, inred = 0, outred = 0, filenameread = 0;
   int skip;
-  double input[3], output[3];
 
   NODELIST *list_of_nodes;       /* linked list of read in nodes */
   NODELIST *listpointer;         /* pointer to a single element in the list */
@@ -945,7 +942,7 @@ GROUNDPLANE **retplane;
  
   /* plane calculation variables */
   int nodes1, nodes2, checksum;
-  double x, y, z, seghei, rh;
+  double x, y, z, seghei;
   double wx, wy, wz, dx1, dy1, dz1, dx2, dy2, dz2;
   double xinit, yinit, zinit;
   double segwid1 = -1;
@@ -954,8 +951,7 @@ GROUNDPLANE **retplane;
 
   /* layout variables */
   char *templine;
-  int i, j, b0, b1, e0, e1;
-  int signofelem;
+  int i, j;
   int o1 = 0, mid = 1, o2 = 2;
   int a = 0, b = 0;
   int err;
@@ -963,9 +959,7 @@ GROUNDPLANE **retplane;
   /* temporary storage structures and variables */
   NODES *tempnode;
   SEGMENT *tempseg;
-  PSEUDO_SEG *p_seg;
   GROUNDPLANE *grndp, *onegp;
-  SPATH *tempath, *pathp;
   double dumb, dontcare = 2.0;
   int dummy1, dummy2;
   double xt[4], yt[4], zt[4];
@@ -1561,7 +1555,7 @@ node is referenced later.\n",listpointer->name);
 /*                          end of groundplane code                             */
 /*------------------------------------------------------------------------------*/
 
-nothing(line)
+int nothing(line)
 char *line;
 {
   if (line[0] == '+')
@@ -1596,7 +1590,7 @@ FILE *fp;
 
   /* concatenate any lines beginning with a '+' to all_lines */
   while( (line = plusline(fp)) != NULL) {
-    if ((newlength = strlen(all_lines) + strlen(line) + 1) > length) {
+    if ((newlength = (int) (strlen(all_lines) + strlen(line) + 1)) > length) {
       if ( (all_lines = DREALCORE(all_lines, MAX(newlength,length+MAXLINE)))  // Enrico, DREALCORE instead of realloc 
 	  == NULL ) {															
 	viewprintf(stderr,"couldn't get more space for a line. Needed %d chars\n",
@@ -1682,7 +1676,7 @@ FILE *fp;
     return s_line;
 }
 
-savealine(line)
+void savealine(line)
 char *line;
 {
   if (keep != 0) {
@@ -1703,7 +1697,7 @@ char *string;
      else return 1;
 }
 
-tolowercase(line)
+void tolowercase(line)
 char *line;
 {
   while(*line != '\0') {
@@ -1712,7 +1706,7 @@ char *line;
   }
 }
 
-is_nonuni_gp(gp)
+int is_nonuni_gp(gp)
      GROUNDPLANE *gp;
 {
   return (gp->nonuni != NULL);

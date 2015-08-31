@@ -197,10 +197,10 @@ afx_msg LRESULT CMainFrame::OnOutputText(WPARAM color, LPARAM)
 
 	view = (CFastHenryView *) GetActiveView();
 
-	view->OutputText(g_sOutputText, color);
+	view->OutputText(g_sOutputText, (unsigned long) color);
 
 	// store string in log list
-	m_clsLogList.push_front(COUPLE(g_sOutputText, color));
+	m_clsLogList.push_front(COUPLE(g_sOutputText, (unsigned long) color));
 
 	return strlen(g_sOutputText);
 }

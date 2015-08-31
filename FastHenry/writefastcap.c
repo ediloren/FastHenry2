@@ -1,20 +1,30 @@
+
+// #defines are to avoid the compiler warnings that the standard functions are unsafe
+// Remark: MUST be at the beginning of the file, before any stdc or crt include
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <math.h>
 #include "induct.h"
 
 #include "FHWindow.h" // Enrico
 
+// function prototypes
+void assign_shades(SYS *indsys);
+void unit_cross_product(double x1, double y1, double z1, double x2, double y2, double z2, double *cx, double *cy, double *cz);
+void make_between(FILE *fp, GROUNDPLANE *gp, double wx, double wy, double wz, double width, int j, int k);
+
 
 /* this writes a file of faces of the segments suitable to be
    read in by keith's program for generating postscript images */
 
-writefastcap(fname, shading_name, indsys)
+void writefastcap(fname, shading_name, indsys)
 char *fname, *shading_name;
 SYS *indsys;
 {
   SEGMENT *seg;
   NODES *node0, *node1;
-  double x,y ,z, xbotr, ybotr, zbotr;
+  double x, y ,z;
   int i, j, k;
   double hx,hy,hz,mag,wx,wy,wz, height, width;
   FILE *fp, *shade_fp;
@@ -273,7 +283,7 @@ SYS *indsys;
   fclose(shade_fp);
 }
 
-make_between(fp, gp, wx,wy,wz,width,j,k)
+void make_between(fp, gp, wx,wy,wz,width,j,k)
 GROUNDPLANE *gp;
 double wx,wy,wz,width;
 int j,k;
@@ -304,7 +314,7 @@ FILE *fp;
   fprintf(fp,"\n");
 }
 
-unit_cross_product(x1,y1,z1,x2,y2,z2,cx, cy,cz)
+void unit_cross_product(x1,y1,z1,x2,y2,z2,cx, cy,cz)
 double x1,y1,z1,x2,y2,z2,*cx, *cy,*cz;
 {
   double magc;
@@ -326,7 +336,7 @@ double x1,y1,z1,x2,y2,z2,*cx, *cy,*cz;
 /* attempts to choose shades for each segment to make seeing the condutors 
    easier.  To see shades, run with the zbuf -q options */
 
-assign_shades(indsys)
+void assign_shades(indsys)
 SYS *indsys;
 {
   int_list *elem;

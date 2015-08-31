@@ -5,6 +5,17 @@
 
 #include "FHWindow.h" // Enrico
 
+// function prototypes
+int is_real_node(NODES *node);
+void make_loop(NODES *node_l, NODES *node_s, seg_ptr seg, TREE *tree);
+void mark_seg(seg_ptr seg);
+void mark_node(NODES *node);
+int is_marked(seg_ptr seg);
+void clear_marks_and_level(NPATH *nlist);
+void make_gp_trees(NPATH *nlist, TREE *atree);
+void mark_used_segs(PATHLIST *plist);
+void clear_used_segs(PATHLIST *plist);
+
 // Enrico, static vars moved to file scope to be initialized
 static int mid = 1;
 
@@ -137,10 +148,13 @@ seg_ptr tseg;
     viewprintf(stderr,"Huh?  Unknown type of seg: %d\n",tseg.type);
     FHExit(FH_GENERIC_ERROR);
   }
+
+  // dummy return, only to avoid the compiler's warning about not all control paths returning a value
+  return NULL;
 }
 
 /* is this node normal */
-is_normal(node)
+int is_normal(node)
 NODES *node;
 {
   if (node->type == NORMAL)
@@ -176,10 +190,12 @@ seg_ptr seg;
   else {
     viewprintf(stderr, "is_gp: Unknown type of seg: %d\n", seg.type);
     FHExit(FH_GENERIC_ERROR);
+	// return to avoid compiler warning about not all control paths returning a value
+	return 0;
   }
 }
 
-is_gp_node(node)
+int is_gp_node(node)
 NODES *node;
 {
   return (node->type == GPTYPE || node->type == GPHOLE);
@@ -199,7 +215,7 @@ seg_ptr seg_p;
 #endif
 
 /* is node in the list */
-is_node_in_list(node, nodelist)
+int is_node_in_list(node, nodelist)
 NODES *node;
 NPATH *nodelist;
 {
@@ -214,7 +230,7 @@ NPATH *nodelist;
 }
 
 /* is node (not real node) in the list */
-is_orignode_in_list(node, nodelist)
+int is_orignode_in_list(node, nodelist)
 NODES *node;
 NPATH *nodelist;
 {
@@ -384,7 +400,7 @@ SYS *indsys;
   }
 }
 
-equivnodes(line, indsys)
+int equivnodes(line, indsys)
 char *line;
 SYS *indsys;
 {
@@ -392,8 +408,8 @@ SYS *indsys;
   PSEUDO_NODE *pnlist = NULL, *pn;
   NODES *node, *realnode;
 
-  int skip, i;
-  char name1[80], name2[80];
+  int skip;
+  char name1[80];
 
   /* skip over .equiv  I think */
   if (sscanf(line,"%*s%n",&skip) != 0) {
@@ -467,7 +483,7 @@ NODES *node;
   return pn;
 }
 
-make_equiv(orignode, realnode)
+void make_equiv(orignode, realnode)
 NODES *orignode, *realnode;
 {
   SEGLIST *segl;
@@ -510,7 +526,7 @@ NODES *orignode, *realnode;
 
 }
 
-append_pnlist(pnlist, indsys)
+void append_pnlist(pnlist, indsys)
 PSEUDO_NODE *pnlist;
 SYS *indsys;
 {
@@ -543,7 +559,7 @@ NODES *node;
   return node;
 }
 
-add_to_connected_segs(node, seg, pseudo_seg)
+void add_to_connected_segs(node, seg, pseudo_seg)
 NODES *node;
 SEGMENT *seg;
 PSEUDO_SEG *pseudo_seg;
@@ -574,13 +590,12 @@ PSEUDO_SEG *pseudo_seg;
   realnode->connected_segs = segelem;
 }
 
-remove_from_connected_segs(node, seg, pseudo_seg)
+void remove_from_connected_segs(node, seg, pseudo_seg)
 NODES *node;
 SEGMENT *seg;
 PSEUDO_SEG *pseudo_seg;
 {
   SEGLIST *segelem, *tempsegl;
-  int count;
   NODES *realnode;
   void *vptr;
 
@@ -674,8 +689,8 @@ int *i, *j;
   cos2 = dotp(x - xt[mid], y - yt[mid], z - zt[mid], 
 	      gp->ux2, gp->uy2, gp->uz2);
 
-  count1 = cos1/gp->d1 + 0.5;
-  count2 = cos2/gp->d2 + 0.5;
+  count1 = (int) (cos1/gp->d1 + 0.5);
+  count2 = (int) (cos2/gp->d2 + 0.5);
 
   if (count1 > gp->seg1 || count1 < 0 || count2 > gp->seg2 || count2 < 0) {
     viewprintf(stderr, "find_nearest_gpnode: point (%lg,%lg,%lg) is outside of gp %s\n",
@@ -704,7 +719,7 @@ int *i, *j;
   return node;
 }
 
-is_real_node(node)
+int is_real_node(node)
 NODES *node;
 {
   return (node == node->equiv ? 1 : 0);
@@ -768,7 +783,6 @@ SPATH *seg_list;
 {
   NODES *anode;
   PSEUDO_SEG *pseg;
-  SPATH *pathptr;
   seg_ptr seg;
 
   if (nodelist != NULL) {
@@ -901,11 +915,11 @@ NPATH **stack;
 
 /* This function is based on the algorithm from "Graph Theory with Applications
    to Engin. and Comp Sci" by Narsingh Deo. 1974, pp. 280-284. */
-make_trees(indsys)
+void make_trees(indsys)
 SYS *indsys;
 {
 
-  NODES *tempnode, *node, *other, *orig;
+  NODES *tempnode, *node, *other;
   TREE *atree;
   NPATH *stack = NULL;
   SEGLIST *branches;
@@ -1001,10 +1015,12 @@ seg_ptr seg;
   else {
     viewprintf(stderr, "is_marked: unknown seg type: %d\n",seg.type);
     FHExit(FH_GENERIC_ERROR);
+	// dummy return, only to avoid the compiler's warning about not all control paths returning a value
+	return 0;
   }
 }
     
-mark_seg(seg)
+void mark_seg(seg)
 seg_ptr seg;
 {
   if (seg.type == NORMAL)
@@ -1022,7 +1038,7 @@ seg_ptr seg;
     ((PSEUDO_SEG *)seg.segp)->is_deleted = 0;
 }
 
-mark_node(node)
+void mark_node(node)
 NODES *node;
 {
   node->examined = 1;
@@ -1053,7 +1069,7 @@ PATHLIST *list;
   return templist;
 }
 
-make_loop(node_l, node_s, seg, tree)
+void make_loop(node_l, node_s, seg, tree)
 NODES *node_s;  /* one branch to main trunk. */
                 /* possibly zero branches to main trunk if seg is EXTERNTYPE?
                      (obsolete comment?)*/
@@ -1208,7 +1224,7 @@ PSEUDO_SEG *pseg;
    It adds a tree to indsys->trees which contains all the new loops.
 */   
 
-find_hole_meshes(indsys)
+void find_hole_meshes(indsys)
 SYS *indsys;
 {
   NODES *node, *tnode, ***pnodes;
@@ -1313,7 +1329,7 @@ NPATH *nodes_in_hole;
   return surround;
 }
 
-clear_marks_and_level(nlist)
+void clear_marks_and_level(nlist)
 NPATH *nlist;
 {
   NPATH *np;
@@ -1327,7 +1343,7 @@ NPATH *nlist;
 /* find all the circuits (loops) formed by the nodes in nlist.  
    This is nearly identical to make_trees().
    Also clear seg->is_deleted when done */
-make_gp_trees(nlist, atree)
+void make_gp_trees(nlist, atree)
 NPATH *nlist;
 TREE *atree;
 {
@@ -1497,7 +1513,7 @@ seg_ptr seg;    /* segment connecting above nodes (not in tree) */
   return path;
 }
 
-clear_used_segs(plist)
+void clear_used_segs(plist)
 PATHLIST *plist;
 {
   PATHLIST *pl;
@@ -1509,7 +1525,7 @@ PATHLIST *plist;
 }
 
 /*this marks used segs so that path_through_gp() has a record of these meshes*/
-mark_used_segs(plist)
+void mark_used_segs(plist)
 PATHLIST *plist;
 {
   PATHLIST *pl;

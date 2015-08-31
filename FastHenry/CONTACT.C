@@ -17,6 +17,45 @@
 #include <math.h>
 #include "induct.h"
 
+// function prototypes
+void contact_error(char *errstr, char *line, ContactList *contactp);
+void regurg_contact(FILE *fp, ContactList *contactp);
+void contact_point(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void walk_along_line(double x0, double y0, double z0, double x1, double y1, double z1, double max_x, double max_y, Nonuni_gp *gp);
+void contact_rect(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_decay_rect(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_equiv_rect(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_initial_grid(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_trace(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_line(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void contact_initial_mesh_grid(ContactList *contactp, Nonuni_gp *gp, double relx, double rely, double relz, double units);
+void get_new_x_y(double x, double y, double xv, double yv, Gcell *cell, double *ret_x, double *ret_y, G_nodes **pnode, char *dir);
+void break_cell(Gcell *cell, char dir, Nonuni_gp *gp);
+void make_two_kids(Gcell *cell, char dir, Nonuni_gp *gp);
+void update_bi_nodes(Gcell *cell, Nonuni_gp *gp);
+void find_or_make_node(Gcell *cell, Gcell *kid1, Gcell *kid2, char node_start, char node_end, double x, double y, Nonuni_gp *gp);
+void fix_node_cell_ptrs(Gcell *cell);
+void clear_edge_ptrs(Gcell *cell);
+void set_edge_nodes(G_nodes *node1, G_nodes *node2, char adj_dir, char dir1, char dir2, Gcell *cell);
+void fix_adjacency(G_nodes *begin_node, char adj_dir, G_nodes *node, G_nodes *end_node);
+void cut_inside_rect(double x, double y, double z, double rect_x_width, double rect_y_width, double max_cell_x, double max_cell_y, Nonuni_gp *gp);
+void do_decay_rect(double x, double y, double z, double rect_x_width, double rect_y_width, double max_cell_x, double max_cell_y,
+	double stop_x, double stop_y, Nonuni_gp *gp);
+void limit_box(double x, double y, double x_wid, double y_wid, double xl_min, double xr_max, double yl_min, double yr_max,
+	double *xl, double *yl, double *xr, double *yr);
+void compute_new_widths(double *x_rect, double *y_rect, double *x_cell, double *y_cell);
+void make_equiv_rect(double x0, double y0, double z0, double x_width, double y_width, Nonuni_gp *gp, char *name);
+void equiv_nodes_on_edge(G_nodes *node1, char dir, G_nodes *node2, NODES *cnode, Nonuni_gp *gp, char *name, double z0);
+void make_initial_grid(Nonuni_gp *gp, int x_cells, int y_cells);
+void make_grid_kids(Gcell *parent, int x_cells, int y_cells, Nonuni_gp *gp);
+void update_grid_nodes(Gcell *cell, Nonuni_gp *gp);
+void set_node_and_cell_info(G_nodes *node, int dir, Gcell *cell);
+void set_cell_node_adjacency(Gcell *cell);
+void poke_holes(Nonuni_gp *gp);
+void do_trace(double x0, double y0, double z0, double x1, double y1, double z1, double width, double factor, Nonuni_gp *gp);
+void point_at_each_other(G_nodes *node1, int dir, G_nodes *node2);
+
+
 /* to compare floating point numbers */
 #define nearzero(x) (fabs(x) < EPS)
 
@@ -102,7 +141,7 @@ ContactList *make_contactlist(head, line, units, relx, rely, relz, skip)
 
   contactp->vals = (double *)Gmalloc(contactp->numvals*sizeof(double));
 
-  skip3 += linep - line + 1;
+  skip3 += (int) (linep - line + 1);
 
   /* now let's read them in */
   linep = line + 1;  /* skip the ( */
@@ -130,7 +169,7 @@ ContactList *make_contactlist(head, line, units, relx, rely, relz, skip)
 }
 
 
-contact_error(errstr, line, contactp)
+void contact_error(errstr, line, contactp)
 char *errstr, *line;
 ContactList *contactp;
 {
@@ -161,7 +200,7 @@ char *errstr;
   regurg_contact(stderr, contactp);
 }
   
-regurg_contact(fp, contactp)
+void regurg_contact(fp, contactp)
      FILE *fp;
      ContactList *contactp;
 {
@@ -176,7 +215,7 @@ regurg_contact(fp, contactp)
 }
 
 /* This calls the functions which make the discretization around the contacts*/
-make_contacts(contactp, gp)
+void make_contacts(contactp, gp)
 Nonuni_gp *gp;
 ContactList *contactp;
 {
@@ -207,13 +246,12 @@ ContactList *contactp;
 
 /* cut up cell for this point until it's contained in a cell no
    bigger than the 4th argument */
-contact_point(contactp, gp, relx, rely, relz, units)
+void contact_point(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double xc, yc, zc;
   Gcell *contain;
 
@@ -240,13 +278,12 @@ contact_point(contactp, gp, relx, rely, relz, units)
 /* follow a line, cutting every cell you come to */
 /* vals[0]-[2] first point of line, vals[3]-[5] other end point, 
    vals[6] = max width in plane's x-dir,  vals[7] = max width in y-dir */
-contact_line(contactp, gp, relx, rely, relz, units)
+void contact_line(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double x0, y0, z0, x1, y1, z1;
   Gcell *contain;
 
@@ -282,7 +319,7 @@ contact_line(contactp, gp, relx, rely, relz, units)
 }
 
 /*walk along line from (x0,y0) to (x1,y1) and cut cells to size (max_x,max_y)*/
-walk_along_line(x0, y0, z0, x1, y1, z1, max_x, max_y, gp)
+void walk_along_line(x0, y0, z0, x1, y1, z1, max_x, max_y, gp)
      double x0,y0,z0,x1,y1,z1, max_x, max_y;
      Nonuni_gp *gp;
 {
@@ -320,7 +357,6 @@ Gcell *find_next_cell_along_line(x,y,xv,yv, cell, ret_x, ret_y)
      double x,y,xv,yv, *ret_x, *ret_y;
      Gcell *cell;
 {
-  char edge_dir;
   G_nodes *node;
   char dir;
   Gcell *newcell;
@@ -383,7 +419,7 @@ Gcell *find_next_cell_along_line(x,y,xv,yv, cell, ret_x, ret_y)
 /* follow vector direction until we hit an edge of cell */
 /* and return x,y of that point and a node and direction to search
    to find nearest node on that edge */
-get_new_x_y(x,y,xv,yv, cell, ret_x, ret_y, pnode, dir)
+void get_new_x_y(x,y,xv,yv, cell, ret_x, ret_y, pnode, dir)
      double x,y,xv,yv, *ret_x, *ret_y;
      Gcell *cell;
      G_nodes **pnode;
@@ -491,7 +527,7 @@ Gcell *cut_cell(x, y, max_x, max_y, cell, gp)
   return cell;
 }
 
-break_cell(cell, dir, gp)
+void break_cell(cell, dir, gp)
      Gcell *cell;
      char dir;
      Nonuni_gp *gp;
@@ -507,14 +543,13 @@ break_cell(cell, dir, gp)
   update_bi_nodes(cell, gp);
 }
 
-update_bi_nodes(cell, gp)
+void update_bi_nodes(cell, gp)
      Gcell *cell;
      Nonuni_gp *gp;
 {
   Bi *two_kids;
   Gcell *c1, *c2;
   char type;
-  G_nodes *node;
   
   two_kids = (Bi *)cell->children;
   c1 = two_kids->child1;
@@ -568,7 +603,7 @@ update_bi_nodes(cell, gp)
 }
 
 /* set new parent edge pointers to NULL so that we know they are corrupted*/
-clear_edge_ptrs(cell)
+void clear_edge_ptrs(cell)
      Gcell *cell;
 {
   int i;
@@ -578,10 +613,10 @@ clear_edge_ptrs(cell)
 }
      
 /* update the nodes on the boundary of this cell to point in the right place */
-fix_node_cell_ptrs(cell)
+void fix_node_cell_ptrs(cell)
      Gcell *cell;
 {
-  G_nodes *node, **corners;
+  G_nodes **corners;
   int i;
 
   corners = cell->bndry.nodes;
@@ -598,7 +633,7 @@ fix_node_cell_ptrs(cell)
 }
 
 /* set cell ptrs for nodes between node1 and node2 */
-set_edge_nodes(node1, node2, adj_dir, dir1, dir2, cell)
+void set_edge_nodes(node1, node2, adj_dir, dir1, dir2, cell)
      G_nodes *node1, *node2;
      char adj_dir, dir1, dir2;
      Gcell *cell;
@@ -612,7 +647,7 @@ set_edge_nodes(node1, node2, adj_dir, dir1, dir2, cell)
   }
 }
      
-find_or_make_node(cell, kid1, kid2, node_start, node_end, x, y, gp)
+void find_or_make_node(cell, kid1, kid2, node_start, node_end, x, y, gp)
      Gcell *cell, *kid1, *kid2;
      char node_start, node_end;
      double x,y;
@@ -657,7 +692,7 @@ find_or_make_node(cell, kid1, kid2, node_start, node_end, x, y, gp)
   }
 }
 
-fix_adjacency(begin_node, adj_dir, node, end_node)
+void fix_adjacency(begin_node, adj_dir, node, end_node)
      G_nodes *begin_node, *node, *end_node;
      char adj_dir;
 {
@@ -702,7 +737,7 @@ G_nodes *find_mid_node(begin_node, adj_dir, end_node)
 
 
 /* breaks a cell into two.  Turns a leaf into a BI (two kids) */
-make_two_kids(cell, dir, gp)
+void make_two_kids(cell, dir, gp)
      Gcell *cell;
      char dir;
      Nonuni_gp *gp;
@@ -738,16 +773,14 @@ make_two_kids(cell, dir, gp)
    val[4] width in y-direction.  val[5] = max_x - maximum width of cells
    in x direction.  val[6] - max width in y-dir */
 
-contact_rect(contactp, gp, relx, rely, relz, units)
+void contact_rect(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double x0, y0, z0;
   double xl, yl, xr, yr;
-  Gcell *contain;
   double rect_x_width, rect_y_width, max_cell_x, max_cell_y;
 
   if (contactp->numvals != 7) 
@@ -814,7 +847,7 @@ contact_rect(contactp, gp, relx, rely, relz, units)
 /* it calls walk_along_line() for lines spaced appropriately to guarantee
    no big rectangle squeezes through */
 
-cut_inside_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y, 
+void cut_inside_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y, 
 		gp)
      double x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y;
      Nonuni_gp *gp;
@@ -852,16 +885,14 @@ cut_inside_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y,
    until they reach vals[7] = stop_x, vals[8] = stop_y.
    stop_x and stop_y < 0 mean never stop.
 */
-contact_decay_rect(contactp, gp, relx, rely, relz, units)
+void contact_decay_rect(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double x0, y0, z0;
   double xl, yl, xr, yr;
-  Gcell *contain;
   double rect_x_width, rect_y_width, max_cell_x, max_cell_y;
   double stop_x, stop_y;
   
@@ -937,7 +968,7 @@ contact_decay_rect(contactp, gp, relx, rely, relz, units)
      
 }
 
-do_decay_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y, 
+void do_decay_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y, 
 		stop_x, stop_y, gp)
      double x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y;
      double stop_x, stop_y;
@@ -996,7 +1027,7 @@ do_decay_rect(x, y, z, rect_x_width, rect_y_width, max_cell_x, max_cell_y,
 
 }
 
-limit_box(x, y, x_wid, y_wid, xl_min, xr_max, yl_min, yr_max, xl, yl, xr, yr)
+void limit_box(x, y, x_wid, y_wid, xl_min, xr_max, yl_min, yr_max, xl, yl, xr, yr)
      double x, y, x_wid, y_wid, xl_min, yl_min, xr_max, yr_max;
      double *xl, *yl, *xr, *yr;
 {
@@ -1033,7 +1064,7 @@ limit_box(x, y, x_wid, y_wid, xl_min, xr_max, yl_min, yr_max, xl, yl, xr, yr)
    then new_rect = rect*(1/(1-ratio)) and new_cell = rect(ratio/(1-ratio))
 */
 
-compute_new_widths(x_rect, y_rect, x_cell, y_cell)
+void compute_new_widths(x_rect, y_rect, x_cell, y_cell)
      double *x_rect, *y_rect; /* dimensions of rectangle */
      double *x_cell, *y_cell; /* max width of cells in rectangle */
 {
@@ -1063,15 +1094,13 @@ compute_new_widths(x_rect, y_rect, x_cell, y_cell)
 /* equivalences (shorts) all the nodes inside rect.     
    center of rectangle: vals[0]-[2], xwidth = [3], ywidth=[4]
 */
-contact_equiv_rect(contactp, gp, relx, rely, relz, units)
+void contact_equiv_rect(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double x0, y0, z0;
-  double xl, yl, xr, yr;
   Gcell *contain;
   double rect_x_width, rect_y_width;
   
@@ -1098,13 +1127,12 @@ contact_equiv_rect(contactp, gp, relx, rely, relz, units)
 /* equiv all the nodes together on the exterior of the given rectangle */
 /* picks the closest node outside the rect along the perimeter. */
 /* We will assume the elements on the interior don't matter */
-make_equiv_rect(x0, y0, z0, x_width, y_width, gp, name) 
+void make_equiv_rect(x0, y0, z0, x_width, y_width, gp, name) 
     double x0, y0, z0, x_width, y_width;
     Nonuni_gp *gp;
     char *name;  /* node name */
 {
   double xl, xr, yb, yt;
-  Gcell *cell;
   GROUNDPLANE *grndp = gp->grndp;
   SYS *indsys = gp->grndp->indsys;
   double x,y,z;
@@ -1112,7 +1140,7 @@ make_equiv_rect(x0, y0, z0, x_width, y_width, gp, name)
   G_nodes *center, *gnode;
   double xg,yg,zg;
   NODES *cnode, *node, *realcnode;
-  int i, isalready_done;
+  int isalready_done;
   Llist *inside_nodes, *endl, *list;
 
   xl = x0 - x_width/2.0;
@@ -1354,7 +1382,7 @@ walk_along_edge(xl, yb, xr, yt, gp, which_edge, cnode, name, z0)
 /* short cnode to all the nonuni_nodes from node1 to node2 going in
    the "dir" adjacency direction */
 /* *** this is no longer called *** */
-equiv_nodes_on_edge(node1, dir, node2, cnode, gp, name, z0)
+void equiv_nodes_on_edge(node1, dir, node2, cnode, gp, name, z0)
     G_nodes *node1, *node2;
     char dir;
     NODES *cnode;
@@ -1432,15 +1460,12 @@ NODES *make_fastH_node(node, grndp, gp, xg, yg, zg, pseudoname)
 
 /* set up an initial 2D grid of cells. */
 /*  vals[0] is the number of cells in x, vals[1] is the number in y */
-contact_initial_grid(contactp, gp, relx, rely, relz, units)
+void contact_initial_grid(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
-  double xc, yc, zc;
-  Gcell *contain;
 
   if (contactp->numvals != 2) 
     contact_error("Exactly 2 values required for an initial grid.","",
@@ -1455,12 +1480,11 @@ contact_initial_grid(contactp, gp, relx, rely, relz, units)
   make_initial_grid(gp, (int)vals[0], (int)vals[1]);
 }
 
-make_initial_grid(gp, x_cells, y_cells)
+void make_initial_grid(gp, x_cells, y_cells)
      Nonuni_gp *gp;
      int x_cells, y_cells;
 {
   Gcell *root = gp->root_cell;
-  Grid_2d *grid;
 
   if (get_children_type(root) != NONE) {
     viewprintf(stderr, "Error: attempting to cut an initial grid that has already be divided.\n x_cells=%d, y_cells=%d\n",x_cells,y_cells);
@@ -1479,13 +1503,13 @@ make_initial_grid(gp, x_cells, y_cells)
 
 /* make node information for new grid.  Assumes we are gridding the root cell
    and checks to insure it */
-update_grid_nodes(cell, gp)
+void update_grid_nodes(cell, gp)
    Gcell *cell;
    Nonuni_gp *gp;
 {
   int i, j;
   Grid_2d *grid;
-  G_nodes *node, *nodeNW, *nodeNE, *nodeSW, *nodeSE;
+  G_nodes *nodeNW, *nodeNE, *nodeSW, *nodeSE;
   Gcell ***kids, *onekid;
   int x_c, y_c;
 
@@ -1577,7 +1601,7 @@ update_grid_nodes(cell, gp)
 }
 
 /* have this node and cell point at each other */
-set_node_and_cell_info(node, dir, cell)
+void set_node_and_cell_info(node, dir, cell)
      G_nodes *node;
      int dir;
      Gcell *cell;
@@ -1587,7 +1611,7 @@ set_node_and_cell_info(node, dir, cell)
 }
 
 /* have nodes on boundary of this cell point at each other */
-set_cell_node_adjacency(cell)
+void set_cell_node_adjacency(cell)
      Gcell *cell;
 {
   G_nodes **nodes = cell->bndry.nodes;
@@ -1599,7 +1623,7 @@ set_cell_node_adjacency(cell)
 
 }
 
-point_at_each_other(node1, dir, node2)
+void point_at_each_other(node1, dir, node2)
       G_nodes *node1, *node2;
       int dir;
 {
@@ -1637,7 +1661,7 @@ G_nodes *add_new_node(x, y, cell_dir, cell, index, gp)
   return node;
 }
 
-make_grid_kids(parent, x_cells, y_cells, gp)
+void make_grid_kids(parent, x_cells, y_cells, gp)
       Nonuni_gp *gp;
       int x_cells, y_cells;
       Gcell *parent;
@@ -1677,15 +1701,12 @@ make_grid_kids(parent, x_cells, y_cells, gp)
 /* set up an initial 2D grid of cells and then put holes in it. */
 /*  vals[0] is the number of cells in x, vals[1] is the number in y */
 /* it puts holes every other row and every other column */
-contact_initial_mesh_grid(contactp, gp, relx, rely, relz, units)
+void contact_initial_mesh_grid(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
-  double xc, yc, zc;
-  Gcell *contain;
 
   if (contactp->numvals != 2) 
     contact_error("Exactly 2 values required for an initial grid.","",
@@ -1705,7 +1726,7 @@ contact_initial_mesh_grid(contactp, gp, relx, rely, relz, units)
 /* make a meshed groundplane out of an initially refined plane. */
 /*  This pokes holes in every other row, every other column.  You
     could really do any pattern */
-poke_holes(gp)
+void poke_holes(gp)
     Nonuni_gp *gp;
 {
   int i, j;
@@ -1736,9 +1757,8 @@ ContactList *make_contact_connection(head, line, units, relx, rely, relz, skip)
      double units, relx, rely, relz;
      int *skip;
 {
-  char name[MAXNAME];
   char nname[80];
-  int skip1, skip2, skip3, skip4, skip25;
+  int skip3, skip4, skip25;
   ContactList *con_decay, *con_equiv;
   char *linep;
   double val, ratio;
@@ -1819,7 +1839,7 @@ ContactList *make_contact_connection(head, line, units, relx, rely, relz, skip)
   con_decay->numvals = 9;
   con_decay->vals = (double *)Gmalloc(9*sizeof(double));
 
-  skip3 += linep - line + 1;
+  skip3 += (int) (linep - line + 1);
 
   /* now let's read them in */
   linep = line + 1;  /* skip the ( */
@@ -1886,13 +1906,12 @@ ContactList *make_contact_connection(head, line, units, relx, rely, relz, skip)
    and height of cells underneath trace at 45 degrees will be vals[7]*vals[6]
    instead of just vals[6] (so set to 1 for no reduction) The reduction
    comes at the price of accuracy of course */
-contact_trace(contactp, gp, relx, rely, relz, units)
+void contact_trace(contactp, gp, relx, rely, relz, units)
      Nonuni_gp *gp;
      ContactList *contactp;
      double relx,rely,relz,units;
 {
   double *vals = contactp->vals;
-  int i1,j1;
   double x0, y0, z0, x1, y1, z1;
   Gcell *contain;
 
@@ -1932,7 +1951,7 @@ contact_trace(contactp, gp, relx, rely, relz, units)
    region, the cells are at most as wide as half the width of the trace.  And
    adjacent to those right underneath, no bigger than width of trace .
    should we do more?*/
-do_trace(x0, y0, z0, x1, y1, z1, width, factor, gp)
+void do_trace(x0, y0, z0, x1, y1, z1, width, factor, gp)
      double x0,y0,z0,x1,y1,z1, width, factor;
      Nonuni_gp *gp;
 {
@@ -2033,8 +2052,11 @@ Gcell *pick_cell_based_on_vec(node, xv, yv)
 	else
 	  return node->cells[NW];
     }
-    else
-      GP_PANIC("pick_cell_based_on_vec(): xv == yv == 0!")
+	else {
+	  GP_PANIC("pick_cell_based_on_vec(): xv == yv == 0!")
+	  // GP_PANIC should exit - this return is only to avoid the ocmpiler warning
+	  return NULL;
+    }
   }
   else if (xv == 0) {
     /* we've hit a node.  Doesn't matter which we return.  */
@@ -2052,8 +2074,11 @@ Gcell *pick_cell_based_on_vec(node, xv, yv)
         return node->cells[SW];
     }
   }
-  else
-    GP_PANIC("pick_cell_based_on_vec(): No condition met!");
+  else {
+	  GP_PANIC("pick_cell_based_on_vec(): No condition met!");
+	  // GP_PANIC should exit - this return is only to avoid the ocmpiler warning
+	  return NULL;
+  }
 }
 
 

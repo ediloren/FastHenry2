@@ -1,18 +1,22 @@
 /* This contains functions needed for the new preconditioner */
 
 #include "induct.h"
-#include "sparse/spMatrix.h"
+#include "Sparse/spMatrix.h"
 
 #include "FHWindow.h" // Enrico
 
-double *spGetElement();
+// prototype already supplied by spMatrix.h
+//double *spGetElement();
+void fill_diagL(ssystem *sys, SYS *indsys, double w);
+void fill_bySegment(ssystem *sys, SYS *indsys, double w);
+
 
 static char outfname[80];
 
 /* used in shift_mutual */
 static double radius_factor;
 
-choose_and_setup_precond(indsys)
+void choose_and_setup_precond(indsys)
 SYS *indsys;
 {
   int precond_choice = indsys->opts->precond;
@@ -78,20 +82,17 @@ SYS *indsys;
   }
 }
 
-fill_spPre(sys, indsys, w)
+void fill_spPre(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
 double w;  /* frequency */
 {
-
-  int i,j,err,used;
   char *Matrix = indsys->sparMatrix;
-  MELEMENT *melem, *melem2, **Mlist = indsys->Mlist;
-  CX *elem1, *elem2;
+  MELEMENT **Mlist = indsys->Mlist;
   int num_mesh = indsys->num_mesh;
   double *diagL = indsys->diagL;
   double *R = indsys->R;
-  double rtempsum, itempsum;
+
 
   spClear(Matrix);
 
@@ -99,6 +100,11 @@ double w;  /* frequency */
     fill_diagL(sys, indsys, w);
 
 #if 1==0
+	int i, j, used;
+	MELEMENT *melem, *melem2;
+	double rtempsum, itempsum;
+	CX *elem1, *elem2;
+
   for(i = 0; i < num_mesh; i++) {
     for(j = i; j < num_mesh; j++) {
       rtempsum = 0;
@@ -144,7 +150,7 @@ double w;  /* frequency */
 
 /* this is called by choose_and_setup_precond() and also by main() if 
    dont_form_Z is true (fmin = 0) */
-create_sparMatrix(indsys)
+void create_sparMatrix(indsys)
 SYS *indsys;
 {
   int err;
@@ -164,7 +170,7 @@ SYS *indsys;
   }
 } 
 
-fill_bySegment(sys, indsys, w)
+void fill_bySegment(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
 double w;
@@ -214,9 +220,9 @@ double w;
     if (ismulti) {
       for(i = 0; i < num_fils; i++) {
 	pchg = fillist[i].pchg = seg->filaments[i].pchg;
-	xindex = (pchg->x - minx)/length;
-	yindex = (pchg->y - miny)/length;
-	zindex = (pchg->z - minz)/length;
+	xindex = (int) ((pchg->x - minx)/length);
+	yindex = (int)((pchg->y - miny) / length);
+	zindex = (int)((pchg->z - minz) / length);
 	nc = fillist[i].fc = sys->cubes[depth][xindex][yindex][zindex];
 	nsize = nc->directnumeles[0];
 	nc_pc = nc->chgs;
@@ -309,7 +315,7 @@ double w;
    and fmin=0 (the MZMt matrix will be a sparse MRMt).  but
    now has it's own function, fill_diagR() 
 */
-fill_diagL(sys, indsys, w)
+void fill_diagL(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
 double w;
@@ -324,7 +330,7 @@ double w;
   char *Matrix = indsys->sparMatrix;
   double *R = indsys->R;
   double **L = indsys->Z;
-  int fili, filj, i, j, k, num_fils, nsize, cindex;
+  int i, j, num_fils, nsize, cindex;
   int xindex, yindex, zindex;
   cube *nc;
   charge *pchg, **nc_pc;
@@ -343,9 +349,9 @@ double w;
       filnum = seg->filaments[i].filnumber;
       if (ismulti) {
 	pchg = seg->filaments[i].pchg;
-	xindex = (pchg->x - minx)/length;
-	yindex = (pchg->y - miny)/length;
-	zindex = (pchg->z - minz)/length;
+	xindex = (int)((pchg->x - minx) / length);
+	yindex = (int)((pchg->y - miny) / length);
+	zindex = (int)((pchg->z - minz) / length);
 	nc = sys->cubes[depth][xindex][yindex][zindex];
 	nsize = nc->directnumeles[0];
 	nc_pc = nc->chgs;
@@ -389,18 +395,17 @@ double w;
    The reordering and fillin manipulation must be dominating and
    since we only factor this once, there is no real benefit.
 */
-fill_diagR(indsys)
+void fill_diagR(indsys)
 SYS *indsys;
 {
   SEGMENT *seg;
-  double val, valR;
+  double valR;
   char *Matrix = indsys->sparMatrix;
   double *R = indsys->R;
-  int fili, filj, i, j, k, num_fils, nsize, cindex;
+  int i, num_fils;
   MELEMENT *mtranj, *mtrani;
   MELEMENT **Mtrans = indsys->Mtrans;
-  CX *elem;
-  int ismulti, filnum;
+  int filnum;
 
   for(seg = indsys->segment; seg != NULL; seg = seg->next) {
     num_fils = seg->num_fils;

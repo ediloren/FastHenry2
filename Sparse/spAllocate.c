@@ -73,7 +73,7 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
-
+static void RecordAllocation();
 
 
 
@@ -123,6 +123,7 @@ register  unsigned  SizePlusOne;
 register  MatrixPtr  Matrix;
 register  int  I;
 int  AllocatedSize;
+static void InitializeElementBlocks();
 
 /* Begin `spCreate'. */
 /* Clear error flag. */
@@ -368,7 +369,7 @@ ElementPtr  pElement;
  *  spNO_MEMORY
  */
 
-static
+static void
 InitializeElementBlocks( Matrix, InitialNumberOfElements,
                          NumberOfFillinsExpected )
 
@@ -439,8 +440,6 @@ spcGetFillin( Matrix )
 
 MatrixPtr Matrix;
 {
-struct FillinListNodeStruct *pListNode;
-ElementPtr  pFillins;
 
 /* Begin `spcGetFillin'. */
 
@@ -511,7 +510,7 @@ ElementPtr  pFillins;
  *  spNO_MEMORY
  */
 
-static
+static void
 RecordAllocation( Matrix, AllocatedPtr )
 
 MatrixPtr Matrix;
@@ -522,6 +521,9 @@ char  *AllocatedPtr;
  * If Allocated pointer is NULL, assume that malloc returned a NULL pointer,
  * which indicates a spNO_MEMORY error.
  */
+
+	static void AllocateBlockOfAllocationList();
+
     if (AllocatedPtr == NULL)
     {   Matrix->Error = spNO_MEMORY;
         return;
@@ -568,7 +570,7 @@ char  *AllocatedPtr;
  *  spNO_MEMORY
  */
 
-static
+static void
 AllocateBlockOfAllocationList( Matrix )
 
 MatrixPtr Matrix;

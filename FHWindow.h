@@ -24,6 +24,9 @@ extern volatile char bFHContinue;
 extern volatile struct impMatrix strctImpMatrix;
 
 extern void FHSetName(char *name);
+extern void FHOnClosing(int cause);
+extern void FHExit(int cause);
+extern int viewprintf();
 
 #endif
 

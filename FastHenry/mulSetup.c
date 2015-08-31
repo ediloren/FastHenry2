@@ -7,6 +7,20 @@
 
 cube *cstack[1024];		/* Stack used in several routines. */
 
+// function prototypes
+static int placeq(int flag, ssystem *sys, charge *charges, SYS *indsys, int pseudo_lev);
+void getrelations(ssystem *sys);
+void setPosition(ssystem *sys);
+static void indexkid(ssystem *sys, cube *dad, int *pqindex, int *pcindex);
+void setExact(ssystem *sys, int numterms);
+static void getnbrs(ssystem *sys);
+static void linkcubes(ssystem *sys);
+static void set_vector_masks(ssystem *sys);
+static void setMaxq(ssystem *sys);
+static void getAllInter(ssystem *sys);
+void removeabandoned(ssystem *sys);
+
+
 /*
   sets up the partitioning of space and room for charges and expansions
 */
@@ -92,21 +106,17 @@ int pseudo_lev;
   charge *nextq, *compq;
   cube *****cubes, *nextc;
   char *hack_path();
-  SEGMENT *seg, *lastseg;
-  NODES *nextn;
   FILAMENT *fil;
   double Precond_Cost, aver_mat_size, Direct_Cost;
-  double Pre_Cost_last, aver_last_size, Dir_Cost_last;
-  int cubes_last_level, exact_cubes_last_level;
   double to_be_broken;
   int totalq2, fake_pass, already_done;
-  int dep = -1, xi, yi, zi;
+  int dep = -1;
 
   /* for fasthenry, use limit = user specification */
   if (indsys->opts->limit == AUTO)
     /* sqrt(3.0) factor since multipole part done 3 times, */
     /* while direct part once and direct evaluation is n^2 (thus sqrt) */
-    limit = multerms(sys->order)*sqrt(3.0);  /* multerms = (order + 1)^2 */
+    limit = (int) (multerms(sys->order)*sqrt(3.0));  /* multerms = (order + 1)^2 */
   else
     limit = indsys->opts->limit;
 
@@ -242,9 +252,9 @@ int pseudo_lev;
 
       /* Count the number of charges per cube and allocate if needed */
       for(nextq = charges; nextq != NULL; nextq = nextq->next) {
-	xindex = (nextq->x - minx) / length;
-	yindex = (nextq->y - miny) / length;
-	zindex = (nextq->z - minz) / length;
+	xindex = (int) ((nextq->x - minx) / length);
+	yindex = (int)((nextq->y - miny) / length);
+	zindex = (int)((nextq->z - minz) / length);
 	nextc = cubes[i][xindex][yindex][zindex];
 #if 1==0
 	if (i == dep && xindex == xi && yindex == yi && zindex == zi)
@@ -405,9 +415,9 @@ int pseudo_lev;
 
     /* Count the number of charges per cube. */
     for(nextq = charges; nextq != NULL; nextq = nextq->next) {
-      xindex = (nextq->x - minx) / length;
-      yindex = (nextq->y - miny) / length;
-      zindex = (nextq->z - minz) / length;
+      xindex = (int) ((nextq->x - minx) / length);
+	  yindex = (int)((nextq->y - miny) / length);
+	  zindex = (int)((nextq->z - minz) / length);
       nextc = cubes[depth][xindex][yindex][zindex];
       if(nextc == NULL) {
 	CALLOC(nextc, 1, cube, ON, AMSC);
@@ -471,9 +481,9 @@ int pseudo_lev;
       /* disfchg(nextq); */
     }
 #endif
-    xindex = (nextq->x - minx) / length;
-    yindex = (nextq->y - miny) / length;
-    zindex = (nextq->z - minz) / length;
+	xindex = (int)((nextq->x - minx) / length);
+	yindex = (int)((nextq->y - miny) / length);
+	zindex = (int)((nextq->z - minz) / length);
     nextc = cubes[depth][xindex][yindex][zindex];
 
     /* check if current charge is same as those already in the cube `nextc' */
@@ -559,9 +569,9 @@ cube *nextc, *****cubes = sys->cubes;
 
 /* Count the number of charges per cube. */
   for(nextq = charges; nextq != NULL; nextq = nextq->next) {
-    xindex = (nextq->x - minx) / length;
-    yindex = (nextq->y - miny) / length;
-    zindex = (nextq->z - minz) / length;
+	  xindex = (int)((nextq->x - minx) / length);
+	  yindex = (int)((nextq->y - miny) / length);
+	  zindex = (int)((nextq->z - minz) / length);
     nextc = cubes[depth][xindex][yindex][zindex];
     if(nextc == NULL) {
       CALLOC(nextc, 1, cube, ON, AMSC);
@@ -600,9 +610,9 @@ cube *nextc, *****cubes = sys->cubes;
       disfchg(nextq);
 */
     }
-    xindex = (nextq->x - minx) / length;
-    yindex = (nextq->y - miny) / length;
-    zindex = (nextq->z - minz) / length;
+	xindex = (int)((nextq->x - minx) / length);
+	yindex = (int)((nextq->y - miny) / length);
+	zindex = (int)((nextq->z - minz) / length);
     nextc = cubes[depth][xindex][yindex][zindex];
     nextc->chgs[nextc->upnumeles[0]++] = nextq;
   }
@@ -611,7 +621,7 @@ cube *nextc, *****cubes = sys->cubes;
 /*
 GetRelations allocates parents links the children. 
 */
-getrelations(sys)
+void getrelations(sys)
 ssystem *sys;
 {
 cube *nextc, *parent, *****cubes = sys->cubes;
@@ -652,10 +662,10 @@ int i, j, k, l, side;
 
 /* remove abandoned cubes */
 
-removeabandoned(sys)
+void removeabandoned(sys)
 ssystem *sys;
 {
-cube *nextc, *parent, *****cubes = sys->cubes;
+cube *nextc, *****cubes = sys->cubes;
 int i, j, k, l, side, num_real_kids, m;
   for(i = sys->depth - 1, side = sys->side/2; i >= 0; i--, side /= 2) {
     for(j=0; j < side; j++) {
@@ -695,7 +705,7 @@ int i, j, k, l, side, num_real_kids, m;
 /*
 Set the position coordinates of the cubes.
 */
-setPosition(sys)
+void setPosition(sys)
 ssystem *sys;
 {
 int i, j, k, l;
@@ -732,7 +742,7 @@ psuedo-adaptive scheme.  Also get the pointer to the appropriate section
 of the charge and potential vector.  Uses the eval vector for the potential
 coeffs at the lowest level.  Also index the lowest level cubes.
 */
-indexkid(sys, dad, pqindex, pcindex)
+void indexkid(sys, dad, pqindex, pcindex)
 ssystem *sys;
 cube *dad;
 int *pqindex, *pcindex;
@@ -770,7 +780,7 @@ potential vector.  Otherwise, the number of nonzero kids is counted
 and put in upnumvects as usual.  
 */
 /* added 30Mar91: provisions for loc_exact and mul_exact */
-setExact(sys, numterms)
+void setExact(sys, numterms)
 ssystem *sys;
 int numterms;
 {
@@ -900,7 +910,7 @@ int num_lexact, num_mexact;
 Find all the nearest neighbors.
 At the bottom level, get neighbors due to a parents being exact.
 */
-getnbrs(sys)
+void getnbrs(sys)
 ssystem *sys;
 {
 cube *nc, *np, *****cubes = sys->cubes;
@@ -962,7 +972,9 @@ cube *cp;
 {
   int i;
   int cnt;
-  cube *kidc;
+
+  // Enrico, bug fix: 'cnt' not initialized before use
+  cnt = 0;
 
   if(cp->level == depth) return(cp->upnumeles[0]);
   else for(i = 0; i < cp->numkids; i++) 
@@ -976,7 +988,7 @@ for the cubes requiring local expansion work, one for the cubes requiring
 direct methods and one for cubes with potential evaluation points. 
 Note, upnumvects and exact must be set!!!
 */
-linkcubes(sys)
+void linkcubes(sys)
 ssystem *sys;
 {
   cube *nc, **plnc, **pdnc, **pmnc, *****cubes = sys->cubes;
@@ -1031,7 +1043,7 @@ ssystem *sys;
 /*
 Determine maximum number of chgs contained in a single cube.
 */
-setMaxq(sys)
+void setMaxq(sys)
 ssystem *sys;
 {
   int i, j, k, l, side, p, kids_are_exact, all_null, depth = sys->depth;
@@ -1128,8 +1140,7 @@ markUp(child, flag)
 cube *child;
 int flag;
 {
-  int i,j;
-  cube *nc, *np;
+  int i;
 
   child->flag = flag;
   for(i = 0; i < child->numnbrs; i++) {
@@ -1204,7 +1215,19 @@ ssystem *sys;
   markUp(child, FALSE);
 
   /* allocate and save the interaction list */
-  child->interSize = vects = pstack - &(cstack[0]);
+
+  // Remark: this casting to 'int' may create issues when the interSize is a number
+  // greater than 32 bits. Improbable, but on 64 bits systems (or more) this may happen.
+  // However, fixing this problem would have impacts in other parts of the code,
+  // as well in the data structures. So code is left as it is, with an additional check and warning.
+  child->interSize = vects = (int) (pstack - &(cstack[0]));
+  // ull is the standard c++ for unsigned 64-bit integer. 0xffffffff is of course the max value
+  // that can be stored in 32 bits.
+  if ( (pstack - &(cstack[0])) > 0xffffffffull) {
+	  viewprintf(stderr, "maximum interSize gap exceeded (more than 4e9)\nStopping simulation\n");
+	  FHExit(FH_GENERIC_ERROR);
+  }
+
   if(vects > 0) CALLOC(child->interList, vects, cube*, ON, AMSC);
   for(j = 0; j < vects; j++) child->interList[j] = cstack[j];
 
@@ -1214,7 +1237,7 @@ ssystem *sys;
 /*
   generates explicit, true interaction lists for all non-empty cubes w/lev > 1
 */
-getAllInter(sys)
+void getAllInter(sys)
 ssystem *sys;
 {
   int i, j, k, l, side, depth = sys->depth;
@@ -1236,7 +1259,7 @@ ssystem *sys;
   - mask vectors are redundant (could read flags in charge struct) 
   - done for speed in potential eval loop
 */
-set_vector_masks(sys)
+void set_vector_masks(sys)
 ssystem *sys;
 {
   int i;

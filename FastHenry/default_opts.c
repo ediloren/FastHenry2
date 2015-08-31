@@ -2,7 +2,7 @@
 /*  There is little error checking that these are valid */
 #include "induct.h"
 
-default_opts(opts)
+void default_opts(opts)
 ind_opts *opts;
 {
   opts->soln_technique = ITERATIVE;      /* -s */

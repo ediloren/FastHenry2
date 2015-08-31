@@ -379,6 +379,7 @@ register int IntRow, IntCol, ExtRow, ExtCol;
 /* Begin `Translate'. */
     ExtRow = *Row;
     ExtCol = *Col;
+	static void	ExpandTranslationArrays();
 
 /* Expand translation arrays if necessary. */
     if ((ExtRow > Matrix->AllocatedExtSize) OR
@@ -860,7 +861,7 @@ ElementPtr  pCreatedElement, spcGetElement(), spcGetFillin();
  *      Column currently being operated upon.
  */
 
-spcLinkRows( Matrix )
+void spcLinkRows( Matrix )
 
 MatrixPtr Matrix;
 {
@@ -910,7 +911,7 @@ register  int  Col;
  *     The allocated size of the matrix before it is expanded.
  */
 
-static
+static void
 EnlargeMatrix( Matrix, NewSize )
 
 MatrixPtr Matrix;
@@ -925,7 +926,7 @@ register int I, OldAllocatedSize = Matrix->AllocatedSize;
         return;
 
 /* Expand the matrix frame. */
-    NewSize = MAX( NewSize, EXPANSION_FACTOR * OldAllocatedSize );
+    NewSize = MAX( NewSize, (int) (EXPANSION_FACTOR * OldAllocatedSize) );
     Matrix->AllocatedSize = NewSize;
 
     if (( REALLOC(Matrix->IntToExtColMap, int, NewSize+1)) == NULL)
@@ -999,7 +1000,7 @@ register int I, OldAllocatedSize = Matrix->AllocatedSize;
  *     The allocated size of the translation arrays before being expanded.
  */
 
-static
+static void
 ExpandTranslationArrays( Matrix, NewSize )
 
 MatrixPtr Matrix;
@@ -1014,7 +1015,7 @@ register int I, OldAllocatedSize = Matrix->AllocatedExtSize;
         return;
 
 /* Expand the translation arrays ExtToIntRowMap and ExtToIntColMap. */
-    NewSize = MAX( NewSize, EXPANSION_FACTOR * OldAllocatedSize );
+    NewSize = MAX( NewSize, (int) (EXPANSION_FACTOR * OldAllocatedSize) );
     Matrix->AllocatedExtSize = NewSize;
 
     if (( REALLOC(Matrix->ExtToIntRowMap, int, NewSize+1)) == NULL)

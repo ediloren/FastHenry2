@@ -5,7 +5,11 @@
 
 #define DIVFACT 1  /* a factor that is always 1 except for debugging */
 
-DivideSegs(length, charges, indsys, is_initial)
+// function prototypes
+void BreakupSeg(SEGMENT *seg, double maxlength, charge *charges, SYS *indsys);
+alterFils(SEGMENT *seg, NODES *node, double dx, double dy, double dz);
+
+void DivideSegs(length, charges, indsys, is_initial)
 double length;
 charge *charges;
 SYS *indsys;
@@ -40,31 +44,25 @@ int is_initial;    /* is this the initial refinement call */
   }
 }
 
-BreakupSeg(seg, maxlength, charges, indsys)
+void BreakupSeg(seg, maxlength, charges, indsys)
 SEGMENT *seg;
 double maxlength;
 charge *charges;
 SYS *indsys;
 {
   double oldlength, x, y, z, dx, dy, dz;
-  int i, j, pieces;
-  NODES *node0, *node1, *node;
-  SEGMENT *newseg, *lastseg, *condseg, *origsegnext;
-  charge *chg;
+  int i, pieces;
+  NODES *node0, *node1;
+  SEGMENT *newseg, *lastseg, *origsegnext;
   NODES *nodelast, *newnode;
   NODES *makenode();
   static char name[80 + MAXDEP*3];
   charge *chgend;
   charge *oldnext;
   charge *assignFil();
-  NPATH *apath;
-  SPATH *condpath, *lastpath, *headpath, *condbeg, *condend;
-  int backwards;
-  // Enrico debug
-  double len1, dlen1;
     
   oldlength = seg->length;
-  pieces = seg->length/maxlength + 1;
+  pieces = (int) (seg->length/maxlength + 1);
   
   // Enrico, commented line because length 
   // is re-calculated later, see bug fix

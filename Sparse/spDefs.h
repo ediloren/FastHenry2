@@ -428,7 +428,7 @@
  * MEMORY ALLOCATION
  */
 
-extern char *ealloc(), *drealloc();
+extern char *ealloc(), *drealloc(), *dalloc();
 #ifdef ultrix
     extern void dfree();
     extern void abort();

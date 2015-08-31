@@ -55,7 +55,7 @@ public:
 	CString m_strSamplePath;
 
 protected:
-	int getSubstring(const char *buffer, char *substr, int *skip);
+	int getSubstring(const char *buffer, char *substr, size_t *skip);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

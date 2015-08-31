@@ -3,6 +3,16 @@
 
 #include "FHWindow.h" // Enrico
 
+// function prototypes
+void clear_nonuni_marks(G_nodes *node);
+void sort_nonuni_choices(nonuni_choice_list *choices, int num);
+int is_ptr_in_list(void *ptr, Llist *list);
+void make_children_meshes(Gcell *cell, MELEMENT **pMlist, int *pcount);
+int make_leaf_mesh(Gcell *cell, MELEMENT **pMlist);
+void make_grid_children_meshes(Grid_2d *grid, MELEMENT **pMlist, int *pcount);
+int intersection(double x0, double y0, double x1, double y1, double cx0, double cy0, double cx1, double cy1);
+void get_grid_indices(Gcell *cell, double x, double y, int *pi, int *pj);
+
 SPATH *path_through_nonuni_gp(nodein, nodeout, plane)
      NODES *nodein, *nodeout;
      GROUNDPLANE *plane;
@@ -43,7 +53,7 @@ SPATH *path_through_nonuni_gp(nodein, nodeout, plane)
 }
 
 /* clear all the flags as NOT_CHECKED */
-clear_nonuni_marks(node)
+ void clear_nonuni_marks(node)
      G_nodes *node;
 {
   while(node != NULL) {
@@ -58,7 +68,6 @@ G_nodes *find_nearest_nonuni_node(xg, yg, zg, gp)
      Nonuni_gp *gp;
 {
   Gcell *nearest;
-  G_nodes *node;
 
   double x,y,z;
 
@@ -163,7 +172,7 @@ SPATH *get_a_nonuni_path(node, node_goal, plane, nodes_so_far)
 }
 
 /* sort choices DECREASING by rank.  Not the most efficient */
-sort_nonuni_choices(choices, num)
+void sort_nonuni_choices(choices, num)
      nonuni_choice_list *choices;
      int num;
 {
@@ -214,7 +223,7 @@ int add_nonuni_choice(choice, nodes_so_far, segs, node, delta)
     return 0;
 }
 
-is_ptr_in_list(ptr, list)
+int is_ptr_in_list(ptr, list)
      void *ptr;
      Llist *list;
 {
@@ -244,7 +253,9 @@ Gcell *get_containing_cell(x, y, cell)
     return get_containing_grid_cell( x, y, cell );
     break;
   default:
-    GP_PANIC("Unknown child type in set_cell_coords")
+	GP_PANIC("Unknown child type in set_cell_coords")
+	// dummy return to avoid compiler's warning
+	return NULL;
     break;
   }
 }
@@ -310,11 +321,14 @@ Gcell *get_containing_bi_cell( x, y, cell)
     else
       return get_containing_cell(x,y,two_kids->child2);
   }
-  else 
-    GP_PANIC("get_containing bi_kids: Unknown bi_type!");
+  else {
+	  // dummy return to avoid compiler's warning
+	  return NULL;
+	  GP_PANIC("get_containing bi_kids: Unknown bi_type!");
+  }
 }
 
-is_in_cell(x, y, cell)
+int is_in_cell(x, y, cell)
      double x,y;
      Gcell *cell;
 {
@@ -457,7 +471,7 @@ int make_nonuni_Mlist(plane, pMlist)
   return counter;
 }
 
-make_children_meshes(cell, pMlist, pcount)
+void make_children_meshes(cell, pMlist, pcount)
      Gcell *cell;
      MELEMENT **pMlist;
      int *pcount;
@@ -479,7 +493,7 @@ make_children_meshes(cell, pMlist, pcount)
   }
 }
 
-make_grid_children_meshes( grid, pMlist, pcount)
+void make_grid_children_meshes( grid, pMlist, pcount)
      Grid_2d *grid;
      MELEMENT **pMlist;
      int *pcount;
@@ -491,7 +505,7 @@ make_grid_children_meshes( grid, pMlist, pcount)
       make_children_meshes( grid->kids[i][j], pMlist, pcount);
 }
     
-make_leaf_mesh(cell, pMlist)
+int make_leaf_mesh(cell, pMlist)
      Gcell *cell;
      MELEMENT **pMlist;
 {
@@ -582,7 +596,6 @@ NODES *get_or_make_nearest_node(name, index, x, y, z, indsys, gp, node_list)
 {
   G_nodes *nonuni_node;
   NODES *node;
-  NPATH *nodeL;
   NODES *makenode();
 
   nonuni_node = find_nearest_nonuni_node(x, y, z, gp);
@@ -653,7 +666,6 @@ Llist *get_nodes_inside_rect(x0, y0, x1, y1, cell, endoflist)
      Gcell *cell;
      Llist **endoflist;
 {
-  Llist *nodelist;
 
   /* check if there is any overlap for this child */
   if (intersection(x0,y0,x1,y1,cell->x0,cell->y0,cell->x1,cell->y1) == FALSE)
@@ -671,7 +683,9 @@ Llist *get_nodes_inside_rect(x0, y0, x1, y1, cell, endoflist)
     break;
   default:
     GP_PANIC("Unknown child type in set_cell_coords")
-    break;
+	// dummy return to avoid compiler's warning
+	return NULL;
+	break;
   }
 }
 
@@ -747,7 +761,7 @@ Llist *grid_get_nodes_inside_rect( x0, y0, x1, y1, cell, endoflist)
 }
 
 /* returns the cell indices that contain (x,y) */
-get_grid_indices(cell, x, y, pi, pj)
+void get_grid_indices(cell, x, y, pi, pj)
     Gcell *cell;
     double x,y;
     int *pi, *pj;
@@ -777,7 +791,7 @@ get_grid_indices(cell, x, y, pi, pj)
 
 /* returns TRUE if the two rectangles overlap.  
    lower left=(x0,y0) upper right = (x1,y1) */
-intersection(x0,y0,x1,y1,cx0,cy0,cx1,cy1)
+int intersection(x0,y0,x1,y1,cx0,cy0,cx1,cy1)
      double x0,y0,x1,y1,cx0,cy0,cx1,cy1;
 {
   if ((x0 < cx0 && x1 < cx0) || (x0 > cx1 && x1 > cx1)
@@ -830,7 +844,7 @@ Llist *which_nodes_inside(x0,y0,x1,y1,cell, endoflist)
   return list;
 }
 
-free_Llist(list)
+void free_Llist(list)
      Llist *list;
 {
   Llist *node;

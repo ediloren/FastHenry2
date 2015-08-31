@@ -71,7 +71,7 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
-
+static int MatrixIsSingular();
 
 
 
@@ -181,6 +181,14 @@ ElementPtr  pPivot;
 int  Step, Size, ReorderingRequired;
 ElementPtr SearchForPivot();
 RealNumber LargestInCol, FindLargestInCol();
+void spcLinkRows();
+static void ComplexRowColElimination();
+static void RealRowColElimination();
+static void CreateInternalVectors(Matrix);
+static void CountMarkowitz();
+static void MarkowitzProducts();
+static void ExchangeRowsAndCols();
+static void UpdateMarkowitzNumbers();
 
 /* Begin `spOrderAndFactor'. */
     ASSERT( IS_VALID(Matrix) AND NOT Matrix->Factored);
@@ -321,6 +329,9 @@ register  ElementPtr  pElement;
 register  ElementPtr  pColumn;
 register  int  Step, Size;
 RealNumber Mult;
+static int FactorComplexMatrix();
+static int ZeroPivot();
+
 
 /* Begin `spFactor'. */
     ASSERT( IS_VALID(Matrix) AND NOT Matrix->Factored);
@@ -719,7 +730,7 @@ BOOLEAN *DoRealDirect, *DoCmplxDirect;
  *  spNO_MEMORY
  */
 
-static
+static void
 CreateInternalVectors( Matrix )
 
 MatrixPtr  Matrix;
@@ -808,7 +819,7 @@ int  Size;
  *     The size of the matrix.
  */
 
-static
+static void
 CountMarkowitz( Matrix, RHS, Step )
 
 MatrixPtr Matrix;
@@ -918,7 +929,7 @@ int  ExtRow;
  *      The size of the matrix.
  */
 
-static
+static void
 MarkowitzProducts( Matrix, Step )
 
 MatrixPtr Matrix;
@@ -945,7 +956,7 @@ double fProduct;
             if (fProduct >= LARGEST_LONG_INTEGER)
                 *pMarkowitzProduct++ = LARGEST_LONG_INTEGER;
             else
-                *pMarkowitzProduct++ = fProduct;
+                *pMarkowitzProduct++ = (long) fProduct;
         }
         else
         {   Product = *pMarkowitzRow++ * *pMarkowitzCol++;
@@ -1165,7 +1176,14 @@ RealNumber  PivotMag, FindBiggestInColExclude();
              * N-1 bottles of beer on the wall.
              */
         }
-        I = pMarkowitzProduct - Matrix->MarkowitzProd + 1;
+		// check that the difference between the two pointers is less than 32 bits,
+		// i.e. the dimension of 'I' which is an 'int'. Full fix would be not to cast
+		// the pointer's difference to an 'int', but to re-define 'I' to be as long as
+		// a pointer. However this would have impacts in many other parts of the code.
+		// Remark: 'ull' is the standard C++ for unsigned long long constant, that is
+		// guaranteed to be 64 bits
+		ASSERT(pMarkowitzProduct - Matrix->MarkowitzProd + 1 < 0xffffffffull);
+        I = (int) (pMarkowitzProduct - Matrix->MarkowitzProd + 1);
 
 /* Assure that I is valid. */
         if (I < Step) break;  /* while (Singletons-- > 0) */
@@ -1561,7 +1579,8 @@ RealNumber  FindBiggestInColExclude();
         {   /* Just passing through. */
         }
 
-        I = pMarkowitzProduct - Matrix->MarkowitzProd;
+		ASSERT(pMarkowitzProduct - Matrix->MarkowitzProd < 0xffffffffull);
+		I = (int) (pMarkowitzProduct - Matrix->MarkowitzProd);
 
 /* Assure that I is valid; if I < Step, terminate search. */
         if (I < Step) break; /* Endless for loop */
@@ -2075,7 +2094,7 @@ RealNumber  Largest, Magnitude;
  *      of the reduced submatrix.
  */
 
-static
+static void
 ExchangeRowsAndCols( Matrix, pPivot, Step )
 
 MatrixPtr Matrix;
@@ -2085,6 +2104,8 @@ register int Step;
 register  int   Row, Col;
 long  OldMarkowitzProd_Step, OldMarkowitzProd_Row, OldMarkowitzProd_Col;
 ElementPtr spcFindElementInCol();
+void spcRowExchange();
+void spcColExchange();
 
 /* Begin `ExchangeRowsAndCols'. */
     Row = pPivot->Row;
@@ -2205,7 +2226,7 @@ ElementPtr spcFindElementInCol();
  *      Pointer to the element in Row2 to be exchanged.
  */
 
-spcRowExchange( Matrix, Row1, Row2 )
+void spcRowExchange( Matrix, Row1, Row2 )
 
 MatrixPtr Matrix;
 int  Row1, Row2;
@@ -2213,6 +2234,8 @@ int  Row1, Row2;
 register  ElementPtr  Row1Ptr, Row2Ptr;
 int  Column;
 ElementPtr  Element1, Element2;
+static void ExchangeColElements();
+static void ExchangeRowElements();
 
 /* Begin `spcRowExchange'. */
     if (Row1 > Row2)  SWAP(int, Row1, Row2);
@@ -2306,7 +2329,7 @@ ElementPtr  Element1, Element2;
  *      Pointer to the element in Col2 to be exchanged.
  */
 
-spcColExchange( Matrix, Col1, Col2 )
+void spcColExchange( Matrix, Col1, Col2 )
 
 MatrixPtr Matrix;
 int  Col1, Col2;
@@ -2412,7 +2435,7 @@ ElementPtr  Element1, Element2;
  *      Pointer used to traverse the column.
  */
 
-static
+static void
 ExchangeColElements( Matrix, Row1, Element1, Row2, Element2, Column )
 
 MatrixPtr Matrix;
@@ -2554,7 +2577,7 @@ register  ElementPtr  pElement;
  *      Pointer used to traverse the row.
  */
 
-static
+static void
 ExchangeRowElements( Matrix, Col1, Element1, Col2, Element2, Row )
 
 MatrixPtr Matrix;
@@ -2689,7 +2712,7 @@ register   ElementPtr  pElement;
  *  spNO_MEMORY
  */
 
-static
+static void
 RealRowColElimination( Matrix, pPivot )
 
 MatrixPtr Matrix;
@@ -2778,7 +2801,7 @@ extern ElementPtr  CreateFillin();
  *  spNO_MEMORY
  */
 
-static
+static void
 ComplexRowColElimination( Matrix, pPivot )
 
 MatrixPtr Matrix;
@@ -2862,7 +2885,7 @@ ElementPtr  CreateFillin();
  *      Points to matrix element in lower triangular row.
  */
 
-static
+static void
 UpdateMarkowitzNumbers( Matrix, pPivot )
 
 MatrixPtr Matrix;
@@ -2887,7 +2910,7 @@ double Product;
             if (Product >= LARGEST_LONG_INTEGER)
                 Matrix->MarkowitzProd[Row] = LARGEST_LONG_INTEGER;
             else
-                Matrix->MarkowitzProd[Row] = Product;
+                Matrix->MarkowitzProd[Row] = (long) Product;
         }
         else Matrix->MarkowitzProd[Row] = MarkoRow[Row] * MarkoCol[Row];
         if (MarkoRow[Row] == 0)
@@ -2905,7 +2928,7 @@ double Product;
             if (Product >= LARGEST_LONG_INTEGER)
                 Matrix->MarkowitzProd[Col] = LARGEST_LONG_INTEGER;
             else
-                Matrix->MarkowitzProd[Col] = Product;
+                Matrix->MarkowitzProd[Col] = (long) Product;
         }
         else Matrix->MarkowitzProd[Col] = MarkoRow[Col] * MarkoCol[Col];
         if ((MarkoCol[Col] == 0) AND (MarkoRow[Col] != 0))

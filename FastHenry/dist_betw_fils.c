@@ -10,6 +10,25 @@ double **Gweight, **Gpoint;
 double dist_between();
 double min_endpt_sep();
 double dist_betw_pt_and_fil();
+void gquad_weights(int N, double *p, double *w);
+
+void getD(fil, D)
+FILAMENT *fil;
+double *D;
+{
+	D[XX] = fil->x[1] - fil->x[0];
+	D[YY] = fil->y[1] - fil->y[0];
+	D[ZZ] = fil->z[1] - fil->z[0];
+}
+
+void getr(x, y, z, s, t, D)
+double *x, *y, *z;
+double *s, t, *D;
+{
+	*x = s[XX] + t*D[XX];
+	*y = s[YY] + t*D[YY];
+	*z = s[ZZ] + t*D[ZZ];
+}
 
 /* The line defined by fil1 is r = s1 + t1*D1 where s1 is the vector 
    (fil1->x[0], y[0], z[0]) and D1 is (x[1] - x[0], y[1] - y[0], z[1] - z[0]).
@@ -19,11 +38,10 @@ double dist_betw_fils(fil1, fil2, parallel)
 FILAMENT *fil1, *fil2;
 int *parallel;
 {
-  double k1,k2,k3,k4,c1,c2,c3,c4,a1,a2,a3,b1,b2,b3;
   double x1,y1,z1,x2,y2,z2;
-  double D1[3], D2[3], s1[3], s2[3], e[3], *D, t1, t2, s1ms2[3], s1me[3];
+  double D1[3], D2[3], s1[3], s2[3], t1, t2, s1ms2[3];
   double D1D1, D1D2, D2D2, D1s1s2, D2s1s2;
-  double tmp1, tmp2;
+  double tmp1;
   
   s1[XX] = fil1->x[0];
   s1[YY] = fil1->y[0];
@@ -80,23 +98,6 @@ int *parallel;
   
 }
 
-getD(fil, D)
-FILAMENT *fil;
-double *D;
-{
-  D[XX] = fil->x[1] - fil->x[0];
-  D[YY] = fil->y[1] - fil->y[0];
-  D[ZZ] = fil->z[1] - fil->z[0];
-}
-
-getr(x,y,z,s,t,D)
-double *x,*y,*z;
-double *s,t,*D;
-{
-  *x = s[XX] + t*D[XX];
-  *y = s[YY] + t*D[YY];
-  *z = s[ZZ] + t*D[ZZ];
-}
 
 double vdotp(v1, v2)
 double *v1,*v2;
@@ -207,9 +208,9 @@ FILAMENT *fil;
     return 1.0/rat;
 }
 
-fill_Gquad()
+void fill_Gquad()
 {
-  int i,j;
+  int i;
 
   Gweight = (double **)MattAlloc(MAXsubfils+1, sizeof(double *));
   Gpoint = (double **)MattAlloc(MAXsubfils+1, sizeof(double *));
@@ -308,11 +309,10 @@ main()
 }
 #endif 
 
-gquad_weights(N,p,w)
+void gquad_weights(N,p,w)
 int N;
 double *p,*w;
 {
-  int i;
 
   if ( !((N>=2)&&(N<=6)) &&(N!=19)&&(N!=30)&&(N!=25)&&(N!=15)&&(N!=10)) {
     viewprintf(stderr,"Hey, bad number of Guassian Quad points\n");

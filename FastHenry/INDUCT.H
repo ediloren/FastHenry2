@@ -38,8 +38,9 @@ operation of Software or Licensed Program(s) by LICENSEE or its customers.
 
 /* include file for induct.c */
 
-#include "cmplx.h"
 #include "mulGlobal.h"
+
+#include "cmplx.h"
 #include <float.h> /* Enrico, for the _isnan() and _finite() function */
 #include "math2.h" /* Enrico, for the asinh() and atanh() functions */
 
@@ -635,7 +636,7 @@ double magdiff2();
 double mut_rect();
 extern int gmres();
 extern int matvec();
-extern int directmatvec();
+extern void directmatvec();
 extern CX inner();
 extern int SetupComputePsi();
 charge *assignFil();
@@ -676,5 +677,107 @@ void InitReadTreeVars(void);
 void InitReadGeomVars(void);
 void InitSetupComputePsiVars(void);
 void InitUglierAllocVars(void);
+
+
+// prototypes of functions defined in induct.c
+void savecmplx(FILE *fp, char *name, CX **Z, int rows, int cols);
+// prototypes of functions defined in readGeom.c
+int readGeom(FILE *fp, SYS *indsys);
+int is_nonuni_gp(GROUNDPLANE *gp);
+void concat4(char *s1, char *s2, char *s3, char *s4);
+int notblankline(char *string);  // remark: another function with the same body is defined in induct.c, but as 'static'
+void tolowercase(char *line);
+// prototypes of functions defined in findpaths.c
+int is_orignode_in_list(NODES *node, NPATH *nodelist);
+void remove_from_connected_segs(NODES *node, SEGMENT *seg, PSEUDO_SEG *pseudo_seg);
+void add_to_connected_segs(NODES *node, SEGMENT *seg, PSEUDO_SEG *pseudo_seg);
+void make_equiv(NODES *orignode, NODES *realnode);
+void append_pnlist(PSEUDO_NODE *pnlist, SYS *indsys);
+int equivnodes(char *line, SYS *indsys);
+int is_gp_node(NODES *node);
+int is_normal(NODES *node);
+int is_node_in_list(NODES *node, NPATH *nodelist);
+void make_trees(SYS *indsys);
+void find_hole_meshes(SYS *indsys);
+// prototypes of functions defined in capsolve.c
+void computePsi(ssystem *sys, double *q, double *p, int size, charge *chglist);
+// prototypes of functions defined in hole.c
+int is_hole(NODES *node);
+int eos(char chr);
+int is_one_of(char letter, char *one_of);
+int skipspace(char *line);
+int is_next_word(char *str, char *line);
+void make_holes(HoleList *holep, GROUNDPLANE *gp);
+// prototypes of functions defined in joelself.c
+void get_height(FILAMENT *fil, double *wid, double *height);
+void get_wid(FILAMENT *fil, double *wid);
+void put_in_table(FILAMENT *fil_j, FILAMENT *fil_m, int whperp, double mutterm, double *dims, int dim_count, Table **lastptr, int num_dims);
+int edges_parallel(FILAMENT *fil_j, FILAMENT *fil_m, double *wid1, int *whperp);
+int lookup(FILAMENT *fil_j, FILAMENT *fil_m, int whperp, double *widj, double *heightj, double *retval, double *dims,
+	int *dim_count, Table ***lastptr, int *p_num_dims);
+void init_table();
+int get_table_mem();
+void destroy_table();
+// prototypes of functions defined in deg_mutual.c
+enum degen_type find_deg_dims(FILAMENT *fil);
+// prototypes of functions defined in addgroundplane.c
+void doincrement(double x, double y, double z, double xi, double yi, double zi, int dim, double *dx, double *dy, double *dz);
+void clear_marks(SYS *indsys);
+void dump_mesh_coords(SYS *indsys);
+void dump_ascii_mesh_coords(SYS *indsys);
+// prototypes of functions defined in read_tree.c
+int process_plane(GROUNDPLANE *grndp, FILE *fp, SYS *indsys);
+// prototypes of functions defined in find_nonuni_path.c
+int make_nonuni_Mlist(GROUNDPLANE *plane, MELEMENT **pMlist);
+// prototypes of functions defined in regurgitate.c
+void regurgitate(SYS *indsys);
+// prototypes of functions defined in writefastcap.c
+void writefastcap(char *fname, char *shading_name, SYS *indsys);
+// prototypes of functions defined in dist_betw_fils.c
+void fill_Gquad();
+// prototypes of functions defined in newPrecond.c
+void choose_and_setup_precond(SYS *indsys);
+void fill_spPre(ssystem *sys, SYS *indsys, double w);
+void create_sparMatrix(SYS *indsys);
+void fill_diagR(SYS *indsys);
+// prototypes of functions defined in barnoldi.c
+int createMRMt(char **MRMt_Ptr, SYS *indsys);
+void formMLMt(SYS *indsys);
+int ArnoldiROM(double **B, double **C, double **D, char *P, int size, int numinp, int numout, int q_orig,
+	int(*matvec)(), SYS *indsys, ssystem *sys, charge *chglist);
+int dumpROM(FILE *fp, double **Ar, double **Br, double **Cr, double **Dr, int size, int numinp, int numout);
+void dumpROMequiv_circuit(FILE *fp, double **Ar, double **Br, double **Cr, double **Dr, int size, int numinp, int numout,
+	char *title, char *suffix, SYS *indsys);
+// prototypes of functions defined in precond.c
+void indPrecond_direct(ssystem *sys, SYS *indsys, double w);
+void indPrecond(ssystem *sys, SYS *indsys, double w);
+void multPrecond(PRE_ELEMENT **Precond, CX *x, CX *result, int size);
+// prototypes of functions defined in cx_ludecomp.c
+CX **cx_ludecomp(CX **matin, int size, int allocate);
+void cx_lu_solve(CX **mat, CX *x, CX *b, int size);
+// prototypes of functions defined in fillM.c
+void fill_b(EXTERNAL *ext, CX *b);
+void makegrids(SYS *indsys, CX *Im, int column, int freq_num);
+void extractYcol(CX **mat, CX *x0, EXTERNAL *extcol, EXTERNAL *ext_list);
+// prototypes of functions defined in gmres.c
+void cx_invert(CX **mat, int size);
+// prototypes of functions defined in breakupSeg.c
+void DivideSegs(double length, charge *charges, SYS *indsys, int is_initial);
+// prototypes of functions defined in pre_cost.c
+int is_gp_charge(charge *chg);
+// prototypes of functions defined in default_opts.c
+void default_opts(ind_opts *opts);
+// prototypes of functions defined in parse_command_line.c
+int read_on_off(char *str, int *on_off);
+void Describe_Usage(char *name);
+void add_to_subset_of_columns(char *str, ind_opts *opts);
+void fix_and_print_opts(ind_opts *opts);
+int is_in_optstring(char op, char *string, int *takearg);
+int checkarg(int index, int argc, char **argv);
+// prototypes of functions defined in calcp.c
+void dumpnums(int flag, int size);
+// prototypes of functions defined in uglieralloc.c
+void uallocEfcy(long memcount);
+
 
 #endif

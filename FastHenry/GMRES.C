@@ -5,9 +5,21 @@
 #include "induct.h"
 #define EPSGMRES 1e-13    /* machine precision * 10 */
 
+#include "Sparse/spMatrix.h"
+
+
 // Enrico, static vars moved to file scope to be initialized
 static int lastmax=0, lastsize=0;
 static CX *c = NULL, *s = NULL, *g = NULL, *y = NULL;
+
+// function prototypes
+void matMultVect(CX **mat1, CX *svect, CX *dvect, int rows);
+void matMult(CX **mat1, CX **mat2, int rows1, int firstcol, int lastcol, CX *vtemp);
+void sub_3(CX *z, CX *x, CX *y, int size);
+void set_scalar_mult_2(CX *x, CX *y, double alpha, int size);
+void sub_cx_mult_2(CX *x, CX *y, CX alpha, int size);
+void set_scalar_mult_1(CX *x, double alpha, int size);
+void calc_other_norm(CX *x, CX *xlast, int size, double abs_tol, double *r_real, double *r_imag, double *max_real, double *max_imag);
 
 /*
 mat - dense matrix to block precondition. Mat is replaced with  D^-1 Mat, 
@@ -21,7 +33,7 @@ startrows - beginning row of each diag block,
 startrows[0] = 0, startrows[numblocks] = size;
 */
 
-int blockPrecond(mat, rhs, size, vect, pvect, numblocks, startrows)
+void blockPrecond(mat, rhs, size, vect, pvect, numblocks, startrows)
 CX **mat, *rhs;
 CX *vect, **pvect;
 int size, numblocks;
@@ -58,7 +70,7 @@ CX **diagBlock;
 /* 
   In-place inverts a matrix using guass-jordan.
 */
-cx_invert(mat, size)
+void cx_invert(mat, size)
 CX **mat;
 int size;
 {
@@ -91,7 +103,7 @@ int size;
 /*
 Multiplies mat1 * mat2, replacing mat2 with the product. 
 */
-matMult(mat1, mat2, rows1, firstcol, lastcol, vtemp)
+void matMult(mat1, mat2, rows1, firstcol, lastcol, vtemp)
 CX **mat1, **mat2, *vtemp;
 int rows1, firstcol, lastcol;
 {
@@ -115,11 +127,11 @@ CX *row, tmp;
 /*
 dvect = mat1 * svect.
 */
-matMultVect(mat1, svect, dvect, rows)
+void matMultVect(mat1, svect, dvect, rows)
 CX **mat1, *svect, *dvect;
 int rows;
 {
-  int i, j, k;
+  int j, k;
   CX *row, tmp, sum;
 
   for(j=0; j < rows; j++) {
@@ -152,11 +164,11 @@ gmres(A, b, x0, inner, matvec, size, maxiters, tol, sys, chglist, w, R, indsys,
   int cond;   /* conductor number for saving residual data */
 {
   register int i, j, k;
-  double rnorm, norm, length, blahnorm;
+  double rnorm, norm, length;
   int retval = -maxiters;
   CX hi, hip1;
   CX tmp1, tmp2;
-  double zeta, rtmp1, rtmp2, r_real, r_imag, max_real, max_imag, absolute;
+  double zeta, rtmp1, rtmp2, r_real, r_imag, max_real, max_imag;
   // Enrico, see header
   //static int lastmax=0, lastsize=0;
   //static CX *c = NULL, *s = NULL, *g = NULL, *y = NULL;
@@ -342,6 +354,8 @@ gmres(A, b, x0, inner, matvec, size, maxiters, tol, sys, chglist, w, R, indsys,
     }
 
 #ifdef DEBUG
+	double blahnorm;
+
     matvec(APw, sys, x, size, chglist, w, R, indsys);
     for(i=0; i < size; i++) {
       temp1[i].real = b[i].real - APw[i].real;
@@ -396,7 +410,7 @@ gmres(A, b, x0, inner, matvec, size, maxiters, tol, sys, chglist, w, R, indsys,
 }
 
 
-sub_3(z,x,y,size)
+void sub_3(z,x,y,size)
   CX *z, *x, *y;
   int size;
 {
@@ -411,7 +425,7 @@ sub_3(z,x,y,size)
 }
 
 
-set_scalar_mult_1(x,alpha,size)
+void set_scalar_mult_1(x,alpha,size)
   CX *x;
   double alpha;
   int size;
@@ -426,7 +440,7 @@ set_scalar_mult_1(x,alpha,size)
 }
 
 
-set_scalar_mult_2(x,y,alpha,size)
+void set_scalar_mult_2(x,y,alpha,size)
   CX *x, *y;
   double alpha;
   int size;
@@ -473,7 +487,7 @@ add_cx_mult_2(x,y,alpha,size)
   
 }
 
-sub_cx_mult_2(x,y,alpha,size)
+void sub_cx_mult_2(x,y,alpha,size)
   CX *x, *y;
   CX alpha;
   int size;
@@ -610,7 +624,7 @@ int *startrows, numblocks;
 
 /* Vs holds the result of (indsys->MtZM)*(indsys->Precond)*Im */
 /* All other arguments are not used.   MK 10/92 */
-directmatvec(Vs, sys, Im, size, chglist, w, R, indsys)
+void directmatvec(Vs, sys, Im, size, chglist, w, R, indsys)
 CX *Vs, *Im;
 int size;
 ssystem *sys;
@@ -632,14 +646,14 @@ SYS *indsys;
   veryoldmatvec(Vs, indsys->MtZM, Im, size);
 }
 
-calc_other_norm(x, xlast, size, abs_tol, r_real, r_imag, max_real, max_imag)
+void calc_other_norm(x, xlast, size, abs_tol, r_real, r_imag, max_real, max_imag)
      double abs_tol, *r_real, *r_imag, *max_real, *max_imag;
      CX *x, *xlast;
      int size;
 {
   double r_max_diff, r_max_val, i_max_diff, i_max_val, r_abstol, i_abstol;
   int i;
-  double temp, atol;
+  double temp;
 
   r_max_diff = r_max_val = i_max_diff = i_max_val = 0;
 
@@ -650,7 +664,8 @@ calc_other_norm(x, xlast, size, abs_tol, r_real, r_imag, max_real, max_imag)
 
   r_abstol = abs_tol*r_max_val;
   i_abstol = abs_tol*i_max_val;
-/*   atol = EPSGMRES*MAX(r_max_val, i_max_val); */
+/*   double atol;
+    atol = EPSGMRES*MAX(r_max_val, i_max_val); */
   if (i_abstol == 0) i_abstol = 1e-200;
   if (r_abstol == 0) i_abstol = 1e-200;
   

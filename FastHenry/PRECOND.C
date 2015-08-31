@@ -8,6 +8,8 @@ is the default.  Most of this code is if'd out for this precond */
 #include "induct.h"
 #define PARTMESH OFF    /* this should always be OFF */
 
+#include "Sparse/spMatrix.h"
+
 #include "FHWindow.h" // Enrico
 
 // Enrico, static vars moved to file scope to be initialized
@@ -43,7 +45,12 @@ static int *meshnum = NULL;
 FILE *fp;
 static char outfname[80];
 	
-indPrecond(sys, indsys, w)
+// function prototypes
+void mark_dup_mesh(MELEMENT **Mlist, int *meshnum, int meshsize, DUPS *is_dup, int *findx);
+void cx_invert_dup(CX **mat, int size, DUPS *is_dup);
+void dumpPrecond(PRE_ELEMENT **Precond, int size, char *suffix);
+
+void indPrecond(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
 double w;
@@ -53,15 +60,12 @@ double w;
   //static double **mat = NULL;
   static double **nmat;
   int i, j, k, l, m;
-  int maxsize, nsize, nnsize, nnnsize, *reorder;
+  int maxsize, nsize, nnsize, nnnsize;
   int nj, nk, nl, offset, noffset;
-  int dindex; /*, *nc_dummy, *nnbr_dummy, *nnnbr_dummy;*/
   /*static int *is_dummy;*/	/* local dummy flag vector, stays around */
   // Enrico, following line commented out because not used
   // static int big_mat_size = 0;	/* size of previous mat */
-  charge **nnnbr_pc, **nnbr_pc, **nc_pc, **mpc, *dp;
-  surface *surf;
-  double factor;
+  charge **nnnbr_pc, **nnbr_pc, **nc_pc;
   double shiftval;
 
   /* FastHenry stuff */
@@ -557,9 +561,9 @@ double w;
 	tempsum = CXZERO;
 	for(melem = Mlist[i]; melem != NULL; melem = melem->mnext) {
 	  filchg = melem->fil->pchg;
-	  xi =  (filchg->x - minx) / length;
-	  yi =  (filchg->y - miny) / length;
-	  zi =  (filchg->z - minz) / length;
+	  xi =  (int) ((filchg->x - minx) / length);
+	  yi = (int)((filchg->y - miny) / length);
+	  zi = (int)((filchg->z - minz) / length);
 	  nc = sys->cubes[sys->depth][xi][yi][zi];
 	  if (nc == NULL) {
 	    viewprintf(stderr, "Hey, why isn't there a cube for this charge?\n");
@@ -617,7 +621,7 @@ double w;
 
 /* multiplies x times the preconditioner and returns in result */
 
-multPrecond(Precond, x, result, size)
+void multPrecond(Precond, x, result, size)
 PRE_ELEMENT **Precond;
 CX *x, *result;
 int size;
@@ -651,7 +655,7 @@ MELEMENT *getnext(mel, findx)
   In-place inverts a matrix using guass-jordan. 
   Skips rows and columns with is_dup[i].sign != 1.
 */
-cx_invert_dup(mat, size, is_dup)
+void cx_invert_dup(mat, size, is_dup)
 CX **mat;
 int size;
 DUPS *is_dup;
@@ -696,7 +700,7 @@ DUPS *is_dup;
    so when we form the preconditioner later, the duplicate mesh will
    get the same entry as the original */
 
-mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx)
+void mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx)
 MELEMENT **Mlist;
 int *meshnum, meshsize, *findx;
 DUPS *is_dup;
@@ -738,7 +742,7 @@ DUPS *is_dup;
     } /* for i*/
 }
 
-dumpPrecond(Precond, size, suffix)
+void dumpPrecond(Precond, size, suffix)
 PRE_ELEMENT **Precond;
 int size;
 char *suffix;
@@ -797,12 +801,12 @@ char *suffix;
 
   
   
-indPrecond_direct(sys, indsys, w)
+void indPrecond_direct(sys, indsys, w)
 ssystem *sys;
 SYS *indsys;
 double w;
 {
-  cube *nc, *nnbr, *nnnbr;
+  cube *nc, *nnbr;
   int nsize, nnsize;
   charge **nc_pc, **nnbr_pc;
   int meshmax = 0, *meshnum;

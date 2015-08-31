@@ -7,6 +7,9 @@
 #define LN2 6.93147180559945286227e-01
 #define _2POW28 268435456.0
 
+// not needed any more, now math.h defines these functions
+
+/*
 double asinh(double arg)
 {
 	double farg, fres;
@@ -94,3 +97,4 @@ double atanh(double arg)
 		return(-log(fres)/2);
 }
 
+*/

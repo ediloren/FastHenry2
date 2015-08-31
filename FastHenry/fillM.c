@@ -1,6 +1,7 @@
 /* this is the new fillM    10/92 */
 
 #include "induct.h"
+#include "GP.H"
 
 #include "FHWindow.h" // Enrico
 
@@ -9,6 +10,13 @@ static CX *Ib = NULL;
 static CX **out1 = NULL;
 static CX **out2 = NULL;
 static maxdir1 = 0, maxdir2 = 0;
+
+// function prototypes
+int makeMlist(GROUNDPLANE *plane, struct melement **pMlist, struct _minfo *pm_info, int mstart);
+void add_to_external(PSEUDO_SEG *pseg, int mesh, int sign, SYS *indsys);
+int is_next_seg_in_gp(SPATH *selem, NODES *plusnode);
+void bad_seg_type(char *name, seg_ptr seg);
+void makegrids(SYS *indsys, CX *Im, int column, int freq_num);
 
 /* this fills the kircoff's voltage law matrix (Mesh matrix) */
 /* it maps a matrix of mesh currents to branch currents */
@@ -26,13 +34,11 @@ SYS *indsys;
   GROUNDPLANE *plane;                           /* CMS 6/2/92 */
 
   int mesh, k, minimeshes;
-  MELEMENT **Mlist, *mend;
+  MELEMENT **Mlist;
   Minfo *m_info;
   TREE *atree;
   PATHLIST *aplist;
-  SPATH *apath;
   SEGMENT *seg;
-  PSEUDO_SEG *pseg;
 
   Mlist = indsys->Mlist;
   m_info = indsys->m_info;
@@ -108,11 +114,11 @@ int mesh;
 SYS *indsys;
 {
   SPATH *selem, *temppath, *telem;
-  MELEMENT *m1, *m2, *m3, *mlist;
-  NODES *plusnode, *node, *plus2, *node0, *node1, *actualnode;
+  MELEMENT *m1, *mlist;
+  NODES *plusnode, *plus2, *node0, *node1, *actualnode;
   int i, sign, sign2;
   SEGMENT *seg;
-  PSEUDO_SEG *pseg, *pseg2;
+  PSEUDO_SEG *pseg;
 
   mlist = NULL;
   plusnode = find_first_node(path);  /* which node starts the loop */
@@ -233,7 +239,7 @@ SYS *indsys;
 }
 
 /* Check to see if the next segment is also from the same groundplane */
-is_next_seg_in_gp(selem,plusnode)
+int is_next_seg_in_gp(selem,plusnode)
 SPATH *selem;
 NODES *plusnode;
 {
@@ -298,11 +304,13 @@ seg_ptr seg;
     return ((SEGMENT *)seg.segp)->node[number];
   else if (seg.type == PSEUDO)
     return ((PSEUDO_SEG *)seg.segp)->node[number];
-  else 
-    bad_seg_type("getnode", seg);
+  else {
+	  bad_seg_type("getnode", seg);
+	  return NULL;
+  }
 }
 
-bad_seg_type(name, seg)
+void bad_seg_type(name, seg)
 char *name;
 seg_ptr seg;
 {
@@ -328,7 +336,7 @@ FILAMENT *fil;
 /* this keeps track of the meshes which contain the nodes of the */
 /* .external statement.  This will have a voltage source in them */
 /* and will need a 1 placed in the RHS corresponding to mesh number 'mesh' */
-add_to_external(pseg, mesh, sign, indsys)
+void add_to_external(pseg, mesh, sign, indsys)
 PSEUDO_SEG *pseg;
 int mesh, sign;
 SYS *indsys;
@@ -374,7 +382,7 @@ int_list *int_elem, *list;
 
 /* makes the Mlist for the groundplane given a plane and parameters defining */
 /* the current location of the overall Mlist.                                */
-makeMlist(plane, pMlist, pm_info, mstart)
+int makeMlist(plane, pMlist, pm_info, mstart)
 GROUNDPLANE *plane;
 MELEMENT **pMlist;
 Minfo *pm_info;
@@ -384,7 +392,6 @@ int mstart;
   SEGMENT *seg;
   int counter, i, j, k;
   int signofelem;
-  int a_hole;
   SEGMENT ***segs1 = plane->segs1;
   SEGMENT ***segs2 = plane->segs2;
 
@@ -401,19 +408,19 @@ int mstart;
 	  switch (k) {
 	  case 0:
 	    seg = plane->segs1[j][i];
-	    signofelem = -1.0;
+	    signofelem = -1;
 	    break;
 	  case 1:
 	    seg = plane->segs2[j + 1][i];
-	    signofelem = -1.0;
+	    signofelem = -1;
 	    break;
 	  case 2:
 	    seg = plane->segs1[j][i + 1];
-	    signofelem = 1.0;
+	    signofelem = 1;
 	    break;
 	  case 3:
 	    seg = plane->segs2[j][i];
-	    signofelem = 1.0;
+	    signofelem = 1;
 	    break;
 	  }
 	  
@@ -439,7 +446,7 @@ int mstart;
 
 }
 
-fill_b(ext, b)
+void fill_b(ext, b)
 EXTERNAL *ext;
 CX *b;
 {
@@ -449,7 +456,7 @@ CX *b;
     b[elem->index].real = elem->sign;
 }
 
-extractYcol(mat, x0, extcol, ext_list)
+void extractYcol(mat, x0, extcol, ext_list)
 CX **mat, *x0;
 EXTERNAL *extcol, *ext_list;
 {
@@ -543,14 +550,17 @@ SPATH *path;
   else {
     viewprintf(stderr, "find_first_node: first seg not connected to second\n");
     FHExit(FH_GENERIC_ERROR);
+	// dummy return to avoid compiler's warning
+	return NULL;
   }
 
 }
 
-makegrids(indsys, Im, column, freq_num)
+void makegrids(indsys, Im, column, freq_num)
 SYS *indsys;
 CX *Im;
 int column;
+int freq_num;
 {
   //static CX *Ib = NULL; // Enrico, see header
   static CX current;

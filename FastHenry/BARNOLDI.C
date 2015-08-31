@@ -28,9 +28,14 @@
 
 
 #include "induct.h"
-#include "sparse/spMatrix.h"
+#include "Sparse/spMatrix.h"
 
 #include "FHWindow.h" // Enrico
+
+// function prototypes
+void ZeroMatrix(double **A, int rows, int cols);
+int qr_P(double **Bmat, double **Qmat, double **Rmat, double **Z, int numlin, int numcol, int block, char *P);
+
 
 // Enrico, static vars moved to file scope to be initialized
 static double **H = NULL;
@@ -43,10 +48,12 @@ static double *Ib = NULL, *Vb = NULL;
 static double *Im = NULL, *Vs = NULL;
 
 
-ArnoldiROM(B, C, D, P, size, numinp, numout, q_orig,
+int ArnoldiROM(B, C, D, P, size, numinp, numout, q_orig,
            matvec, indsys, sys, chglist)
   double **B, **C, **D;
-  char **P;  /* really in sparse matrix form */
+  // type of P should be 'char *'; changed to avoid compiler's warning (but bug should have no effect)
+  char *P;  /* really in sparse matrix form */
+  //char **P;  /* really in sparse matrix form */
   int size, numinp, numout, q_orig;
   int (*matvec)();
   SYS *indsys;
@@ -235,7 +242,7 @@ qr(Bmat, Qmat, Rmat, numlin, numcol, block)
  *
  *****************************************************************************/
 
-qr_P(Bmat, Qmat, Rmat, Z, numlin, numcol, block, P)
+int qr_P(Bmat, Qmat, Rmat, Z, numlin, numcol, block, P)
   double **Bmat, **Qmat, **Rmat, **Z;
   char *P;
   int numlin, numcol, block;
@@ -293,7 +300,7 @@ qr_P(Bmat, Qmat, Rmat, Z, numlin, numcol, block, P)
  *      be improved...
  *****************************************************************************/
 
-dumpROM(fp, Ar, Br, Cr, Dr, size, numinp, numout)
+int dumpROM(fp, Ar, Br, Cr, Dr, size, numinp, numout)
   FILE *fp;
   double **Ar, **Br, **Cr, **Dr;
   int size, numinp, numout;
@@ -436,7 +443,7 @@ dumpROM(fp, Ar, Br, Cr, Dr, size, numinp, numout)
  *
  *****************************************************************************/
 
-dumpROMequiv_circuit(fp, Ar, Br, Cr, Dr, size, numinp, numout, title, suffix,
+void dumpROMequiv_circuit(fp, Ar, Br, Cr, Dr, size, numinp, numout, title, suffix,
                      indsys)
   FILE *fp;
   double **Ar, **Br, **Cr, **Dr;
@@ -628,7 +635,7 @@ dumpROMbin(fp, A, B, C, D, size, numinp, numout)
  *      generation
  *****************************************************************************/
 
-createMRMt(MRMt_Ptr, indsys)
+int createMRMt(MRMt_Ptr, indsys)
   char **MRMt_Ptr;
   SYS *indsys;
 {
@@ -699,14 +706,12 @@ createMRMtinvMLMt(MRMtinvMLMt_Ptr, indsys, MRMt)
   char *MRMt;
 {
   double **MRMtinvMLMt;
-  int m, n, p;
-  double tempsum, tempR, tempsumR;
+  double tempsum;
   // Enrico, see header
   // static double *tcol2 = NULL, *temp2 = NULL;  /* temp storage for extra rows */
-  int i, j, k, mesh, mesh2, nodeindx;
+  int j, mesh, mesh2;
   int nfils, nmesh;
   MELEMENT *melem, *melem2;
-  MELEMENT *mt, *mt2;    /* elements of M transpose */
   double **M, **L;
   int rows, cols, num_mesh;
   MELEMENT **Mlist, **Mt;
@@ -803,7 +808,7 @@ realComputePsi(Prod, sys, B, chglist, indsys, size, numRHS, initcol)
   double *q, *p;
   extern double dirtime;
   charge *chg;
-  int i, j;
+  int i;
 
   branches = indsys->num_fils;
   Mtrans = indsys->Mtrans;
@@ -1007,19 +1012,17 @@ printRowCol(mat, rowcol, rownum, colnum, size)
   
 /* This computes the product M*L*Mt and stores it in imag(indsys->MtZM) */
 /*  It is just formMZMt() without the real part */
-formMLMt(indsys)
+void formMLMt(indsys)
 SYS *indsys;
 {
-  int m,n,p;
-  double tempsum, tempR, tempsumR;
+  double tempsum;
   // Enrico, see header
   // static double *tcol3 = NULL;   /* temporary storage for extra rows */
-  int i,j, k, mesh, mesh2, nodeindx;
+  int j, mesh, mesh2;
   int nfils, nmesh;
   MELEMENT *melem, *melem2;
-  MELEMENT *mt, *mt2;    /* elements of M transpose */
   double **M, **L, *R;
-  CX **Zm, *tempZ;
+  CX **Zm;
   int rows, cols, num_mesh;
   MELEMENT **Mlist, **Mt;
 
@@ -1062,7 +1065,7 @@ SYS *indsys;
 }
 
 /* sets everything to zero in a matrix */
-ZeroMatrix(A, rows, cols)
+void ZeroMatrix(A, rows, cols)
   double **A;
   int rows, cols;
 {

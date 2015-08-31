@@ -117,7 +117,8 @@ BOOL CFastHenryApp::InitInstance()
 	//  the specific initialization routines you do not need.
 
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+	// removed as per warning "C4996: 'CWinApp::Enable3dControls': CWinApp::Enable3dControls is no longer needed. You should remove this call."
+	//Enable3dControls();			// Call this when using MFC in a shared DLL
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
@@ -276,7 +277,8 @@ BOOL CFastHenryApp::InitInstance()
 BOOL CFastHenryApp::parseCmdLine(int *argc, char ***argv, const char *commandStr)
 {
 	char argStr[256], *pointers[256], *cmdStr;
-	int res, skip, i;
+	int res, i;
+	size_t skip;
 	
 	// copy pointer, not to change 'commandStr' 
 	// (required when function is called by automation passing a 'const')
@@ -319,9 +321,10 @@ BOOL CFastHenryApp::parseCmdLine(int *argc, char ***argv, const char *commandStr
 // Special version of sscanf which handles also file names with spaces inside,
 // provided they are surrounded by '"'.
 // Note that this routine is specialized to retrieve only strings
-int CFastHenryApp::getSubstring(const char *buffer, char *substr, int *skip)
+int CFastHenryApp::getSubstring(const char *buffer, char *substr, size_t *skip)
 {
-	int res, deltaClosePos, startPos;
+	int res, deltaClosePos;
+	size_t startPos;
 	unsigned int openPos;
 	const char *openPosPtr, *closePosPtr;
 	char tmpStr[256];

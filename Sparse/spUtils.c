@@ -1852,6 +1852,7 @@ MatrixPtr  Matrix = (MatrixPtr)eMatrix;
 register ElementPtr pElement;
 register int I;
 RealNumber Max = 0.0, AbsRowSum;
+void spcLinkRows();
 
 /* Begin `spNorm'. */
     ASSERT( IS_SPARSE(Matrix) AND NOT IS_FACTORED(Matrix) );

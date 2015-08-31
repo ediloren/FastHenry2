@@ -21,7 +21,13 @@ static double one_3 = 1.0/3.0;
   ? 0 : (  ((x) > (y)) ? 1 : -1 )  )
 
 #define nearzero(x) (fabs(x) < EPS)
-  
+ 
+// function prototypes
+int find_dims(double *dims, int num_dims, Table **a_table, double *retval, int *ret_dim_count, Table ***ret_lastptr);
+void fill_dims(FILAMENT *fil_j, FILAMENT *fil_m, double *widthj, double *heightj, double *dims, int num_dims);
+int MemoryForEntries(AllocInfo *allocptr);
+void DestroyEntries(AllocInfo allocinfo);
+
 /* self inductance */
 double self(W,L,T)
 double W,L,T; 
@@ -56,7 +62,7 @@ double W,L,T;
 
 /* This assumes the lengths of the fils are parallel and returns 1 if the 
    side faces are parallel also */
-edges_parallel(fil_j, fil_m, wid1, whperp)
+int edges_parallel(fil_j, fil_m, wid1, whperp)
 FILAMENT *fil_j, *fil_m;
 int *whperp;
 double *wid1;
@@ -99,7 +105,7 @@ double *wid1;
 }
 
 /* calculates direction of width if not specified */
-get_wid(fil, wid)
+void get_wid(fil, wid)
 FILAMENT *fil;
 double *wid;
 {
@@ -134,7 +140,7 @@ double *wid;
 }
 
 /* calculates direction of height */
-get_height(fil, wid, height)
+void get_height(fil, wid, height)
 FILAMENT *fil;
 double *wid, *height;
 {
@@ -167,13 +173,11 @@ enum degen_type deg_j, deg_m;
   double z_j[3];  /* unit vectors in the filament coord sys*/
   // Enrico, variable not used
   //double origin[3];
-  double dumb, vox,voy,voz, length;
+  double vox,voy,voz, length;
   double a,b,c,d,l1,l2,l3,E,P, l3_1;
   double endx, endy, endz;
-  int sign, sign2;
-  double q[4], r[4], s[4];
+  int sign;
   double totalM, eval_eq();
-  int i,j,k;
   int a_deg, b_deg, c_deg, d_deg;
   extern int forced;
 
@@ -185,6 +189,7 @@ enum degen_type deg_j, deg_m;
   /*   get_height(fil_j, x_j, y_j);  these are now passed as parms */
 
 /*
+  double dumb;
   z_j[XX] = fil_j->x[1] - fil_j->x[0];
   z_j[YY] = fil_j->y[1] - fil_j->y[0];
   z_j[ZZ] = fil_j->z[1] - fil_j->z[0];
@@ -457,7 +462,7 @@ AllocInfo double_alloc;
 
 /* lookup mutual term in table */
 
-lookup(fil_j, fil_m, whperp, widj, heightj, retval, dims, dim_count, lastptr,
+int lookup(fil_j, fil_m, whperp, widj, heightj, retval, dims, dim_count, lastptr,
        p_num_dims)
 
 FILAMENT *fil_j, *fil_m;
@@ -520,9 +525,10 @@ int *dim_count, *p_num_dims;
 /* this fills the vector dims with the dimension information for fil_j
    and fil_m to later determine if the pair has been previous computed and
    is in the lookup table.  All dims should be positive!! */
-fill_dims(fil_j, fil_m, widthj, heightj, dims,num_dims)
+void fill_dims(fil_j, fil_m, widthj, heightj, dims,num_dims)
 FILAMENT *fil_j, *fil_m;
 double *dims, *widthj, *heightj;
+int num_dims;
 {
   int j_first;
   int is_same;
@@ -606,7 +612,6 @@ double *dims, *widthj, *heightj;
   int is_same;
   int i = 0;
   double x,y,z;
-  double z_j[3],length;
 
   x = (fil_j->x[0]+fil_j->x[1]) - (fil_m->x[0]+fil_m->x[1]);
   y = (fil_j->y[0]+fil_j->y[1]) - (fil_m->y[0]+fil_m->y[1]);
@@ -659,7 +664,7 @@ double x,y,eps;
 }
 */
 
-find_dims(dims, num_dims, a_table, retval, ret_dim_count, ret_lastptr)
+int find_dims(dims, num_dims, a_table, retval, ret_dim_count, ret_lastptr)
 double *dims;
 int num_dims;
 double *retval;
@@ -668,7 +673,7 @@ Table ***ret_lastptr, **a_table;
 {
   Table *entry, **lastptr;
   int is_same, maybe_its_there;
-  int dim_count, i;
+  int dim_count;
 
   maybe_its_there = TRUE;
   dim_count = 0;
@@ -712,7 +717,7 @@ Table ***ret_lastptr, **a_table;
   return 0;
 }
       
-put_in_table(fil_j, fil_m, whperp, mutterm, dims, dim_count, lastptr, num_dims)
+void put_in_table(fil_j, fil_m, whperp, mutterm, dims, dim_count, lastptr, num_dims)
 FILAMENT *fil_j, *fil_m;
 int whperp;
 double mutterm;
@@ -754,7 +759,7 @@ Table **lastptr;
 #define ALLOCBLOCK 256 
 
 /* initialize info for allocating table so we can free it later */
-init_table()
+void init_table()
 {
   table_alloc.size = sizeof(Table);
   table_alloc.blocksize = ALLOCBLOCK;
@@ -766,12 +771,12 @@ init_table()
   double_alloc.head = NULL;
 }
 
-get_table_mem()
+int get_table_mem()
 {
   return MemoryForEntries(&table_alloc) + MemoryForEntries(&double_alloc);
 }
 
-destroy_table()
+void destroy_table()
 {
   DestroyEntries(table_alloc);
   DestroyEntries(double_alloc);
@@ -782,7 +787,7 @@ destroy_table()
 char *AllocAnEntry(allocptr)
 AllocInfo *allocptr;
 {
-  int blocksize, size;
+  int blocksize;
   AllocList *elem;
 
   if (allocptr->elems_left > 0) {
@@ -806,7 +811,7 @@ AllocInfo *allocptr;
   }
 }
 
-DestroyEntries(allocinfo)
+void DestroyEntries(allocinfo)
 AllocInfo allocinfo;
 {
   AllocList *lastelem, *head;
@@ -824,7 +829,7 @@ AllocInfo allocinfo;
   allocinfo.elems_left = 0;
 }
 
-MemoryForEntries(allocptr)
+int MemoryForEntries(allocptr)
 AllocInfo *allocptr;
 {
   AllocList *entry;
@@ -947,7 +952,6 @@ double x,y,z, ref_len;
   //static double one_6_3 = 1.0/6.0;
   //static double one_3 = 1.0/3.0;
   int num_nearzero;
-  int num_nearzero_sq;
   double retval;
   double len, xsq, ysq, zsq;
   double one_over_ref_len, one_over_ref_len_sq;
@@ -1005,6 +1009,7 @@ double E,a,P,l3,l1,l2;
      by fourfil() and never get to this point */
   viewprintf(stderr,"Hey, tape_to_fil should not have been called!\n");
   FHExit(FH_GENERIC_ERROR);
+  return 0.0;
 }
 
 double brick_to_fil(E,a,P,b,l3,l1,l2)
@@ -1014,6 +1019,7 @@ double E,a,P,b,l3,l1,l2;
      by fourfil() and never get to this point */
   viewprintf(stderr,"Hey, brick_to_fil should not have been called!\n");
   FHExit(FH_GENERIC_ERROR);
+  return 0.0;
 }
 
 void InitJoelselfVars(void)

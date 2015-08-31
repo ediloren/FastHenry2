@@ -34,6 +34,11 @@
  *  or implied warranty.
  */
 
+// #defines avoid the compiler warnings about unsafe standard functions.
+// 
+// Remark: MUST be at the beginning of the file, before any stdc or crt include
+#define _CRT_SECURE_NO_WARNINGS
+
 #ifndef lint
 static char copyright[] =
     "Sparse1.3: Copyright (c) 1985,86,87,88 by Kenneth S. Kundert";

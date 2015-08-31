@@ -22,6 +22,35 @@ FILAMENT *fil;
          + (fil->height/max < DEG_TOL)*HEIGHT;
 }
 
+void setup_tape_to_tape(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m,
+	nfil_j, nfil_m, nx_j, ny_j)
+	FILAMENT *fil_j, *fil_m, *nfil_j, *nfil_m;
+int whperp;
+double *x_j, *y_j, **nx_j, **ny_j;  /* unit vectors in the fil coord sys */
+enum degen_type deg_j, deg_m;
+{
+
+	if (deg_j == flat) {
+		*nfil_j = *fil_j;
+		*nfil_m = *fil_m;
+		*nx_j = x_j;
+		*ny_j = y_j;
+	}
+	else if (deg_j == skinny) {
+		/* turn skinny into flat orientation */
+		*nfil_j = *fil_j;
+		*nfil_m = *fil_m;
+		/* swap coord sys */
+		*ny_j = x_j;
+		*nx_j = y_j;
+		/* swap height and width */
+		nfil_j->width = fil_j->height;
+		nfil_j->height = fil_j->width;
+		nfil_m->width = fil_m->height;
+		nfil_m->height = fil_m->width;
+	}
+}
+
 double compute_for_degenerate(fil_j, fil_m, whperp, x_j, y_j, 
 			      deg_j, deg_m, dist)
 FILAMENT *fil_j, *fil_m;
@@ -55,35 +84,6 @@ double dist;
   else
     return fourfil(fil_j, fil_m);
 
-}
-
-setup_tape_to_tape(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m,
-			  nfil_j, nfil_m, nx_j, ny_j)
-FILAMENT *fil_j, *fil_m, *nfil_j, *nfil_m;
-int whperp;
-double *x_j, *y_j, **nx_j, **ny_j;  /* unit vectors in the fil coord sys */
-enum degen_type deg_j, deg_m;
-{
-
-  if (deg_j == flat) {
-    *nfil_j = *fil_j;
-    *nfil_m = *fil_m;
-    *nx_j = x_j;
-    *ny_j = y_j;
-  }
-  else if (deg_j == skinny) {
-    /* turn skinny into flat orientation */
-    *nfil_j = *fil_j;
-    *nfil_m = *fil_m;
-    /* swap coord sys */
-    *ny_j = x_j;
-    *nx_j = y_j;
-    /* swap height and width */
-    nfil_j->width = fil_j->height;
-    nfil_j->height = fil_j->width;
-    nfil_m->width = fil_m->height;
-    nfil_m->height = fil_m->width;
-  }
 }
 
 double do_tape_to_brick(fil_j, fil_m, whperp, x_j, y_j, deg_j, deg_m)

@@ -14,6 +14,24 @@ double *Beta, *Betam;		/* beta and beta*m array */
 double *tleg;		/* Temporary Legendre storage. */
 double **factFac;		/* factorial factor array: (n-m+1)...(n+m) */
 
+/*
+returns number of cos(m*phi)-weighted terms in the real (not cmpx) multi exp
+*/
+int costerms(order)
+int order;
+{
+	return(((order + 1) * (order + 2)) / 2);
+}
+
+/*
+returns number of sin(m*phi)-weighted terms in the real (not cmpx) multi exp
+*/
+int sinterms(order)
+int order;
+{
+	return((((order + 1) * (order + 2)) / 2) - (order + 1));
+}
+
 /* 
    Used various places.  Returns number of coefficients in the multipole 
    expansion. 
@@ -22,24 +40,6 @@ int multerms(order)
 int order;
 {
   return(costerms(order) + sinterms(order));
-}
-
-/*
-  returns number of cos(m*phi)-weighted terms in the real (not cmpx) multi exp
-*/
-int costerms(order)
-int order;
-{
-  return(((order + 1) * (order + 2)) / 2);
-}
-
-/*
-  returns number of sin(m*phi)-weighted terms in the real (not cmpx) multi exp
-*/
-int sinterms(order)
-int order;
-{
-  return((((order + 1) * (order + 2)) / 2) - (order+1));
 }
 
 
@@ -125,6 +125,8 @@ int e;				/* exponent, computes i^e */
   if(e % 2 != 0) {
     viewprintf(stderr, "iPwr: odd exponent %d\n", e);
     FHExit(FH_NORMAL_END);
+	// dummy return to avoid compiler's warning
+	return(-1.0);
   }
   else {
     e = e/2;			/* get power of negative 1 */
@@ -144,6 +146,8 @@ int x;
   else if(x < 0) {
     viewprintf(stderr, "fact: attempt to take factorial of neg no. %d\n", x);
     FHExit(FH_NORMAL_END);
+	// dummy return to avoid compiler's warning
+	return(ret);
   }
   else {
     while(x > 1) {
@@ -272,7 +276,7 @@ double cosA, *vector;
 int order;
 {
   int x;
-  int n, m;			/* as in Pn^m, both <= order */
+  int  m;			/* as in Pn^m, both <= order */
   double sinMA;			/* becomes sin^m(alpha) in higher order P's */
   double fact;			/* factorial factor */
 
@@ -324,7 +328,7 @@ int numchgs, order, *is_dummy;
 {
   double **mat;
   double cosA;			/* cosine of elevation coordinate */
-  int i, j, k, kold, n, m, start;
+  int i, j, k, kold, n, m;
   int cterms = costerms(order), terms = multerms(order);
 
   /* Allocate the matrix. */
@@ -521,8 +525,7 @@ int numchgs, order;
 {
   double **mat;
   double cosTh;			/* cosine of elevation coordinate */
-  double factorial;		/* 1/factorial = (n-m)!/(n+m)! */
-  int i, j, k, m, n, kold, start;
+  int i, j, k, m, n, kold;
   int cterms = costerms(order), sterms = sinterms(order);
   int terms = cterms + sterms;
 

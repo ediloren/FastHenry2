@@ -3,8 +3,14 @@
 /* It outputs in SI units only */
 
 #include "induct.h"
+#include "FHWindow.h" // Enrico
 
-regurgitate(indsys)
+// function prototypes
+void spit(SYS *indsys, void(*new_coords)(), char *suffix);
+void do_end_stuff(SYS *indsys);
+
+
+void regurgitate(indsys)
 SYS *indsys;
 {
   /* functions to shift coordinates */
@@ -22,7 +28,7 @@ SYS *indsys;
   do_end_stuff(indsys);
 }
 
-do_end_stuff(indsys)
+void do_end_stuff(indsys)
 SYS *indsys;
 {
   viewprintf(stdout, ".freq fmin=%lg fmax=%lg ndec=%lg\n",indsys->fmin, 
@@ -93,7 +99,7 @@ double x,y,z,*new_x, *new_y, *new_z;
 
 /* spit out nodes and segments and .externals */
 
-spit(indsys, new_coords, suffix)
+void spit(indsys, new_coords, suffix)
 SYS *indsys;
 void (*new_coords)();
 char *suffix;

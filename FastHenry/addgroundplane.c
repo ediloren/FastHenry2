@@ -1,10 +1,19 @@
+
+#include "induct.h"
 #include<stdio.h>
 #include<math.h>
-#include "induct.h"
 
 #include "FHWindow.h" // Enrico
 
 #define PIOVER2 1.570796327
+
+// function prototypes
+void sort_choices(choice_list *choices, int num);
+void increment_usage(SEGMENT *seg);
+void clear_plane_marks(GROUNDPLANE *plane);
+int add_choice(choice_list *choice, NPATH *nodes_so_far, SEGMENT *seg, NODES *node, int is_right_direction, int new_s1_mom,
+	int new_s2_mom, int s1_momentum, int s2_momentum);
+
 
 // Enrico, static vars moved to file scope to be initialized
 static int overlap = 0;
@@ -125,7 +134,6 @@ int o1, o2, mid;
 {
   double temp1, temp2, temp3;
   int to1, to2, tmid;
-  int value;
   
   temp1 = PIOVER2 - (findangle(o1,mid, o1, o2, x, y, z));
   temp2 = PIOVER2 - (findangle(o1, mid, mid, o2, x, y, z));
@@ -381,8 +389,8 @@ GROUNDPLANE *plane;
 
   deco1 = e0 - b0;
   deco2 = e1 - b1;
-  counter1 = b0 + (deco1 > 0 ? 0.0 : -1.0);
-  counter2 = b1 + (deco2 > 0 ? 0.0 : -1.0);
+  counter1 = b0 + (deco1 > 0 ? 0 : -1);
+  counter2 = b1 + (deco2 > 0 ? 0 : -1);
 
   for(i = 0; i < abs(deco1); i++){            /* segments from input to (o1) */
     
@@ -391,7 +399,7 @@ GROUNDPLANE *plane;
     tempseg = plane->segs1[counter1][b1];
     tempseg_ptr.segp = (void *)tempseg;
     tpath->seg = tempseg_ptr;                              /* assign the seg to the path */
-    counter1 = counter1 + (deco1 > 0 ? 1.0 : -1.0);
+    counter1 = counter1 + (deco1 > 0 ? 1 : -1);
     
     tpath->next = (SPATH *)MattAlloc(1, sizeof(SPATH));
     tpath = tpath->next;
@@ -417,7 +425,7 @@ GROUNDPLANE *plane;
     tempseg = plane->segs2[e0][counter2];
     tempseg_ptr.segp = (void *)tempseg;
     tpath->seg = tempseg_ptr;                             /* assing the seg to the path */
-    counter2 = counter2 + (deco2 > 0 ? 1.0 : -1.0);
+    counter2 = counter2 + (deco2 > 0 ? 1 : -1);
 
     tpath->next = (SPATH *)MattAlloc(1,sizeof(SPATH));
     tpath = tpath->next;
@@ -435,8 +443,6 @@ GROUNDPLANE *plane;
 int inout[3];
 double *var1, *var2;
 {
-  NODES *retnode;
-
   *var1 = lengthof2(inout, node->x, node->y, node->z);
   if(*var1 < *var2){
     *var2 = *var1;
@@ -508,19 +514,19 @@ int mesh;
 	  
 	case 0:
 	  seg = plane->segs1[j][i];
-	  signofelem = -1.0;
+	  signofelem = -1;
 	  break;
 	case 1:
 	  seg = plane->segs2[j + 1][i];
-	  signofelem = -1.0;
+	  signofelem = -1;
 	  break;
 	case 2:
 	  seg = plane->segs1[j][i + 1];
-	  signofelem = 1.0;
+	  signofelem = 1;
 	  break;
 	case 3:
 	  seg = plane->segs2[j][i];
-	  signofelem = 1.0;
+	  signofelem = 1;
 	  break;
 	}
 
@@ -553,7 +559,7 @@ int mesh;
 	melem = (MELEMENT *)MattAlloc(1, sizeof(MELEMENT));
 	melem->filindex = abs(loop[k]) - 1;
 	melem->fil = loopfils[k];               /* assign filament pointer */
-	melem->sign = (loop[k] > 0 ? 1.0 : -1.0);
+	melem->sign = (loop[k] > 0 ? 1 : -1);
 	if(k == 0){
 	  melem->mnext = NULL;
 	  pMlist[counter] = melem;
@@ -710,7 +716,7 @@ int s1_momentum, s2_momentum;
 }
 
 /* sort choices by rank.  Not the most efficient */
-sort_choices(choices, num)
+void sort_choices(choices, num)
 choice_list *choices;
 int num;
 {
@@ -726,7 +732,7 @@ int num;
       }
 }
 	
-clear_marks(indsys)
+void clear_marks(indsys)
 SYS *indsys;
 {
   SEGMENT *seg;
@@ -739,19 +745,19 @@ SYS *indsys;
     node->examined = 0;
 }
 
-increment_usage(seg)
+void increment_usage(seg)
 SEGMENT *seg;
 {
   seg->is_deleted++;
 }
 
-dump_mesh_coords(indsys)
+void dump_mesh_coords(indsys)
 SYS *indsys;
 {
   FILE *fp;
   int nmeshes, i, counter, j;
   double **line_list, *temp;
-  int buffer_rows = 5000, buffer_cols = 4, nowrite;
+  int buffer_rows = 5000, buffer_cols = 4;
   MELEMENT *melem;
   FILAMENT *fil;
   char outfname[80];
@@ -807,13 +813,12 @@ SYS *indsys;
 
 }
 
-dump_ascii_mesh_coords(indsys)
+void dump_ascii_mesh_coords(indsys)
 SYS *indsys;
 {
   FILE *fp;
-  int nmeshes, i, counter, j;
-  double **line_list, *temp;
-  int buffer_rows = 5000, buffer_cols = 4, nowrite;
+  int nmeshes, i, counter;
+  int buffer_rows = 5000, buffer_cols = 4;
   MELEMENT *melem;
   FILAMENT *fil;
   char outfname[80];
@@ -922,7 +927,7 @@ int s1_momentum, s2_momentum;
     return 0;
 }
     
-clear_plane_marks(plane)
+void clear_plane_marks(plane)
 GROUNDPLANE *plane;
 {
   int i,j;

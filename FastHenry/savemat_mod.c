@@ -22,6 +22,7 @@
  * Revised 7-23-91 to support ANSI-C
  */
 #include <stdio.h>
+#include <string.h>
 
 #ifdef ALPHA
 typedef struct {
@@ -68,7 +69,7 @@ double *pimag;  /* pointer to imag data */
 	x.mrows = mrows;
 	x.ncols = ncols;
 	x.imagf = imagf;
-	x.namlen = strlen(pname) + 1;
+	x.namlen = (long) strlen(pname) + 1;
 	mn = x.mrows * x.ncols;
 
 	fwrite(&x, sizeof(Fmatrix), 1, fp);
@@ -117,7 +118,7 @@ int mn;				/* real #entries, this dump only */
 	  x.mrows = mrows;
 	  x.ncols = ncols;
 	  x.imagf = imagf;
-	  x.namlen = strlen(pname) + 1;
+	  x.namlen = (long) strlen(pname) + 1;
 	
 	  fwrite(&x, sizeof(Fmatrix), 1, fp);
 	  fwrite(pname, sizeof(char), (int)x.namlen, fp);

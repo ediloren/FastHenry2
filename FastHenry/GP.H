@@ -260,6 +260,9 @@ NODES *make_fastH_node();
 ContactList *make_contact_connection();
 Gcell *pick_cell_based_on_vec();
 
+// read_tree.c
+void debug_func();
+
 #define get_x0(cell) (cell->x0)
 #define get_y0(cell) (cell->y0)
 #define get_x1(cell) (cell->x1)
@@ -288,5 +291,18 @@ Gcell *pick_cell_based_on_vec();
 
 /* return opposite direction to dir */
 #define opposite_dir(dir) ( (dir + 2)%4 )
+
+
+// prototypes of functions defined in read_tree.c
+void get_nonuni_coords(double x, double y, double z, Nonuni_gp *gp, double *xr, double *yr, double *zr);
+void set_cell_coords(Gcell *cell, double x0, double y0, double x1, double y1);
+void get_global_coords(double x, double y, double z, Nonuni_gp *gp, double *xg, double *yg, double *zg);
+void dump_nonuni_plane_currents(Nonuni_gp *gp, CX *Ib, FILE *fp);
+// prototypes of functions defined in find_nonuni_path.c
+int is_in_cell(double x, double y, Gcell *cell);
+void free_Llist(Llist *list);
+// prototypes of functions defined in contact.c
+void make_contacts(ContactList *contactp, Nonuni_gp *gp);
+
 
 #endif /* _GP_H */
