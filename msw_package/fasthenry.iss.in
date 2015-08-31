@@ -7,7 +7,7 @@ AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://www.wrcad.com
 
-OutputBaseFilename=fasthenry-VERSION-setup
+OutputBaseFilename=fasthenry-VERSION-VDATE-setup
 
 Compression=lzma
 

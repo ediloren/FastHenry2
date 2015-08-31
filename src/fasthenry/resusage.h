@@ -25,6 +25,16 @@ static long sectime, utime;
 #ifdef NOTOTHER
 
 #ifdef FOUR			/* 4.2,3BSD (tested: Sun4, IBM6000, DEC5000) */
+/* SRW */
+#ifdef SRW0814
+#define SRWSECONDS \
+static double srw_seconds() \
+{ \
+    getrusage(RUSAGE_SELF, &timestuff); \
+    return (timestuff.ru_utime.tv_sec + 1.0e-6*timestuff.ru_utime.tv_usec); \
+}
+#endif
+
 #define starttimer getrusage(RUSAGE_SELF, &timestuff); \
 sectime = timestuff.ru_utime.tv_sec; \
 utime = timestuff.ru_utime.tv_usec
@@ -35,6 +45,16 @@ dtime = (double)(timestuff.ru_utime.tv_sec - sectime) \
 #endif /* FOUR */
 
 #ifdef FIVE			/* for System V (tested: HP300) */
+/* SRW */
+#ifdef SRW0814
+#define SRWSECONDS \
+static double srw_seconds() \
+{ \
+    times(&timestuff); \
+    return (timestuff.tms_utime/(double)HZ); \
+}
+#endif
+
 #define starttimer times(&timestuff); \
 utime = timestuff.tms_utime
 #define stoptimer times(&timestuff); \

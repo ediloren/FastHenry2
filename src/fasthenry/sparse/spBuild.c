@@ -183,23 +183,36 @@ register  int  I;
  *  Error is not cleared in this routine.
  */
 
+/* SRW 080714
+ * Modified to support the hash table.
+ */
+
 RealNumber *
-spGetElement( char *eMatrix, int Row, int Col )
+spGetElement( char *eMatrix, int InRow, int InCol )
 
 {
 MatrixPtr  Matrix = (MatrixPtr)eMatrix;
-RealNumber  *pElement;
+ElementPtr  pElement;
+int Row, Col;
 
 /* Begin `spGetElement'. */
-    ASSERT( IS_SPARSE( Matrix ) AND Row >= 0 AND Col >= 0 );
+    ASSERT( IS_SPARSE( Matrix ) AND InRow >= 0 AND InCol >= 0 );
 
-    if ((Row == 0) OR (Col == 0))
+    if ((InRow == 0) OR (InCol == 0))
         return &Matrix->TrashCan.Real;
 
 #if NOT TRANSLATE
     ASSERT(Matrix->NeedsOrdering);
 #endif
 
+#if BUILDHASH
+    pElement = sph_get(Matrix, InRow, InCol);
+    if (pElement != NULL)
+        return ((RealNumber*)pElement);
+#endif
+
+    Row = InRow;
+    Col = InCol;
 #if TRANSLATE
     Translate( Matrix, &Row, &Col );
     if (Matrix->Error == spNO_MEMORY) return NULL;
@@ -228,20 +241,315 @@ RealNumber  *pElement;
  * is the first record in the MatrixElement structure.
  */
 
-    if ((Row != Col) OR ((pElement = (RealNumber *)Matrix->Diag[Row]) == NULL))
-    {
+    if (Row == Col AND Matrix->Diag[Row] != NULL) {
+        pElement = Matrix->Diag[Row];
+#if BUILDHASH
+        sph_add(Matrix, InRow, InCol, pElement);
+#endif
+        return ((RealNumber*)pElement);
+    }
+
 /*
  * Element does not exist or does not reside along diagonal.  Search
  * column for element.  As in the if statement above, the pointer to the
  * element which is returned by spcFindElementInCol is cast into a
  * pointer to Real, a RealNumber.
  */
-        pElement = (RealNumber*)spcFindElementInCol( Matrix,
-                                                     &(Matrix->FirstInCol[Col]),
+
+    pElement = spcFindElementInCol( Matrix, &(Matrix->FirstInCol[Col]),
                                                      Row, Col, YES );
-    }
-    return pElement;
+#if BUILDHASH
+    sph_add(Matrix, InRow, InCol, pElement);
+#endif
+    return (RealNumber*)pElement;
 }
+
+
+/* SRW 080714
+ * Without hashing, GetElement is a huge bottleneck when building a
+ * large matrix.  This function can provide a big improvement, though
+ * less so with the hashing addition.  This adds a list of row
+ * elements for a given column, The rows should be in ascending order
+ * for best results.  The game is to avoid searching each column from
+ * the beginning in spcFindElementInCol, which is very time consuming.
+ */
+
+void
+spSetRowElements( char *eMatrix, int InCol, struct spColData *ColData,
+    int Dsize )
+{
+MatrixPtr  Matrix = (MatrixPtr)eMatrix;
+ElementPtr pElement;
+int I, Row, InRow, Col;
+
+/* Begin `spSetRowElements'. */
+    ASSERT( IS_SPARSE( Matrix ) AND InCol >= 0 AND ColData AND Dsize > 0 );
+
+    if (InCol == 0)
+        return;
+
+#if NOT TRANSLATE
+    ASSERT(Matrix->NeedsOrdering);
+#endif
+
+    for (I = 0; I < Dsize; I++) {
+        ElementPtr pElement, *Ptr;
+        InRow = ColData[I].row;
+#if BUILDHASH
+        pElement = sph_get(Matrix, InRow, InCol);
+        if (pElement != NULL) {
+            pElement->Real += ColData[I].real;
+            pElement->Imag += ColData[I].imag;
+            ColData[I].ptr = pElement;
+            continue;
+        }
+#endif
+        Row = InRow;
+        Col = InCol;
+#if TRANSLATE
+        /* This can make row order non-monotonic! */
+        Translate( Matrix, &Row, &Col );
+        if (Matrix->Error == spNO_MEMORY) return;
+#endif
+
+#if NOT TRANSLATE
+#if NOT EXPANDABLE
+        ASSERT(Row <= Matrix->Size AND Col <= Matrix->Size);
+#endif
+
+#if EXPANDABLE
+/* Re-size Matrix if necessary. */
+        if ((Row > Matrix->Size) OR (Col > Matrix->Size))
+            EnlargeMatrix( Matrix, MAX(Row, Col) );
+        if (Matrix->Error == spNO_MEMORY) return;
+#endif
+#endif
+        if (Row == Col && Matrix->Diag[Col]) {
+            pElement = Matrix->Diag[Col];
+            pElement->Real += ColData[I].real;
+            pElement->Imag += ColData[I].imag;
+            ColData[I].ptr = pElement;
+#if BUILDHASH
+            sph_add(Matrix, InRow, InCol, pElement);
+#endif
+            continue;
+        }
+
+        int J = I-1;
+        pElement = I > 0 ? (ElementPtr)ColData[J].ptr : 0;
+        while (pElement && pElement->Row >= Row) {
+            if (J == 0) {
+                pElement = 0;
+                break;
+            }
+            J--;
+            pElement = (ElementPtr)ColData[J].ptr;
+        }
+        if (pElement)
+            Ptr = &pElement->NextInCol;
+        else if (Row > Col && Matrix->Diag[Col])
+            Ptr = &(Matrix->Diag[Col]->NextInCol);
+        else
+            Ptr = &(Matrix->FirstInCol[Col]);
+
+        pElement = spcFindElementInCol( Matrix, Ptr, Row, Col, YES );
+        pElement->Real += ColData[I].real;
+        pElement->Imag += ColData[I].imag;
+        ColData[I].ptr = pElement;
+#if BUILDHASH
+        sph_add(Matrix, InRow, InCol, pElement);
+#endif
+    }
+}
+
+
+/* SRW 080714 start of hash functions */
+#if BUILDHASH
+
+#define ST_MAX_DENS     5
+#define ST_START_MASK   31
+
+#if defined(__GNUC__) && (defined(i386) || defined(__x86_64__))
+#define rol_bits(x, k) ({ unsigned int t; \
+    asm("roll %1,%0" : "=g" (t) : "cI" (k), "0" (x)); t; })
+#else
+#define rol_bits(x, k) (((x)<<(k)) | ((x)>>(32-(k))))
+#endif
+
+// Hashing function for 4/8 byte integers, adapted from
+// lookup3.c, by Bob Jenkins, May 2006, Public Domain.
+//
+unsigned int number_hash(unsigned int n, unsigned int hashmask)
+{
+    unsigned int a, b, c; // Assumes 32-bit int.
+
+    /*
+    if (sizeof(unsigned long) == 8) {
+        union { unsigned long l; unsigned int i[2]; } u;
+        a = b = c = 0xdeadbeef + 8;
+        u.l = n;
+        b += u.i[1];
+        a += u.i[0];
+    }
+    else {
+        */
+        a = b = c = 0xdeadbeef + 4;
+        a += n;
+    /*
+    }
+    */
+
+    c ^= b; c -= rol_bits(b, 14);
+    a ^= c; a -= rol_bits(c, 11);
+    b ^= a; b -= rol_bits(a, 25);
+    c ^= b; c -= rol_bits(b, 16);
+    a ^= c; a -= rol_bits(c, 4);
+    b ^= a; b -= rol_bits(a, 14);
+    c ^= b; c -= rol_bits(b, 24);
+
+    return (c & hashmask);
+}
+
+#define HEBLKSZ 1024
+
+struct heblk
+{
+    struct heblk *next;
+    struct spHelt elts[HEBLKSZ];
+};
+
+static struct heblk *he_blocks;
+static int he_blkcnt;
+
+struct spHelt *newhelt()
+{
+    if (!he_blocks || he_blkcnt == HEBLKSZ) {
+        struct heblk *hb = (struct heblk*)malloc(sizeof(struct heblk));
+        hb->next = he_blocks;
+        he_blocks = hb;
+        he_blkcnt = 0;
+    }
+    return (he_blocks->elts + he_blkcnt++);
+};
+
+/*
+ * Private function to increase the hash width by one bit.
+ */
+void sph_rehash(struct spHtab *tab)
+{
+    unsigned int i, oldmask = tab->mask;
+    tab->mask = (oldmask << 1) | 1;
+    struct spHelt **oldent = tab->entries;
+    tab->entries =
+        (struct spHelt**)calloc(tab->mask + 1, sizeof(struct spHelt*));
+    for (i = 0; i <= tab->mask; i++)
+        tab->entries[i] = 0;
+    for (i = 0; i <= oldmask; i++) {
+        struct spHelt *h, *hn;
+        for (h = oldent[i]; h; h = hn) {
+            hn = h->next;
+            unsigned int j = number_hash(h->row + h->col, tab->mask);
+            h->next = tab->entries[j];
+            tab->entries[j] = h;
+        }
+    }
+    free(oldent);
+}
+
+/*
+ * Add data to the hash table, return 1 if added, 0 if already there
+ * or null.  Note that the Row and Col in data are actually ignored.
+ */
+int sph_add(MatrixPtr Matrix, int row, int col, ElementPtr data)
+{
+    struct spHtab *tab = Matrix->ElementHashTab;
+    if (data == NULL)
+        return (0);
+    if (!tab) {
+        tab = (struct spHtab*)malloc(sizeof(struct spHtab));
+        tab->mask = ST_START_MASK;
+        tab->entries =
+            (struct spHelt**)calloc((tab->mask + 1), sizeof(struct spHelt*));
+        tab->allocated = 0;
+        tab->getcalls = 0;
+        Matrix->ElementHashTab = tab;
+    }
+    unsigned int i = number_hash(row + col, tab->mask);
+    struct spHelt *h;
+    for (h = tab->entries[i]; h; h = h->next) {
+        if (h->row == row && h->col == col)
+            return (0);
+    }
+    h = newhelt();
+    h->next = tab->entries[i];
+    tab->entries[i] = h;
+    h->row = row;
+    h->col = col;
+    h->eptr = data;
+    tab->allocated++;
+    if (tab->allocated/(tab->mask + 1) > ST_MAX_DENS)
+        sph_rehash(tab);
+    return (1);
+}
+
+/*
+ * Return the element at row,col or null if none exists.
+ */
+ElementPtr sph_get(MatrixPtr Matrix, int row, int col)
+{
+    struct spHtab *tab = Matrix->ElementHashTab;
+    if (tab && tab->allocated) {
+        tab->getcalls++;
+        unsigned int i = number_hash(row + col, tab->mask);
+        struct spHelt *h;
+        for (h = tab->entries[i]; h; h = h->next) {
+            if (h->row == row && h->col == col)
+                return (h->eptr);
+        }
+    }
+    return (0);
+}
+
+/*
+ * Return the sph_get call count and the allocated size.  The call
+ * count is zeroed.
+ */
+void sph_stats(void *mp, unsigned int *pg, unsigned int *pa)
+{
+    MatrixPtr Matrix = (MatrixPtr)mp;
+    struct spHtab *tab = Matrix->ElementHashTab;
+    if (!tab) {
+        if (pg)
+            *pg = 0;
+        if (pa)
+            *pa = 0;
+    }
+    else {
+        if (pg)
+            *pg = tab->getcalls;
+        if (pa)
+            *pa = tab->allocated;
+        tab->getcalls = 0;
+    }
+}
+
+void sph_destroy(MatrixPtr Matrix)
+{
+    int i;
+    struct spHtab *tab = Matrix->ElementHashTab;
+    if (!tab)
+        return;
+    while (he_blocks) {
+        struct heblk *hx = he_blocks;
+        he_blocks = he_blocks->next;
+        free(hx);
+    }
+    free(tab->entries);
+    free(tab);
+    Matrix->ElementHashTab = 0;
+}
+#endif
+/* SRW end of hash functions */
 
 
 

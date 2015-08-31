@@ -249,6 +249,17 @@
  *      versions of Sparse. [0]
  */
 
+/* SRW 080714
+ *  BUILDHASH
+ *      This creates a hash table that can speed up building the sparse
+ *      matrix, dramatically so when the matrix is large.
+ *  BITFIELD
+ *      This creates and manages a bitfield that identifies allocated
+ *      entries, requires BUILDHASH.  This provides fast random access
+ *      to element pointers for linking/swapping matrix elements, which
+ *      speeds up reordering of large matrices considerably.
+ */
+
 /* Begin options. */
 #define  REAL                           YES
 #define  EXPANDABLE                     NO
@@ -271,6 +282,13 @@
 #define  PSEUDOCONDITION                YES
 #define  FORTRAN                        NO
 #define  DEBUG                          YES
+
+#define  BUILDHASH                      YES
+#define  BITFIELD                       YES
+#if BITFIELD && !BUILDHASH
+#undef BUILDHASH
+#define BUILDHASH YES
+#endif
 
 /*
  *  The following options affect Sparse exports and so are exported as a

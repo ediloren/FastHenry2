@@ -829,6 +829,29 @@ struct FillinListNodeStruct
  *      lists of fill-ins.
  */
 
+/* SRW 080714 */
+#if BUILDHASH
+/*
+ * Implement a hash table for quick access of elements by row/col.
+ * This is experimental, for FastHenry.
+ */
+struct spHelt
+{
+    int row;
+    int col;
+    ElementPtr eptr;
+    struct spHelt *next;
+};
+
+struct spHtab
+{
+    struct spHelt **entries;
+    unsigned int mask;
+    unsigned int allocated;
+    unsigned int getcalls;
+};
+#endif
+
 /* Begin `MatrixFrame'. */
 struct  MatrixFrame
 {   RealNumber                   AbsThreshold;
@@ -881,6 +904,14 @@ struct  MatrixFrame
     int                          FillinsRemaining;
     struct FillinListNodeStruct *FirstFillinListNode;
     struct FillinListNodeStruct *LastFillinListNode;
+
+    /* SRW */
+#if BUILDHASH
+    struct spHtab               *ElementHashTab;
+#endif
+#if BITFIELD
+    unsigned int               **BitField;
+#endif
 };
 typedef  struct MatrixFrame  *MatrixPtr;
 
@@ -892,4 +923,22 @@ ElementPtr spcCreateElement( MatrixPtr, int, int, ElementPtr*, BOOLEAN );
 void spcLinkRows( MatrixPtr );
 void spcRowExchange( MatrixPtr, int, int );
 void spcColExchange( MatrixPtr, int, int );
+
+/* SRW 080714 hash table functions, speedup for building */
+#if BUILDHASH
+extern int sph_add( MatrixPtr, int, int, ElementPtr );
+extern ElementPtr sph_get( MatrixPtr, int, int );
+extern void sph_stats( void*, unsigned int*, unsigned int*);
+extern void sph_destroy( MatrixPtr );
+#endif
+
+/* SRW 080714 bit field functions, speedup for reordering */
+#if BITFIELD
+void ba_setbit(MatrixPtr, int, int, int);
+int ba_getbit(MatrixPtr, int, int);
+ElementPtr ba_left(MatrixPtr, int, int);
+ElementPtr ba_above(MatrixPtr, int, int);
+void ba_setup(MatrixPtr);
+void ba_destroy(MatrixPtr);
+#endif
 

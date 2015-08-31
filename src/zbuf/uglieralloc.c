@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* SRW */
+#define NO_SBRK
+
 #define NALLOC 8184		/* >= sizeof(HEADER)*NALLOC bytes sbrk()'d */
 #define MAGICN 0xaaaaaaaaL	/* used to check fidelity of allocated blks */
 #define UGDEBG 0		/* 0=> most efficient, no verification
@@ -300,9 +303,8 @@ void uallocEfcy(long memcount)
   int first = 1;
 #endif
   int total;
-  char *sbrk();
 
-  total = (int)(sbrk(0) - (char *)base);
+  total = (int)((char*)sbrk(0) - (char*)base);
 
   if(base == NULL) fprintf(stdout, "(top of memory = 0x%lx", (long)sbrk(0));
   else fprintf(stdout, "(%.3g%% efficiency",

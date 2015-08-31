@@ -41,6 +41,10 @@ void mark_dup_mesh(MELEMENT**, int*, int, DUPS*, int*);
 void dumpPrecond(PRE_ELEMENT**, int, char*);
 void indPrecond_direct(ssystem*, SYS*, double);
 
+/* SRW */
+#ifdef SRW0814
+SRWSECONDS
+#endif
 
 void indPrecond(ssystem *sys, SYS *indsys, double w)
 {
@@ -91,6 +95,10 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
   static int *is_partial;
   int debug = 0;
   int isdirect;
+#ifdef SRW0814
+  int trips, ntrips;
+  double stime, etime;
+#endif
 
   int xi, yi, zi;
   CX tempsum, *elem;
@@ -101,6 +109,10 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
   int totalcubes = 0;
   char *Matrix = indsys->sparMatrix;
   
+#ifdef SRW0814
+  stime = srw_seconds();
+#endif
+
   if (filcount == NULL) {
     CALLOC(filcount, num_mesh, int, ON, IND);
     CALLOC(filcount2, num_mesh, int, ON, IND);
@@ -161,7 +173,16 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
 
   /* Now go fill-in a matrix. */
   /* For each cube, gather all the meshes and invert that subproblem */
+#ifdef SRW0814
+  ntrips = 0;
+  trips = 0;
+  for(nc=sys->directlist; nc != NULL; nc = nc->dnext)
+      ntrips++;
+#endif
   for(nc=sys->directlist; nc != NULL; nc = nc->dnext) {
+#ifdef SRW0814
+    trips++;
+#endif
 
     for(i = 0; i < num_mesh; i++) {
       filcount[i] = 0;
@@ -425,6 +446,53 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
          fprintf(stderr,"Possible Bug:  self term in preconditioner == 0!\n");
     
     if (indsys->precond_type == SPARSE) {
+#ifdef SRW0814
+      /* SRW
+       * This is much faster than the original code, for large
+       * matrices, as it works with the (hacked) Sparse package to
+       * efficiently build the matrix.
+       *
+       * 1.  We change the order to row-minor, so we (usually) don't
+       *     have to search the column from the beginning to find the
+       *     element.  If the element rows are increasing, we can search
+       *     from the last element.
+       * 2.  We use a new batch insertion function that is a little faster
+       *     than spGetElement.
+       * 3.  The Sparse package now uses hashing, providing further speed
+       *     improvement.
+       *
+       * An example file with 89K filaments improved from 7 hours to
+       * 80 seconds to build the matrix.
+       */
+      if (ntrips >= 100 && !(trips % (ntrips/10))) {
+        printf(" %.1f", (100.0*trips)/ntrips);
+        fflush(stdout);
+      }
+      for(j = 0; j < meshsize; j++) {
+        int cnt = 0;
+        struct spColData *data;
+
+        realmcol = meshnum[j];
+        maxfilcount[realmcol] = filcount[realmcol];
+
+        for(i = 0; i < meshsize; i++) {
+          if ( (meshmat[i][j].real != 0.0 || meshmat[i][j].imag != 0.0) )
+              cnt++;
+        }
+        data = (struct spColData*)malloc(cnt*sizeof(struct spColData));
+        cnt = 0;
+        for(i = 0; i < meshsize; i++) {
+          if ( (meshmat[i][j].real != 0.0 || meshmat[i][j].imag != 0.0) ) {
+            data[cnt].row = meshnum[i] + 1;
+            data[cnt].real = meshmat[i][j].real;
+            data[cnt].imag = meshmat[i][j].imag;
+            cnt++;
+          }
+        }
+        spSetRowElements(Matrix, realmcol+1, data, cnt);
+        free(data);
+      }
+#else
       for(i = 0; i < meshsize; i++) {
 	realmrow = meshnum[i];
 	maxfilcount[realmrow] = filcount[realmrow];
@@ -437,6 +505,7 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
           }
 	}
       }
+#endif
       if (indsys->opts->dumpMats & DUMP_Ls) {
         if (indsys->precond_subtype == SHELLS)
           the_size = offset;
@@ -455,7 +524,7 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
       mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx);
       
       if (debug == 1) {
-    /* SRW -- this is binary data */
+	/* SRW -- this is binary data */
 	fp = fopen("chkinv.mat","wb");
 	if (fp == NULL) {printf("no open\n"); exit(1); }
 	savecmplx(fp, "before", meshmat, meshsize, meshsize);
@@ -524,6 +593,21 @@ void indPrecond(ssystem *sys, SYS *indsys, double w)
     } /* end if local-inv precond */
   }
 
+#ifdef SRW0814
+  etime = srw_seconds();
+  if (indsys->precond_type == SPARSE) {
+    unsigned int calls, allocated;
+    extern void sph_stats(void*, unsigned int*, unsigned int*);
+
+    if (ntrips >= 100)
+        printf("\n");
+    sph_stats(Matrix, &calls, &allocated);
+    printf("Precond build time %g (queries %u, allocations %u)\n",
+      etime - stime, calls, allocated);
+  }
+  else
+    printf("Precond build time %g\n", etime - stime);
+#endif
 
 /* precondition the big meshes */
 /*  bigmeshPre(sys, indsys, w);  */
@@ -723,7 +807,6 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size, char *suffix)
 {
   FILE *fp;
   int i,j;
-  int machine;
   double *temprow;
   int rows, cols;
   PRE_ELEMENT *pre;
@@ -741,18 +824,13 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size, char *suffix)
     exit(1);
   }
 
-  machine = 1000;
-#ifdef DEC
-  machine = 2000;
-#endif
-
   /* this only saves the real part */
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.real;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine_type()+100, "Pre", rows, cols, 1, temprow, 
 		  (double *)NULL, i, cols);
   }
 
@@ -762,7 +840,7 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size, char *suffix)
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.imag;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine_type()+100, "Pre", rows, cols, 1, temprow, 
 		  (double *)NULL, 1, cols);
   }
 

@@ -391,6 +391,120 @@ SPATH *lastelem(SPATH *path)
   return path;
 }
 
+#ifdef SRW0814
+/* SRW start */
+/*
+ * Added this string hash table to speed up the get_nodes_by_name
+ * capability.
+ */
+
+struct stEnt
+{
+    struct stEnt *stNext;
+    const char *stTag;
+    NODES *stData;
+};
+
+struct stTab
+{
+    struct stEnt **entries;
+    unsigned int allocated;
+    unsigned int mask;
+};
+
+static struct stTab tab;
+
+#define ST_MAX_DENS     5
+#define ST_START_MASK   31
+#define INCR_HASH_INIT  5381
+
+static unsigned int incr_hash_string(unsigned int k, const char *s)
+{
+    if (s) {
+        unsigned char *t = (unsigned char*)s;
+        while (*t)
+            k = ((k << 5) + k) ^ *t++;
+    }
+    return (k);
+}
+
+// A string hashing function (Bernstein, comp.lang.c).
+//
+static unsigned int string_hash(const char *str, unsigned int hashmask)
+{
+    if (!hashmask || !str)
+        return (0);
+    unsigned int k = INCR_HASH_INIT;
+    k = incr_hash_string(k, str);
+    return (k & hashmask);
+}
+
+static void st_rehash(struct stTab *tab)
+{
+    unsigned int i, oldmask = tab->mask;
+    tab->mask = (oldmask << 1) | 1;
+    struct stEnt **oldent = tab->entries;
+    tab->entries =
+        (struct stEnt**)calloc(tab->mask + 1, sizeof(struct stEnt*));
+    for (i = 0; i <= tab->mask; i++)
+        tab->entries[i] = 0;
+    for (i = 0; i <= oldmask; i++) {
+        struct stEnt *h, *hn;
+        for (h = oldent[i]; h; h = hn) {
+            hn = h->stNext;
+            unsigned int j = string_hash(h->stTag, tab->mask);
+            h->stNext = tab->entries[j];
+            tab->entries[j] = h;
+        }
+    }
+    free(oldent);
+}
+
+static int st_add(struct stTab *tab, const char *tag, NODES *data)
+{
+    unsigned int i = string_hash(tag, tab->mask);
+    struct stEnt *h;
+    for (h = tab->entries[i]; h; h = h->stNext) {
+        if (!strcmp(tag, h->stTag))
+            return (0);
+    }
+    h = (struct stEnt*)malloc(sizeof(struct stEnt));
+    h->stNext = tab->entries[i];
+    tab->entries[i] = h;
+    h->stTag = tag;
+    h->stData = data;
+    tab->allocated++;
+    if (tab->allocated/(tab->mask + 1) > ST_MAX_DENS)
+        st_rehash(tab);
+    return (1);
+}
+
+static NODES *st_get(struct stTab *tab, const char *tag)
+{
+    if (tab->allocated) {
+        unsigned int i = string_hash(tag, tab->mask);
+        struct stEnt *h;
+        for (h = tab->entries[i]; h; h = h->stNext) {
+            if (!strcmp(tag, h->stTag))
+                return (h->stData);
+        }
+    }
+    return (NULL);
+}
+
+// Exported.
+void register_new_node(NODES *node)
+{
+    if (tab.mask == 0) {
+        tab.mask = ST_START_MASK;
+        tab.entries =
+            (struct stEnt**)calloc((tab.mask + 1), sizeof(struct stEnt*));
+    }
+    st_add(&tab, node->name, node);
+}
+/* SRW end */
+#endif
+
 /* returns a pointer to the node named name.  If it is not there, it
    checks the pseudo-list and returns a real node to which the 
    pseudo-name corresponds. Otherwise an error.
@@ -400,25 +514,28 @@ SPATH *lastelem(SPATH *path)
 
 NODES *get_node_from_name(char *name, SYS *indsys)
 {
-
   NODES *node;
   PSEUDO_NODE *pnode;
-  
+
+#ifdef SRW0814
+    node = st_get(&tab, name);
+    if (node != NULL)
+        return (node);
+#else
   node = indsys->nodes;
   while((node != NULL) && (strcmp(name, node->name) != 0))
     node = node->next;
 
   if (node != NULL)
     return node;
-  else {
-    pnode = indsys->pseudo_nodes;
-    while ((pnode != NULL) && (strcmp(name, pnode->name) != 0))
-      pnode = pnode->next;
-    if (pnode == NULL) 
-      return NULL;
-    else
-      return pnode->node;
-  }
+#endif
+  pnode = indsys->pseudo_nodes;
+  while ((pnode != NULL) && (strcmp(name, pnode->name) != 0))
+    pnode = pnode->next;
+  if (pnode == NULL) 
+    return NULL;
+  else
+    return pnode->node;
 }
 
 int equivnodes(char *line, SYS *indsys)

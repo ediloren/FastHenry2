@@ -22,3 +22,8 @@ all: fasthenry zbuf
 clean:
 	cd $(FASTH) ; $(MAKE) clean
 	cd $(ZBUF) ; $(MAKE) clean
+
+distclean:
+	$(MAKE) clean
+	rm -f bin/fasthenry bin/zbuf
+	rm -f examples/work/*.mat examples/work/*.out

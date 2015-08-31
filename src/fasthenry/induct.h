@@ -40,13 +40,8 @@ of this software.
 #include "cmplx.h"
 #include "mulGlobal.h"
 
-#if SUPERCON == ON
 #define FHVERSION "3.0wr"
-#define FHDATE "29Sep96, mod 010114"
-#else
-#define FHVERSION "3.0"
-#define FHDATE "29Sep96, mod 010114"
-#endif
+#define FHDATE "29Sep96, mod 082514"
 
 #define AVER_MAT_MAX 110        /* These are two constants used to */
 #define MAX_DIV_RAT 0.25        /* decide partitioning level      */
@@ -148,9 +143,6 @@ extern int num_fourfil;
 extern int num_mutualfil;
 extern int num_found;
 extern int num_perp;
-
-/* machine type for savemat_mod, declated in induct.c */
-extern int machine;
 
 /* temporary list of gp node references to be resolved.
    (used in addgroundplane() in file readGeom.c */
@@ -955,6 +947,7 @@ void regurgitate(SYS*);
 // void spit(SYS*, regurg_cb, char*);
 
 /* savemat_mod.c */
+extern int machine_type(void);
 // void savemat(FILE*, int, char*, int, int, int, double*, double*);
 void savemat_mod(FILE*, int, char*, int, int, int, double*, double*, int, int);
 

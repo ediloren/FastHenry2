@@ -553,12 +553,6 @@ int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
 {
   int i, j, realsize;
   static double *temp = (double *) NULL;
-  int machine;
-
-  machine = 1000;
-#ifdef DEC
-  machine = 0000;
-#endif
 
   if (temp == (double *) NULL) {
     realsize = MAX(size, numinp);
@@ -570,7 +564,7 @@ int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
     for(j = 0; j < size; j++) {
       for(i = 0; i < size; i++)
         temp[i] = A[i][j];
-      savemat_mod(fp, machine+100, "Asys", size, size, 0, temp,
+      savemat_mod(fp, machine_type()+100, "Asys", size, size, 0, temp,
                   (double *)NULL, j, size);
     }
   }
@@ -578,7 +572,7 @@ int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
     for(j = 0; j < numinp; j++) {
       for(i = 0; i < size; i++)
         temp[i] = B[i][j];
-      savemat_mod(fp, machine+100, "Bsys", size, numinp, 0, temp, 
+      savemat_mod(fp, machine_type()+100, "Bsys", size, numinp, 0, temp, 
                   (double *)NULL, j, size);
     }
   }
@@ -586,7 +580,7 @@ int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
     for(j = 0; j < numout; j++) {
       for(i = 0; i < size; i++)
         temp[i] = C[i][j];
-      savemat_mod(fp, machine+100, "Csys", size, numout, 0, temp, 
+      savemat_mod(fp, machine_type()+100, "Csys", size, numout, 0, temp, 
                   (double *)NULL, j, size);
     }
   }
@@ -594,7 +588,7 @@ int dumpROMbin(FILE *fp, double **A, double **B, double **C, double **D,
     for(j = 0; j < numinp; j++) {
       for(i = 0; i < numout; i++) 
         temp[i] = D[i][j];
-      savemat_mod(fp, machine+100, "Dsys", numout, numinp, 0, temp, 
+      savemat_mod(fp, machine_type()+100, "Dsys", numout, numinp, 0, temp, 
                   (double *)NULL, j, numout);
     }
   }

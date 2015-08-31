@@ -306,6 +306,20 @@ extern  int      spFileStats( char*, char*, char* );
 extern  int      spFillinCount( char* );
 extern  int      spGetAdmittance( char*, int, int, struct spTemplate* );
 extern  spREAL  *spGetElement( char*, int, int );
+
+/* SRW start */
+extern  spREAL  *spGetElementEx( char*, int, int, spREAL* );
+
+struct spColData
+{
+    int row;
+    double real;
+    double imag;
+    void *ptr;
+};
+extern  void    spSetRowElements( char*, int, struct spColData*, int);
+/* SRW end */
+
 extern  char    *spGetInitInfo( spREAL* );
 extern  int      spGetOnes( char*, int, int, int, struct spTemplate* );
 extern  int      spGetQuad( char*, int, int, int, int, struct spTemplate* );

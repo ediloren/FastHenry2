@@ -36,6 +36,9 @@ of this software.
  * superconductors 6/29/96.  These modifications are active
  * when the preprocessor variable SUPERCON is defined.
  */
+/* Enable SRW 8/7/2014 mods */
+#define SRW0814
+
 
 /* # ***** sort to /src/header
    # ***** */
@@ -179,7 +182,7 @@ extern long membins[1001];
 	 "\nfastcap: out of memory in file `%s' at line %d\n",              \
 	       __FILE__, __LINE__);                                         \
        (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",       \
-		     (NUM)*sizeof(TYPE));                                   \
+		     (long)(NUM)*sizeof(TYPE));                                   \
        DUMPALLOCSIZ;                                                        \
        DUMPRSS;                                                             \
        (void)fflush(stderr);                                                \
@@ -221,7 +224,7 @@ extern long membins[1001];
 	 "\nfastcap: out of memory in file `%s' at line %d\n",             \
 	       __FILE__, __LINE__);                                         \
        (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",        \
-		     (NUM)*sizeof(TYPE));                                   \
+		     (long)(NUM)*sizeof(TYPE));                                   \
        DUMPALLOCSIZ;                                                        \
        DUMPRSS;                                                             \
        (void)fflush(stderr);                                                \

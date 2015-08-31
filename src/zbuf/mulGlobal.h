@@ -133,7 +133,7 @@ extern long memMSC;
 	 "\nfastcap: out of memory in file `%s' at line %d\n",              \
 	       __FILE__, __LINE__);                                         \
        (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",        \
-		     (NUM)*sizeof(TYPE));                                   \
+		     (long)(NUM)*sizeof(TYPE));                                   \
        DUMPALLOCSIZ;                                                        \
        DUMPRSS;                                                             \
        (void)fflush(stderr);                                                \
@@ -170,7 +170,7 @@ extern long memMSC;
 	 "\nfastcap: out of memory in file `%s' at line %d\n",               \
 	       __FILE__, __LINE__);                                          \
        (void)fprintf(stderr, " (NULL pointer on %ld byte request)\n",         \
-		     (NUM)*sizeof(TYPE));                                    \
+		     (long)(NUM)*sizeof(TYPE));                                    \
        DUMPALLOCSIZ;                                                         \
        DUMPRSS;                                                              \
        (void)fflush(stderr);                                                 \

@@ -20,13 +20,6 @@ int forced = 0;  /* for debugging inside exact_mutual() */
 char outfname[200];
 char outfname2[200];
 
-/* savemat_mod machine type */
-#ifdef DEC
-int machine = 0000;
-#else
-int machine = 1000;
-#endif
-
 /* SRW */
 charge *assignFil(SEGMENT*, int*, charge*);
 double **MatrixAlloc(int, int, int);
@@ -62,6 +55,9 @@ void pick_ground_nodes(SYS*);
 int pick_subset(strlist*, SYS*);
 void concat4(char*, char*, char*, char*);
 
+#ifdef SRW0814
+SRWSECONDS
+#endif
 
 int
 main(int argc, char **argv)
@@ -624,7 +620,7 @@ main(int argc, char **argv)
 	if (m == 0) {
 	  if (opts->kind & MATLAB) {
             concat4(outfname,"MZMt",opts->suffix,".mat");
-        /* SRW -- this is binary data */
+	    /* SRW -- this is binary data */
 	    if ( (fp2 = fopen(outfname,"wb")) == NULL) {
 	      printf("Couldn't open file\n");
 	      exit(1);
@@ -635,7 +631,7 @@ main(int argc, char **argv)
 	  }
 	  if (opts->kind & TEXT) {
             concat4(outfname,"MZMt",opts->suffix,".dat");
-        /* SRW -- this is ascii data */
+	    /* SRW -- this is ascii data */
 	    if ( (fp2 = fopen(outfname,"w")) == NULL) {
 	      printf("Couldn't open file\n");
 	      exit(1);
@@ -662,7 +658,7 @@ main(int argc, char **argv)
 
     if (opts->soln_technique == ITERATIVE) {
       if (indsys->precond_type == LOC) {
-	printf("Forming local inversion preconditioner\n");
+	printf("Forming local inversion preconditioner.\n");
 	
 	if (opts->mat_vect_prod == DIRECT)
 	  indPrecond_direct(sys, indsys, 2*PI*freq);
@@ -675,16 +671,25 @@ main(int argc, char **argv)
 	}
       }
       else if (indsys->precond_type == SPARSE) {
-	printf("Forming sparse matrix preconditioner..\n");
+	printf("Forming sparse matrix preconditioner.\n");
 	fill_spPre(sys, indsys, 2*PI*freq);
 
 	if (m == 0) {
+#ifdef SRW0814
+	  double stime = srw_seconds(), etime;
+#endif
 	  if (indsys->opts->debug == ON)
 	    printf("Number of nonzeros before factoring: %d\n",
 		   spElementCount(indsys->sparMatrix));
 
+
 	  /* Reorder and Factor the matrix */
 	  err = spOrderAndFactor(indsys->sparMatrix, NULL, 1e-3, 0.0, 1);
+#ifdef SRW0814
+	  etime = srw_seconds();
+	  printf("Reorder and factor time %g\n", etime - stime);
+      fflush(stdout);
+#endif
 
 	  if (indsys->opts->debug == ON)
 	    printf("Number of fill-ins after factoring: %d\n",
@@ -802,7 +807,7 @@ main(int argc, char **argv)
       extractYcol(indsys->FinalY, x0, ext, indsys->externals);
 
       if (indsys->opts->debug == ON) {
-    /* SRW -- this is binary data */
+	/* SRW -- this is binary data */
 	fptemp = fopen("Ytemp.mat", "wb");
 	if (fptemp == NULL) {
 	  printf("couldn't open file %s\n","Ytemp.mat");
@@ -1432,7 +1437,7 @@ void savemats(SYS *indsys)
   int num_mesh, num_fils, num_real_nodes;
   double *Mrow;   /* one row of M */
   double **Z, *R;
-  int machine, counter, nnz, nnz0;
+  int counter, nnz, nnz0;
   ind_opts *opts;
   MELEMENT *mesh;
   MELEMENT **Mlist = indsys->Mlist;
@@ -1575,11 +1580,6 @@ void savemats(SYS *indsys)
       exit(1);
     }
 
-    machine = 1000;
-#ifdef DEC
-    machine = 0000;
-#endif
-
     dumbx =  (double *)malloc(num_fils*sizeof(double));
     dumby =  (double *)malloc(num_fils*sizeof(double));
     dumbz =  (double *)malloc(num_fils*sizeof(double));
@@ -1597,19 +1597,19 @@ void savemats(SYS *indsys)
 
     for(i = 0; i < num_mesh; i++) {
       fillMrow(indsys->Mlist, i, Mrow);
-      savemat_mod(fp, machine+100, "M", num_mesh, num_fils, 0, Mrow, 
+      savemat_mod(fp, machine_type()+100, "M", num_mesh, num_fils, 0, Mrow, 
 		  (double *)NULL, i, num_fils);
     }
     */
 
     /* this only saves the real part (savemat_mod.c modified) */
-    savemat_mod(fp, machine+100, "R", 1, num_fils, 0, R, (double *)NULL, 
+    savemat_mod(fp, machine_type()+100, "R", 1, num_fils, 0, R, (double *)NULL, 
 		0, num_fils);
     
     if (!indsys->dont_form_Z && indsys->opts->mat_vect_prod == DIRECT) {
       /* do imaginary part of Z */
       for(i = 0; i < num_fils; i++) {
-	savemat_mod(fp, machine+100, "L", num_fils, num_fils, 0, Z[i], 
+	savemat_mod(fp, machine_type()+100, "L", num_fils, num_fils, 0, Z[i], 
 		    (double *)NULL, i, num_fils);
       }
     }
@@ -1630,14 +1630,14 @@ void savemats(SYS *indsys)
 	dumbz[tmpf->filnumber] = tmpf->z[0];
       }
     }
-    savemat_mod(fp, machine+0, "areas", num_fils, 1, 0, dumb, (double *)NULL,0,
-		num_fils);
-    savemat_mod(fp, machine+0, "pos", num_fils, 3, 0, dumbx, (double *)NULL, 0,
-		num_fils);
-    savemat_mod(fp, machine+0, "pos", num_fils, 3, 0, dumby, (double *)NULL, 1,
-		num_fils);
-    savemat_mod(fp, machine+0, "pos", num_fils, 3, 0, dumbz, (double *)NULL, 1,
-		num_fils);
+    savemat_mod(fp, machine_type()+0, "areas", num_fils, 1, 0, dumb,
+        (double *)NULL,0, num_fils);
+    savemat_mod(fp, machine_type()+0, "pos", num_fils, 3, 0, dumbx,
+        (double *)NULL, 0, num_fils);
+    savemat_mod(fp, machine_type()+0, "pos", num_fils, 3, 0, dumby,
+        (double *)NULL, 1, num_fils);
+    savemat_mod(fp, machine_type()+0, "pos", num_fils, 3, 0, dumbz,
+        (double *)NULL, 1, num_fils);
     
     free(dumb);
     free(dumbx);
@@ -1651,23 +1651,17 @@ void savemats(SYS *indsys)
 void savecmplx(FILE *fp, char *name, CX **Z, int rows, int cols)
 {
   int i,j;
-  int machine;
-
-  machine = 1000;
-#ifdef DEC
-  machine = 0000;
-#endif
 
   /* this only saves the real part (savemat_mod.c modified) one byte per call*/
   for(i = 0; i < rows; i++) 
     for(j = 0; j < cols; j++) 
-      savemat_mod(fp, machine+100, name, rows, cols, 1, &Z[i][j].real, 
+      savemat_mod(fp, machine_type()+100, name, rows, cols, 1, &Z[i][j].real, 
 		  (double *)NULL, i+j, 1);
 
   /* do imaginary part of Z */
   for(i = 0; i < rows; i++) 
     for(j = 0; j < cols; j++)
-      savemat_mod(fp, machine+100, name, rows, cols, 0, &Z[i][j].imag, 
+      savemat_mod(fp, machine_type()+100, name, rows, cols, 0, &Z[i][j].imag, 
 		  (double *)NULL, 1, 1);
 }
 
@@ -1675,7 +1669,6 @@ void savecmplx(FILE *fp, char *name, CX **Z, int rows, int cols)
 void savecmplx2(FILE *fp, char *name, CX **Z, int rows, int cols)
 {
   int i,j;
-  int machine;
   static double *temp;
   static int colmax = 0;
 
@@ -1684,16 +1677,11 @@ void savecmplx2(FILE *fp, char *name, CX **Z, int rows, int cols)
     colmax = cols;
   }
 
-  machine = 1000;
-#ifdef DEC
-  machine = 0000;
-#endif
-
   /* this only saves the real part (savemat_mod.c modified) one byte per call*/
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temp[j] = Z[i][j].real;
-    savemat_mod(fp, machine+100, name, rows, cols, 1, temp, 
+    savemat_mod(fp, machine_type()+100, name, rows, cols, 1, temp, 
 		(double *)NULL, i, cols);
   }
 
@@ -1701,7 +1689,7 @@ void savecmplx2(FILE *fp, char *name, CX **Z, int rows, int cols)
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temp[j] = Z[i][j].imag;
-    savemat_mod(fp, machine+100, name, rows, cols, 0, temp, 
+    savemat_mod(fp, machine_type()+100, name, rows, cols, 0, temp, 
 		(double *)NULL, 1, cols);
   }
 }
@@ -2037,16 +2025,10 @@ void dump_to_Ycond(FILE *fp, int cond, SYS *indsys)
 void saveCarray(FILE *fp, char *fname, double **Arr, int rows, int cols)
 {
   int i;
-  int machine;
-
-    machine = 1000;
-#ifdef DEC
-    machine = 0000;
-#endif
 
   for(i = 0; i < rows; i++) {
-    savemat_mod(fp, machine+100, fname, rows, cols, 0, Arr[i], (double *)NULL,
-		i, cols);
+    savemat_mod(fp, machine_type()+100, fname, rows, cols, 0, Arr[i],
+        (double *)NULL, i, cols);
   }
 }
 
@@ -2097,7 +2079,7 @@ void dump_M_to_matlab(FILE *fp, MELEMENT **Mlist, int num_mesh, int nnz,
     for(mesh = Mlist[i]; mesh != NULL; mesh = mesh->mnext) {
       onerow[1] = mesh->filindex + 1;
       onerow[2] = mesh->sign;
-      savemat_mod(fp, machine+100, mname, nnz, 3, 0, onerow,
+      savemat_mod(fp, machine_type()+100, mname, nnz, 3, 0, onerow,
 		  (double *)NULL, counter++, 3);
     }
   }

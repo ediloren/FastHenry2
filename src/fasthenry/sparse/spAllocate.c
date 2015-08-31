@@ -254,6 +254,14 @@ int  AllocatedSize;
     Matrix->ExtToIntRowMap[0] = 0;
 #endif
 
+    /* SRW */
+#if BUILDHASH
+    Matrix->ElementHashTab = NULL;
+#endif
+#if BITFIELD
+    Matrix->BitField = NULL;
+#endif
+
 /* Allocate space for fill-ins and initial set of elements. */
     InitializeElementBlocks( Matrix, SPACE_FOR_ELEMENTS*AllocatedSize,
                                      SPACE_FOR_FILL_INS*AllocatedSize );
@@ -650,6 +658,15 @@ register  AllocationListPtr  ListPtr, NextListPtr;
         FREE( ListPtr->AllocatedPtr );
         ListPtr = NextListPtr;
     }
+
+    /* SRW */
+#if BUILDHASH
+    sph_destroy(Matrix);
+#endif
+#if BITFIELD
+    ba_destroy(Matrix);
+#endif
+
     return;
 }
 

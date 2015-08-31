@@ -112,6 +112,43 @@ void fillM(SYS *indsys)
   }
 }
 
+#ifdef SRW0814
+/* SRW
+ * A sort function for the MELEMENT list.  For long lists, it is much
+ * faster to bulk sort than to keep the list ordered during insertion.
+ */
+
+static int mcmp(const void *a, const void *b)
+{
+    MELEMENT *m1 = *(MELEMENT**)a;
+    MELEMENT *m2 = *(MELEMENT**)b;
+    return (m1->filindex - m2->filindex);
+}
+
+MELEMENT *msort(MELEMENT *m0)
+{
+    int i, cnt = 0;
+    MELEMENT **ary, *m;
+    if (!m0 || !m0->mnext)
+        return (m0);
+    for (m = m0; m; m = m->mnext)
+        cnt++;
+    ary = (MELEMENT**)malloc(cnt*sizeof(MELEMENT*));
+    cnt = 0;
+    for (m = m0; m; m = m->mnext)
+        ary[cnt++] = m;
+    qsort(ary, cnt, sizeof(MELEMENT*), mcmp);
+    cnt--;
+    for (i = 0; i < cnt; i++)
+        ary[i]->mnext = ary[i+1];
+    ary[cnt]->mnext = 0;
+    m = ary[0];
+    free(ary);
+    return (m);
+}
+
+#endif
+
 /* this takes a linked list of segments (path) and makes a row of the */
 /* mesh matrix out of the filament[0]'s of each segment.  */
 MELEMENT *make_mesh_from_path(SPATH *path, int mesh, SYS *indsys)
@@ -142,7 +179,12 @@ MELEMENT *make_mesh_from_path(SPATH *path, int mesh, SYS *indsys)
 
       m1 = make_melement(seg->filaments[0].filnumber, &seg->filaments[0],
 			 sign);
+#ifdef SRW0814
+      m1->mnext = mlist;
+      mlist = m1;
+#else
       mlist = insert_in_list(m1, mlist);
+#endif
     }
     else if (selem->seg.type == PSEUDO) {
       pseg = (PSEUDO_SEG *)selem->seg.segp;
@@ -206,7 +248,12 @@ MELEMENT *make_mesh_from_path(SPATH *path, int mesh, SYS *indsys)
 	  }
 	  m1 = make_melement(seg->filaments[0].filnumber, &seg->filaments[0],
 			     sign2);
+#ifdef SRW0814
+	  m1->mnext = mlist;
+	  mlist = m1;
+#else
 	  mlist = insert_in_list(m1, mlist);
+#endif
 	  plus2 = getothernode(actualnode, telem->seg);
 	  temppath = temppath->next;
 /*	  free(telem); */
@@ -223,6 +270,10 @@ MELEMENT *make_mesh_from_path(SPATH *path, int mesh, SYS *indsys)
     }
     plusnode = getothernode(plusnode, selem->seg);
   }
+
+#ifdef SRW0814
+  mlist = msort(mlist);
+#endif
 
   if (mlist == NULL) {
     fprintf(stderr, 
@@ -570,12 +621,25 @@ void makegrids(SYS *indsys, CX *Im, int column, int freq_num)
     }
   }
 
+/* SRW -- stole Enrico's mod from FastHenry2 */
+  // Enrico, added column / frequency information
+
+  printf("saving to Jreal%s%d_%d.mat, Jimag%s%d_%d.mat, Jmag%s%d_%d.mat\n",
+     indsys->opts->suffix, column+1, freq_num,
+     indsys->opts->suffix, column+1, freq_num, 
+     indsys->opts->suffix, column+1, freq_num);
+
+  sprintf(fname, "Jreal%s%d_%d.mat",indsys->opts->suffix, column+1, freq_num);
+
+/*
   printf("saving to Jreal%s.mat, Jimag%s.mat, Jmag%s.mat\n",
 	 indsys->opts->suffix, 
 	 indsys->opts->suffix, 
 	 indsys->opts->suffix);
 
   sprintf(fname, "Jreal%s.mat",indsys->opts->suffix);
+*/
+
   /* SRW -- this is ascii data */
   fpreal = fopen(fname,"w");
   if(fpreal == NULL){
@@ -584,7 +648,10 @@ void makegrids(SYS *indsys, CX *Im, int column, int freq_num)
   }
 /*  fprintf(fpreal, "$ DATA=VECTOR\n");*/
   
+  sprintf(fname, "Jimag%s%d_%d.mat",indsys->opts->suffix, column+1, freq_num);
+/*
   sprintf(fname, "Jimag%s.mat",indsys->opts->suffix);
+*/
   /* SRW -- this is ascii data */
   fpimag = fopen(fname,"w");
   if(fpimag == NULL){
@@ -593,7 +660,10 @@ void makegrids(SYS *indsys, CX *Im, int column, int freq_num)
   }
 /*  fprintf(fpimag, "$ DATA=VECTOR\n");*/
   
+  sprintf(fname, "Jmag%s%d_%d.mat",indsys->opts->suffix, column+1, freq_num);
+/*
   sprintf(fname, "Jmag%s.mat",indsys->opts->suffix);
+*/
   /* SRW -- this is ascii data */
   fpmag = fopen(fname,"w");
   if(fpmag == NULL){

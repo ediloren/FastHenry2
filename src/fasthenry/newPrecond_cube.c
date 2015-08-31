@@ -618,7 +618,6 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size)
 {
   FILE *fp;
   int i,j;
-  int machine;
   double *temprow;
   int rows, cols;
   PRE_ELEMENT *pre;
@@ -635,18 +634,13 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size)
     exit(1);
   }
 
-  machine = 1000;
-#ifdef DEC
-  machine = 2000;
-#endif
-
   /* this only saves the real part */
   for(i = 0; i < rows; i++) {
     for(j = 0; j < cols; j++)
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.real;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine_type()+100, "Pre", rows, cols, 1, temprow, 
 		  (double *)NULL, i, cols);
   }
 
@@ -656,7 +650,7 @@ void dumpPrecond(PRE_ELEMENT **Precond, int size)
       temprow[j] = 0;
     for(pre = Precond[i]; pre != NULL; pre = pre->next)
       temprow[pre->meshcol] = pre->value.imag;
-    savemat_mod(fp, machine+100, "Pre", rows, cols, 1, temprow, 
+    savemat_mod(fp, machine_type()+100, "Pre", rows, cols, 1, temprow, 
 		  (double *)NULL, 1, cols);
   }
 

@@ -2,6 +2,7 @@
 
 program=fasthenry
 version="3.0wr"
+vdate="082514"
 
 # The inno packager exeutable.
 inno="/inno-5.5.1/iscc"
@@ -42,6 +43,7 @@ cp $srclib/examples/hole.inp $examples
 cp $srclib/examples/holey_gp.inp $examples
 cp $srclib/examples/make_nonuniform.c $examples
 cp $srclib/examples/msm.inp $examples
+cp $srclib/examples/noname.inp $examples
 cp $srclib/examples/nonuni01.inp $examples
 cp $srclib/examples/onebargp.inp $examples
 cp $srclib/examples/pin-con2seg.inp $examples
@@ -67,12 +69,9 @@ echo copying $srclib/doc
 cp $srclib/README $docs
 cp $srclib/README.MIT $docs
 cp $srclib/doc/README $docs/README.DOCS
-cp $srclib/doc/manual_001.ps $docs
-cp $srclib/doc/manual_002.ps $docs
-cp $srclib/doc/manual_003.ps $docs
-cp $srclib/doc/ms_thesis.ps $docs
-cp $srclib/doc/nonuniform_manual_1.ps $docs
-cp $srclib/doc/nonuniform_manual_2.ps $docs
+cp $srclib/doc/fasthenry_manual.pdf $docs
+cp $srclib/doc/ms_thesis.pdf $docs
+cp $srclib/doc/nonuniform_manual.pdf $docs
 u2d $docs/README
 u2d $docs/README.MIT
 u2d $docs/README.DOCS
@@ -80,7 +79,7 @@ rm -f $docs/*~
 
 echo Completed copying files to data directory
 
-sed -e s/VERSION/$version/ < $program.iss.in > $program.iss
+sed -e s/VERSION/$version/ -e s/VDATE/$vdate/ < $program.iss.in > $program.iss
 u2d $program.iss
 
 $inno $program.iss > build.log

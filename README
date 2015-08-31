@@ -88,6 +88,45 @@ Modifications by:        Stephen R. Whiteley  (stevew@wrcad.com)
   Added function prototypes to source code.  Compilation is clean
   under OS X 10.9.
 
+** 8-7-2014 Changes:
+
+  Major improvements in the computation speed of large problems.  The
+  sparse preconditioner setup was a huge bottleneck.  In particular,
+  with one benchmark (added to the examples as noname.inp) building
+  the preconditioner previously took more than 7 hours.  In the
+  present release, the same task takes about 5 minutes.  The actual
+  GMRES solving takes only about 40 seconds, so overall time is still
+  dominated by preconditioner setup, but not as absurdly.
+
+  The secret sauce involves things like hashing and shadow-bitmapping,
+  those intesested can look in the source code for "SRW0814"
+  preprocessor symbols in the fasthenry files, and "BUILDHASH" and
+  "BITFIELD" preprocessor symbols in the Sparse package and read the
+  comments.  The key improvements were in the Sparse package, which
+  does not scale well to large matrix size, large being about 27000 in
+  this case.
+
+  Also, the output to Matlab option should work now, on any platform. 
+  Previously, it would only work on 32-bit SPARC machines due to 1)
+  integer size issues (broken on 64-bit systems) and 2) an obscure
+  variable in the source code needs to be reset to support Intel, and
+  this was simply overlooked.  The endian-ness is now auto-detected
+  so there is no variable to set anymore.
+
+  The documentation has been converted to PDF, but the original
+  PostScript files can be found in the old_ps directory.
+  
+** 8-25-2014 Changes:
+
+  Imported the modified indexing of the Jimag/Jreal/Jmag files from
+  FastHenry2 code from FastFieldSolvers.com.  Output from
+
+    fasthenry examples/together.inp -d grids -x trace1
+
+  (for example) now closely matches the output from FastHenry2 with
+  the same input.
+
+
 --------------------- Superconductivity Support -------------------------
 
 This version of fasthenry has been modified to support superconducting

@@ -24,7 +24,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef ALPHA
+/* SRW */
+/* The fields must be 4-byte integers.  The definition was changed
+ * here, these were "long" as in the Matlab documentation.  On 64-bit
+ * systems, "long" is 8-bytes.  The Matlab example was probably
+ * produced back in the days when ints were 16 bits.
+ */
 typedef struct {
      int type;   /* type */
      int mrows;  /* row dimension */
@@ -32,15 +37,24 @@ typedef struct {
      int imagf;  /* flag indicating imag part */
      int namlen; /* name length (including NULL) */
 } Fmatrix;
-#else
-typedef struct {
-     long type;   /* type */
-     long mrows;  /* row dimension */
-     long ncols;  /* column dimension */
-     long imagf;  /* flag indicating imag part */
-     long namlen; /* name length (including NULL) */
-} Fmatrix;
-#endif
+
+/* SRW */
+/* This returns the value to use for the "machine" part of the "type"
+ * parameter.  Effectively this will be 0 or 1000, unless you are
+ * running on a vintage Vax or Cray.  The official values are
+ *
+ *   0      Intel x86 (IEEE little endian)
+ *   1000   SPARC, PPC (IEEE big endian)
+ *   2000   VAX D-Float
+ *   3000   VAX G-float
+ *   Cray
+ */
+int machine_type()
+{
+    union { int i; char c[4]; } u;
+    u.i = 1;
+    return (u.c[0] ? 0 : 1000);
+}
 
 /* SRW */
 void savemat(FILE*, int, char*, int, int, int, double*, double*);

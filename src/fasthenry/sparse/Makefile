@@ -3,7 +3,7 @@
 #  Ken Kundert
 #  UC Berkeley
 #
-CFLAGS = -O
+CFLAGS = -O -g
 LINTFLAGS = -lc -lm
 SHELL = /bin/sh
 #CC = cc

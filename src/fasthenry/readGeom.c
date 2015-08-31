@@ -81,6 +81,8 @@ int notblankline(char*);
 void tolowercase(char*);
 int is_nonuni_gp(GROUNDPLANE*);
 
+/* SRW -- new hashing function in findpaths.c */
+void register_new_node(NODES*);
 
 int readGeom(FILE *fp, SYS *indsys)
 {
@@ -550,6 +552,9 @@ int addnode(char *line, SYS *indsys, NODES **retnode, int type)
   }
 
   node = makenode(name, indsys->num_nodes, nodex, nodey, nodez, type, indsys);
+
+  /* SRW -- hash it */
+  register_new_node(node);
 
 #if 1==0
   /* add node to linked list of nodes */
