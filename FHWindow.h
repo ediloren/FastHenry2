@@ -17,11 +17,6 @@
 
 #include "FHStructs.h"
 
-// defines used with FHOnClosing function defined in FastHenryWindow.h/.cpp
-#define FH_NORMAL_END 0
-#define FH_USER_BREAK 1
-#define FH_GENERIC_ERROR 1000
-
 // maximum length of a row/port name
 #define FH_MAX_NAME_LEN		256
 

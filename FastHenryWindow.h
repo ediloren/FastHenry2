@@ -20,10 +20,6 @@
 #include "FastHenry2.h"
 #include "FHStructs.h"
 
-#define FH_NORMAL_END 0
-#define FH_USER_BREAK 1
-#define FH_GENERIC_ERROR 1000
-
 #define MAX_TITLE_LENGHT 64
 #define MAX_OUTPUT_TEXT_LEN 2048
 

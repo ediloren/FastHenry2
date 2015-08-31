@@ -534,12 +534,12 @@ ind_opts *opts;
 fix_and_print_opts(opts)
 ind_opts *opts;
 {
-  long clock;
+  time_t clock;
   char hostname[BUFSIZ];
 
   /* print sw copyright info */          /* Enrico */
   viewprintf(stdout, "\nFastHenry 3.0, (c) by M.I.T.\n");
-  viewprintf(stdout, "FastHenry2 Windows porting and modifications, version 3.32\n    (c) 1998, 2011 by Enrico Di Lorenzo, www.fastfieldsolvers.com\n\n");
+  viewprintf(stdout, "FastHenry2 Windows porting and modifications, version 3.6\n    (c) 1998, 2015 by Enrico Di Lorenzo, www.fastfieldsolvers.com\n\n");
 
   viewprintf(stdout, "Running FastHenry %s (%s)\n", FHVERSION, FHDATE);
 

@@ -27,7 +27,7 @@ void FHSetName(char *name)
 	// safe copy of FastHenry input file name
 	strncpy(g_sTitle, name, MAX_TITLE_LENGHT);
 	g_sTitle[MAX_TITLE_LENGHT-1] = 0;
-
+	
 	// ask main process to update window title
 	if( IsWindow(FHHwnd) ) 
 		val = ::SendMessage(FHHwnd, UWM_SET_TITLE, 0, 0);

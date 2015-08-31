@@ -1,6 +1,10 @@
 FastHenry2 Detailed History
 ===========================
 
+Porting Version 3.6, 2015/08/05
+- Ported under Visual Studio Community edition 2013 (supports MFC)
+- Ported to x64, while keeping also x32 support
+
 Porting Version 3.32, 2011/03/25
 - Minor modification aligning all naming to 'FastHenry2'
 - Defined the default samples directory as the shared documents directory

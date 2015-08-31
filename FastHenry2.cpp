@@ -23,7 +23,7 @@
 #include "FHStructs.h"
 
 // imported functions from FastHenry
-extern "C" fastHenryMain(int argc, char *argv[]);
+extern "C" int fastHenryMain(int argc, char *argv[]);
 extern "C" void ufree();
 extern "C" void dfreeall();
 
@@ -321,8 +321,10 @@ BOOL CFastHenryApp::parseCmdLine(int *argc, char ***argv, const char *commandStr
 // Note that this routine is specialized to retrieve only strings
 int CFastHenryApp::getSubstring(const char *buffer, char *substr, int *skip)
 {
-	int res, openPos, deltaClosePos, startPos;
-	char *openPosPtr, *closePosPtr, tmpStr[256];
+	int res, deltaClosePos, startPos;
+	unsigned int openPos;
+	const char *openPosPtr, *closePosPtr;
+	char tmpStr[256];
 
 	substr[0] = '\0';
 
@@ -402,108 +404,109 @@ UINT RunFHThread(LPVOID p)
 	DWORD numElements[3];
 	long index[3];
 	COleVariant data;
+	int ret;
 
 	CFastHenryApp *theApp = mainApp = (CFastHenryApp *)p;
 	
-	fastHenryMain(theApp->argc, theApp->argv);
+	ret = fastHenryMain(theApp->argc, theApp->argv);
 
-	//
-	// copy resistance / inductance matrices into safe-array
-	//
-
-	// Remark: safe array contains VARIANTs which are of type VT_R8 (double);
-	// safe array does not contains VT_R8 any more, since VBScript is not able
-	// to deal with arrays containing anything but VARIANTs;
-	// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
-
-	// destroy previous matrix
+	// destroy previous matrices
 	theApp->m_clsResMatrix.Clear();
-	// init resistance matrix dimensions
-	numElements[0] = strctImpMatrix.m_lFreqNum;
-	numElements[1] = strctImpMatrix.m_lRowNum;
-	numElements[2] = strctImpMatrix.m_lColNum;
-	// create the safe-array...
-	theApp->m_clsResMatrix.Create(VT_VARIANT, 3, numElements);
-	// copy values
-	for(index[0]=0; index[0]<strctImpMatrix.m_lFreqNum; index[0]++) {
-		for(index[1]=0; index[1]<strctImpMatrix.m_lRowNum; index[1]++) {
-			for(index[2]=0; index[2]<strctImpMatrix.m_lColNum; index[2]++) {
-				data = strctImpMatrix.m_daMatricesReal[index[0]][index[1]][index[2]];
-				theApp->m_clsResMatrix.PutElement(index, &data);
-			}
-		}
-	}
-
-	// destroy previous matrix
 	theApp->m_clsIndMatrix.Clear();
-	// init resistance matrix dimensions
-	numElements[0] = strctImpMatrix.m_lFreqNum;
-	numElements[1] = strctImpMatrix.m_lRowNum;
-	numElements[2] = strctImpMatrix.m_lColNum;
-	// create the safe-array...
-	theApp->m_clsIndMatrix.Create(VT_VARIANT, 3, numElements);
-	// copy values
-	for(index[0]=0; index[0]<strctImpMatrix.m_lFreqNum; index[0]++) {
-		for(index[1]=0; index[1]<strctImpMatrix.m_lRowNum; index[1]++) {
-			for(index[2]=0; index[2]<strctImpMatrix.m_lColNum; index[2]++) {
-				data = strctImpMatrix.m_daMatricesImag[index[0]][index[1]][index[2]];
-				theApp->m_clsIndMatrix.PutElement(index, &data);
+	theApp->m_clsFrequencies.Clear();
+	theApp->m_clsRowPortNames.Clear();
+	theApp->m_clsColPortNames.Clear();
+
+	if (ret == FH_NORMAL_END) {
+
+		//
+		// copy resistance / inductance matrices into safe-array
+		//
+
+		// Remark: safe array contains VARIANTs which are of type VT_R8 (double);
+		// safe array does not contains VT_R8 any more, since VBScript is not able
+		// to deal with arrays containing anything but VARIANTs;
+		// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
+
+		// init resistance matrix dimensions
+		numElements[0] = strctImpMatrix.m_lFreqNum;
+		numElements[1] = strctImpMatrix.m_lRowNum;
+		numElements[2] = strctImpMatrix.m_lColNum;
+		// create the safe-array...
+		theApp->m_clsResMatrix.Create(VT_VARIANT, 3, numElements);
+		// copy values
+		for (index[0] = 0; index[0] < strctImpMatrix.m_lFreqNum; index[0]++) {
+			for (index[1] = 0; index[1] < strctImpMatrix.m_lRowNum; index[1]++) {
+				for (index[2] = 0; index[2] < strctImpMatrix.m_lColNum; index[2]++) {
+					data = strctImpMatrix.m_daMatricesReal[index[0]][index[1]][index[2]];
+					theApp->m_clsResMatrix.PutElement(index, &data);
+				}
 			}
 		}
-	}
 
-	//
-	// copy frequencies into safe-array
-	//
+		// init inductance matrix dimensions
+		numElements[0] = strctImpMatrix.m_lFreqNum;
+		numElements[1] = strctImpMatrix.m_lRowNum;
+		numElements[2] = strctImpMatrix.m_lColNum;
+		// create the safe-array...
+		theApp->m_clsIndMatrix.Create(VT_VARIANT, 3, numElements);
+		// copy values
+		for (index[0] = 0; index[0] < strctImpMatrix.m_lFreqNum; index[0]++) {
+			for (index[1] = 0; index[1] < strctImpMatrix.m_lRowNum; index[1]++) {
+				for (index[2] = 0; index[2] < strctImpMatrix.m_lColNum; index[2]++) {
+					data = strctImpMatrix.m_daMatricesImag[index[0]][index[1]][index[2]];
+					theApp->m_clsIndMatrix.PutElement(index, &data);
+				}
+			}
+		}
 
-	// Remark: safe array contains VARIANTs which are of type VT_BSTR;
-	// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
-	// (before this change, the class CComBSTR, which encapsulates VT_BSTR,
-	// was used in the safe array)
+		//
+		// copy frequencies into safe-array
+		//
 
-	// destroy previous matrix
-	theApp->m_clsFrequencies.Clear();
-	// init conductor names array dimensions
-	numElements[0] = strctImpMatrix.m_lFreqNum;
-	// create the safe-array...
-	theApp->m_clsFrequencies.Create(VT_VARIANT, 1, numElements);
-	// copy values
-	for(index[0]=0; index[0]<strctImpMatrix.m_lFreqNum; index[0]++) {
+		// Remark: safe array contains VARIANTs which are of type VT_BSTR;
+		// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
+		// (before this change, the class CComBSTR, which encapsulates VT_BSTR,
+		// was used in the safe array)
+
+		// init frequencies array dimensions
+		numElements[0] = strctImpMatrix.m_lFreqNum;
+		// create the safe-array...
+		theApp->m_clsFrequencies.Create(VT_VARIANT, 1, numElements);
+		// copy values
+		for (index[0] = 0; index[0] < strctImpMatrix.m_lFreqNum; index[0]++) {
 			data = strctImpMatrix.m_daFrequencies[index[0]];
 			theApp->m_clsFrequencies.PutElement(index, &data);
-	}
+		}
 
-	//
-	// copy port names into safe-array
-	//
+		//
+		// copy port names into safe-array
+		//
 
-	// Remark: safe array contains VARIANTs which are of type VT_BSTR;
-	// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
-	// (before this change, the class CComBSTR, which encapsulates VT_BSTR,
-	// was used in the safe array)
+		// Remark: safe array contains VARIANTs which are of type VT_BSTR;
+		// See MS KB174576, HOWTO: Return Arrays from Server-Side Objects in ASP
+		// (before this change, the class CComBSTR, which encapsulates VT_BSTR,
+		// was used in the safe array)
 
-	// destroy previous matrix
-	theApp->m_clsRowPortNames.Clear();
-	// init conductor names array dimensions
-	numElements[0] = strctImpMatrix.m_lRowNum;
-	// create the safe-array...
-	theApp->m_clsRowPortNames.Create(VT_VARIANT, 1, numElements);
-	// copy values
-	for(index[0]=0; index[0]<strctImpMatrix.m_lRowNum; index[0]++) {
+		// init port names array dimensions
+		numElements[0] = strctImpMatrix.m_lRowNum;
+		// create the safe-array...
+		theApp->m_clsRowPortNames.Create(VT_VARIANT, 1, numElements);
+		// copy values
+		for (index[0] = 0; index[0] < strctImpMatrix.m_lRowNum; index[0]++) {
 			data = strctImpMatrix.m_sRowNames[index[0]];
 			theApp->m_clsRowPortNames.PutElement(index, &data);
-	}
+		}
 
-	// destroy previous matrix
-	theApp->m_clsColPortNames.Clear();
-	// init conductor names array dimensions
-	numElements[0] = strctImpMatrix.m_lColNum;
-	// create the safe-array...
-	theApp->m_clsColPortNames.Create(VT_VARIANT, 1, numElements);
-	// copy values
-	for(index[0]=0; index[0]<strctImpMatrix.m_lColNum; index[0]++) {
+		// init conductor names array dimensions
+		numElements[0] = strctImpMatrix.m_lColNum;
+		// create the safe-array...
+		theApp->m_clsColPortNames.Create(VT_VARIANT, 1, numElements);
+		// copy values
+		for (index[0] = 0; index[0] < strctImpMatrix.m_lColNum; index[0]++) {
 			data = strctImpMatrix.m_sColNames[index[0]];
 			theApp->m_clsColPortNames.PutElement(index, &data);
+		}
 	}
 
 	// reset the matrix dimensions

@@ -254,5 +254,5 @@ void CMainFrame::OnHelp()
 	path += _T("\\FastHenry2.chm::/WelcometoFastHenry.htm");
 
 
-	HtmlHelp(NULL, path, HH_DISPLAY_TOPIC, 0);
+	::HtmlHelp(NULL, path, HH_DISPLAY_TOPIC, 0);
 }

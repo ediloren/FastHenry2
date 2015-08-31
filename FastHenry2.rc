@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -28,22 +26,22 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\FastHenry2.ico"
-IDR_FASTHTYPE           ICON    DISCARDABLE     "res\\FastHenryDoc.ico"
+IDR_MAINFRAME           ICON                    "res\\FastHenry2.ico"
+IDR_FASTHTYPE           ICON                    "res\\FastHenryDoc.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_FASTHENRY_RUN
     SEPARATOR
@@ -59,15 +57,14 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FASTHENRY_RUN
         MENUITEM SEPARATOR
         MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT, GRAYED
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        , GRAYED
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW, GRAYED
         MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
@@ -99,7 +96,7 @@ BEGIN
     END
 END
 
-IDR_CNTR_INPLACE MENU PRELOAD DISCARDABLE 
+IDR_CNTR_INPLACE MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -126,7 +123,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -147,7 +144,7 @@ BEGIN
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
 END
 
-IDR_CNTR_INPLACE ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_CNTR_INPLACE ACCELERATORS
 BEGIN
     "O",            ID_FASTHENRY_RUN,       VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -161,44 +158,34 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 217, 87
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOGEX 0, 0, 217, 87
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About FastHenry"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,13,13,20,20
-    LTEXT           "FastHenry2, Porting Version 3.32",IDC_STATIC,39,10,119,
-                    8,SS_NOPREFIX
-    LTEXT           "FastHenry 3.0 original code, Copyright (C) 1998 M.I.T.",
-                    IDC_STATIC,40,60,175,8
+    LTEXT           "FastHenry2, Porting Version 3.6",IDC_STATIC,39,10,119,8,SS_NOPREFIX
+    LTEXT           "FastHenry 3.0 original code, Copyright (C) 1998 M.I.T.",IDC_STATIC,40,60,175,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,32,14,WS_GROUP
-    LTEXT           "Window porting and modifications ",IDC_STATIC,40,25,119,
-                    8
-    LTEXT           "Copyright (C) 1998, 2011 Enrico Di Lorenzo",IDC_STATIC,
-                    40,34,157,8
+    LTEXT           "Window porting and modifications ",IDC_STATIC,40,25,119,8
+    LTEXT           "Copyright (C) 1998, 2015 Enrico Di Lorenzo",IDC_STATIC,40,34,157,8
     LTEXT           "www.fastfieldsolvers.com",IDC_STATIC,40,43,157,8
 END
 
-IDD_DIALOG_RUN DIALOG DISCARDABLE  0, 0, 377, 218
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG_RUN DIALOG 0, 0, 377, 218
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Run Menu"
 FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_INPUT_FILE_NAME,130,5,94,10,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse",IDC_BROWSE_INPUT_FILE,240,5,35,10
-    LTEXT           "Order for reduced order model (-r)",IDC_STATIC4,10,25,
-                    115,10
+    LTEXT           "Order for reduced order model (-r)",IDC_STATIC4,10,25,115,10
     LTEXT           "Suffix for filenames (-S)",IDC_STATIC6,10,40,80,10
-    LTEXT           "Order of multipole expansions (-o)",IDC_STATIC1,10,55,
-                    105,10
-    LTEXT           "Tolerance for iteration error rtol (-t)",IDC_STATIC16,
-                    10,70,120,10
-    LTEXT           "Tolerance for iteration error atol (-b)",IDC_STATIC15,
-                    10,85,120,10
-    LTEXT           "Maximum number of solve iterations (-n)",IDC_STATIC2,10,
-                    100,130,10
-    LTEXT           "Level for initial refinement (-i)",IDC_STATIC3,10,115,
-                    110,10
+    LTEXT           "Order of multipole expansions (-o)",IDC_STATIC1,10,55,105,10
+    LTEXT           "Tolerance for iteration error rtol (-t)",IDC_STATIC16,10,70,120,10
+    LTEXT           "Tolerance for iteration error atol (-b)",IDC_STATIC15,10,85,120,10
+    LTEXT           "Maximum number of solve iterations (-n)",IDC_STATIC2,10,100,130,10
+    LTEXT           "Level for initial refinement (-i)",IDC_STATIC3,10,115,110,10
     LTEXT           "Radius of the shells (-R)",IDC_STATIC5,10,130,110,10
     EDITTEXT        IDC_ROM_ORDER,145,25,34,10,ES_AUTOHSCROLL
     EDITTEXT        IDC_FILENAME_SUFFIX,95,40,84,10,ES_AUTOHSCROLL
@@ -209,65 +196,46 @@ BEGIN
     EDITTEXT        IDC_INITIAL_REFINEMENT,145,115,34,10,ES_AUTOHSCROLL
     EDITTEXT        IDC_SHELLS_RADIUS,145,130,34,10,ES_AUTOHSCROLL
     LTEXT           "Matrix solution method (-s)",IDC_STATIC7,191,25,100,10
-    LTEXT           "Method for matrix-vector product (-m)",IDC_STATIC8,191,
-                    40,119,10
+    LTEXT           "Method for matrix-vector product (-m)",IDC_STATIC8,191,40,119,10
     LTEXT           "Preconditioning method (-p)",IDC_STATIC9,191,55,100,10
-    LTEXT           "Number of partitioning levels (-l)",IDC_STATIC10,191,70,
-                    100,10
+    LTEXT           "Number of partitioning levels (-l)",IDC_STATIC10,191,70,100,10
     LTEXT           "Visualization mode (-f)",IDC_STATIC11,191,85,100,10
-    LTEXT           "Ground plane appearance (-g)",IDC_STATIC12,191,100,100,
-                    10
-    LTEXT           "Dump internal matrices to files (-d)",IDC_STATIC13,191,
-                    115,109,10
+    LTEXT           "Ground plane appearance (-g)",IDC_STATIC12,191,100,100,10
+    LTEXT           "Dump internal matrices to files (-d)",IDC_STATIC13,191,115,109,10
     LTEXT           "Type of file to dump (-k)",IDC_STATIC14,191,130,100,10
-    LTEXT           "Restrict computation to ports (-x)",IDC_STATIC20,191,
-                    145,109,10
-    COMBOBOX        IDC_MATRIX_SOLUTION_METHOD,315,25,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_MATRIX_VECTOR_PRODUCT,315,40,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_PRECONDITIONER,315,55,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_PARTITIONING_LEVELS,315,70,55,45,CBS_DROPDOWN | 
-                    WS_TABSTOP
-    COMBOBOX        IDC_VISUALIZATION_MODE,315,85,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_GROUND_PLANE,315,100,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_DUMP_MATRICES,315,115,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_DUMP_FILE_TYPE,315,130,55,45,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    EDITTEXT        IDC_COMPUTE_PORTS,315,145,55,12,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_VSCROLL
-    CONTROL         "Allow multipole algorithm to refine structure (-a)",
-                    IDC_AUTOMATIC_REFINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,145,165,10
+    LTEXT           "Restrict computation to ports (-x)",IDC_STATIC20,191,145,109,10
+    COMBOBOX        IDC_MATRIX_SOLUTION_METHOD,315,25,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_MATRIX_VECTOR_PRODUCT,315,40,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PRECONDITIONER,315,55,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_PARTITIONING_LEVELS,315,70,55,45,CBS_DROPDOWN | WS_TABSTOP
+    COMBOBOX        IDC_VISUALIZATION_MODE,315,85,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_GROUND_PLANE,315,100,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_DUMP_MATRICES,315,115,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_DUMP_FILE_TYPE,315,130,55,45,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_COMPUTE_PORTS,315,145,55,12,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | WS_VSCROLL
+    CONTROL         "Allow multipole algorithm to refine structure (-a)",IDC_AUTOMATIC_REFINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,145,165,10
     CONTROL         "Exit after generating ROM (-M)",IDC_EXIT_AFTER_ROM,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,160,140,10
-    CONTROL         "Regurgitate geometry (-v)",IDC_REGURGITATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,190,160,140,10
-    CONTROL         "Print debugging information (-D)",IDC_DEBUG_INFO,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,190,175,140,10
+    CONTROL         "Regurgitate geometry (-v)",IDC_REGURGITATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,190,160,140,10
+    CONTROL         "Print debugging information (-D)",IDC_DEBUG_INFO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,190,175,140,10
     PUSHBUTTON      "Cancel",IDCANCEL,115,195,35,15
     PUSHBUTTON      "Reset",IDC_RESET,165,195,35,15
     DEFPUSHBUTTON   "Run",IDOK,215,195,35,15
     LTEXT           "Input file name",IDC_STATIC17,70,5,50,10
-    CONTROL         "Print results on the screen (-O)",
-                    IDC_PRINT_RESULTS_ON_SCREEN,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,175,140,10
+    CONTROL         "Print results on the screen (-O)",IDC_PRINT_RESULTS_ON_SCREEN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,175,140,10
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,3,2,0
- PRODUCTVERSION 3,3,2,0
+ FILEVERSION 3,5,0,0
+ PRODUCTVERSION 3,5,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -282,18 +250,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "FastHenry2\0"
-            VALUE "FileVersion", "3, 3, 2, 0\0"
-            VALUE "InternalName", "FastHenry2\0"
-            VALUE "LegalCopyright", "Copyright (C) FastFieldSolvers, 2011\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "FastHenry2.EXE\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "FastHenry2\0"
-            VALUE "ProductVersion", "3, 3, 2, 0\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "FastHenry2"
+            VALUE "FileVersion", "3.6.0.0"
+            VALUE "InternalName", "FastHenry2"
+            VALUE "LegalCopyright", "Copyright (C) FastFieldSolvers, 2011"
+            VALUE "OriginalFilename", "FastHenry2.EXE"
+            VALUE "ProductName", "FastHenry2"
+            VALUE "ProductVersion", "3.6.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -302,8 +265,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -311,7 +272,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -422,25 +383,25 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
     IDP_FAILED_TO_CREATE    "Failed to create object.  Make sure the object is entered in the system registry."
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "FastHenry2\n\nfasthenry2\nFastHenry2 Files (*.inp)\n.inp\nFastHenry2.Document\nFastHenry2 Document"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "FastHenry2"
     AFX_IDS_IDLEMESSAGE     "For Help, press F1"
     AFX_IDS_HELPMODEMESSAGE "Select an object on which to get Help"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -450,7 +411,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -463,7 +424,7 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
@@ -474,7 +435,7 @@ BEGIN
     ID_HELP                 "Display help for current task or command\nHelp"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
@@ -494,18 +455,18 @@ BEGIN
     ID_FILE_MRU_FILE16      "Open this document"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -522,20 +483,20 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_OLE_INSERT_NEW       "Insert new embedded object\nNew Object"
     ID_OLE_EDIT_LINKS       "Edit linked objects\nEdit Links"
     ID_OLE_EDIT_CONVERT     "Convert object to different type\nConvert Object"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_OLE_VERB_FIRST       "Activate embedded or linked object"
     57873                   "Activate embedded or linked object"
@@ -543,7 +504,7 @@ BEGIN
     57875                   "Activate embedded or linked object"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -554,25 +515,25 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FASTHENRY_STOP       "Stops FastHenry2 execution\nStop FastHenry2"
     ID_FASTHENRY_RUN        "Open and run a FastHenry2 file\nRun FastHenry2"
     ID_EDIT_CLEARALL        "Clear the output screen\nClear screen"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -580,10 +541,8 @@ END
 // Italian (Italy) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
 LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -591,18 +550,18 @@ LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_PROPERTY_RESOURCES\r\n"

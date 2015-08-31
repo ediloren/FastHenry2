@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{33e0f7f8-2252-4d96-b512-38260b5b889a}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d8385299-f341-4777-b07a-3cf9c1374b1c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{20795000-84f7-4255-842a-741d82d72a5e}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="FastHenry">
+      <UniqueIdentifier>{68ff2109-752b-4b7d-be42-7078f145e149}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sparse">
+      <UniqueIdentifier>{7c0540d3-04d7-49f2-b848-2f9b10600773}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CntrItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenryDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenryView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenryWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnicodeString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\addgroundplane.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\barnoldi.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\breakupSeg.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\calcp.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\capsolve.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\contact.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\cx_ludecomp.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\default_opts.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\deg_mutual.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\direct.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\dist_betw_fils.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\fillM.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\find_nonuni_path.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\findpaths.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\gmres.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\hole.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\induct.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\joelself.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\math2.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulDo.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulGlobal.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulLocal.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulMats.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulMulti.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mulSetup.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\mutual.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\newPrecond.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\parse_command_line.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\prec_cost.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\precond.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\read_tree.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\readGeom.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\regurgitate.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\savemat_mod.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\setupComputePsi.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\setupMulti.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\uglieralloc.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="FastHenry\writefastcap.c">
+      <Filter>FastHenry</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spAllocate.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spBuild.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spCompat.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spFactor.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spFortran.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spOutput.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spSolve.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+    <ClCompile Include="sparse\spUtils.c">
+      <Filter>Sparse</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="FastHenry2.odl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FastHenry2.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CntrItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenryDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenryView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenryWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FHStructs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FHWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RunDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnicodeString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\CMPLX.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\GP.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\INDUCT.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\MATH2.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\mulGlobal.h">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\mulStruct.h">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\PATRAN.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="FastHenry\RESUSAGE.H">
+      <Filter>FastHenry</Filter>
+    </ClInclude>
+    <ClInclude Include="sparse\spConfig.h">
+      <Filter>Sparse</Filter>
+    </ClInclude>
+    <ClInclude Include="sparse\spDefs.h">
+      <Filter>Sparse</Filter>
+    </ClInclude>
+    <ClInclude Include="sparse\spMatrix.h">
+      <Filter>Sparse</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\FastHenry2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\FastHenryDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="License_and_history\History.txt" />
+    <Text Include="License_and_history\History_detailed.txt" />
+    <Text Include="License_and_history\license_for_sources_4.0.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\FastHenry2.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="hlp\fasthenry2.hhp" />
+    <CustomBuild Include="FastHenry2.reg" />
+  </ItemGroup>
+</Project>

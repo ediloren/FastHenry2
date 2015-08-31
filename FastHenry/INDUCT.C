@@ -42,7 +42,7 @@ int machine = 1000;
 #endif
 
 
-fastHenryMain(argc, argv)
+int fastHenryMain(argc, argv)
 int argc;
 char *argv[];
 {
@@ -114,6 +114,7 @@ char *argv[];
   indsys->nodes = NULL;
   indsys->planes = NULL;                               /* CMS 7/2/92 */
   indsys->logofstep = 0;
+
   indsys->opts = Parse_Command_Line(argc, argv);
 
   /*indsys->r_height = indsys->r_width = indsys->opts->filratio;*/
@@ -136,8 +137,8 @@ char *argv[];
   if (opts->fname == NULL) {
     viewprintf(stdout, "No input file given.  Nothing to do.\n"); // Enrico
     //fp = stdin;
-	FHOnClosing(FH_NORMAL_END);  // Enrico 
-	return 0;       // Enrico
+	FHOnClosing(FH_NO_MTX_NORMAL_END);  // Enrico 
+	return FH_NO_MTX_NORMAL_END;       // Enrico
   }
   else if (strcmp(opts->fname,"-") == 0) {
     viewprintf(stdout, "Reading from stdin...\n");
@@ -165,8 +166,8 @@ char *argv[];
   /* read in geometry */
   err = readGeom(fp, indsys);
   if (err != 0) {
-	FHOnClosing(FH_USER_BREAK);  // Enrico 
-	return err;
+	FHOnClosing(FH_GENERIC_ERROR);  // Enrico 
+	return FH_GENERIC_ERROR;
   }
 
   fclose(fp);
@@ -182,8 +183,8 @@ char *argv[];
   if ((opts->makeFastCapFile & HIERARCHY) 
       && !(opts->makeFastCapFile & (SIMPLE | REFINED))) {
     /* the hierarchy has been dumped already, and nothing more to do. so quit*/
-	FHOnClosing(FH_NORMAL_END);  // Enrico 
-    return 0;
+	  FHOnClosing(FH_NO_MTX_NORMAL_END);  // Enrico 
+	  return FH_NO_MTX_NORMAL_END;
   }
 
   /* make a file suitable for keith's postscript maker */
@@ -197,8 +198,8 @@ char *argv[];
     viewprintf(stdout, "Done\n");
     if (! (opts->makeFastCapFile & REFINED) ) {
       /* we are done, after making fastcap files for visualization */
-	  FHOnClosing(FH_NORMAL_END);  // Enrico 
-      return 0;
+		FHOnClosing(FH_NO_MTX_NORMAL_END);  // Enrico 
+		return FH_NO_MTX_NORMAL_END;
 	}
   }
 
@@ -235,7 +236,7 @@ char *argv[];
 
   if (bFHContinue == FALSE) {
 	FHOnClosing(FH_USER_BREAK);  // Enrico 
-	return 1;
+	return FH_USER_BREAK;
   }
 
 #if 1 == 0
@@ -436,8 +437,8 @@ char *argv[];
     /* output file to later turn into .ps. Note: this affects seg->is_deleted*/
     writefastcap(outfname, outfname2, indsys);
     viewprintf(stdout, "Done\n");
-	FHOnClosing(FH_NORMAL_END);  // Enrico 
-    return 0;  /* we are done after making fastcap files for visualization */;
+	FHOnClosing(FH_NO_MTX_NORMAL_END);  // Enrico 
+	return FH_NO_MTX_NORMAL_END;  /* we are done after making fastcap files for visualization */;
   }
 
 
@@ -754,7 +755,7 @@ char *argv[];
 
         if (bFHContinue == FALSE) {
 	      FHOnClosing(FH_USER_BREAK);  // Enrico 
-	      return 1;
+		  return FH_USER_BREAK;
 		}
 
 	    if (m == 0) {
@@ -770,7 +771,7 @@ char *argv[];
 
           if (bFHContinue == FALSE) {
 	        FHOnClosing(FH_USER_BREAK);  // Enrico 
-	        return 1;
+			return FH_USER_BREAK;
 		  }
 
           if (indsys->opts->debug == ON)
@@ -872,7 +873,7 @@ char *argv[];
 
         if (bFHContinue == FALSE) {
 	      FHOnClosing(FH_USER_BREAK);  // Enrico 
-	      return 1;
+		  return FH_USER_BREAK;
 		}
 
 	    if (indsys->precond_type == LOC) {
@@ -1026,14 +1027,14 @@ char *argv[];
   viewprintf(stdout, "        GMRES time      %lg\n",ftimes[4]);
   viewprintf(stdout, "   Total:               %lg\n",totaltime);
 
-  FHOnClosing(FH_NORMAL_END);  // Enrico 
-
 #ifdef MATTDEBUG
   /* print memory bins */
   for(i = 0; i < 1001; i++)
     viewprintf(stderr, "%d\n", membins[i]);
 #endif
 
+  FHOnClosing(FH_NORMAL_END);  // Enrico 
+  return FH_NORMAL_END;
 }
 
 /* this will divide a rectangular segment into many filaments */

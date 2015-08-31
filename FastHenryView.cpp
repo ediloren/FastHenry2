@@ -110,13 +110,13 @@ void CFastHenryView::OnDestroy()
 {
 	// Deactivate the item on destruction; this is important
 	// when a splitter view is being used.
-   CRichEditView::OnDestroy();
    COleClientItem* pActiveItem = GetDocument()->GetInPlaceActiveItem(this);
    if (pActiveItem != NULL && pActiveItem->GetActiveView() == this)
    {
       pActiveItem->Deactivate();
       ASSERT(GetDocument()->GetInPlaceActiveItem(this) == NULL);
    }
+   CRichEditView::OnDestroy();
 }
 
 
@@ -180,7 +180,7 @@ BOOL CFastHenryView::CanPaste() const
 
 void CFastHenryView::SetDefaultCharFormat()
 {
-	CHARFORMAT cf;
+	CHARFORMAT2 cf;
 	
 	cf = GetCharFormatSelection();
 
@@ -203,7 +203,7 @@ void CFastHenryView::SetDefaultCharFormat()
 
 void CFastHenryView::SetDefaultParaFormat()
 {
-	PARAFORMAT pf;
+	PARAFORMAT2 pf;
 
 	pf = GetParaFormatSelection();
 	
@@ -223,7 +223,7 @@ void CFastHenryView::SetDefaultParaFormat()
 
 void CFastHenryView::SetColor(long color)
 {
-	CHARFORMAT cf;
+	CHARFORMAT2 cf;
 	
 	cf = GetCharFormatSelection();
 
