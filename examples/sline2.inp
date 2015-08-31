@@ -1,0 +1,29 @@
+* #2 superconducting microstripline, high impedance
+.Units um
+.freq fmin=1e9 fmax=1e9 ndec=1
+
+* conductor
+N1 x=0 y=0 z=.5
+N2 x=0 y=100 z=.5
+E1 N1 N2 w=3 h=.3 nwinc=5 nhinc=5 lambda=.09
+
+* "ground plane"
+N3 x=0 y=0 z=-.05
+N4 x=0 y=100 z=-.05
+N5 x=-3 y=0 z=-.05
+N6 x=-3 y=100 z=-.05
+N7 x=3 y=0 z=-.05
+N8 x=3 y=100 z=-.05
+E2 N3 N4 w=3 h=.1 nwinc=5 nhinc=5 lambda=.09
+E3 N5 N6 w=3 h=.1 nwinc=5 nhinc=5 lambda=.09
+E4 N7 N8 w=3 h=.1 nwinc=5 nhinc=5 lambda=.09
+.equiv N3 N5 N7
+.equiv N4 N6 N8
+
+* short one end
+.equiv N2 N4
+
+* input port
+.external N1 N3
+
+.end

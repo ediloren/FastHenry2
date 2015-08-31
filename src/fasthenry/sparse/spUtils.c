@@ -22,12 +22,11 @@
  *  spRoundoff
  *
  *  >>> Other functions contained in this file:
- *  CountTwins
- *  SwapCols
- *  ScaleComplexMatrix
- *  ComplexMatrixMultiply
- *  ComplexCondition
  */
+static CountTwins();
+static SwapCols();
+static ScaleComplexMatrix();
+static ComplexMatrixMultiply();
 
 
 /*
@@ -60,7 +59,7 @@ static char RCSid[] =
  *
  *  >>> Import descriptions:
  *  spConfig.h
- *      Macros that customize the sparse matrix routines._why i
+ *      Macros that customize the sparse matrix routines.
  *  spMatrix.h
  *      Macros and declarations to be imported by the user.
  *  spDefs.h
@@ -72,10 +71,10 @@ static char RCSid[] =
 #include "spMatrix.h"
 #include "spDefs.h"
 
-
-
-// Enrico prototypes
 static RealNumber ComplexCondition();
+
+
+
 
 
 #if MODIFIED_NODAL
@@ -1049,7 +1048,7 @@ ComplexNumber Pivot, cDeterminant;
         }
         if (Matrix->NumberOfInterchangesIsOdd)
             CMPLX_NEGATE( cDeterminant );
-
+        
         *pDeterminant = cDeterminant.Real;
         *piDeterminant = cDeterminant.Imag;
     }
@@ -1409,14 +1408,14 @@ RealNumber MaxPivot, MinPivot, Mag;
  *  A.K. Cline, C.B. Moler, G.W. Stewart, J.H. Wilkinson.  An estimate
  *  for the condition number of a matrix.  SIAM Journal on Numerical
  *  Analysis.  Vol. 16, No. 2, pages 368-375, April 1979.
- *
+ *  
  *  J.J. Dongarra, C.B. Moler, J.R. Bunch, G.W. Stewart.  LINPACK
  *  User's Guide.  SIAM, 1979.
- *
+ *  
  *  Roger G. Grimes, John G. Lewis.  Condition number estimation for
  *  sparse matrices.  SIAM Journal on Scientific and Statistical
  *  Computing.  Vol. 2, No. 4, pages 384-388, December 1981.
- *
+ *  
  *  Dianne Prost O'Leary.  Estimating matrix condition numbers.  SIAM
  *  Journal on Scientific and Statistical Computing.  Vol. 1, No. 2,
  *  pages 205-209, June 1980.
@@ -1829,7 +1828,7 @@ ComplexNumber Wp, Wm;
 
 
 /*
- *  L-INFINITY MATRIX NORM
+ *  L-INFINITY MATRIX NORM 
  *
  *  Computes the L-infinity norm of an unfactored matrix.  It is a fatal
  *  error to pass this routine a factored matrix.

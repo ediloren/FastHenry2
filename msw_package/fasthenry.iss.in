@@ -1,0 +1,38 @@
+
+[Setup]
+
+AppName=FastHenry
+AppVerName=FastHenry-VERSION
+AppVersion=VERSION
+AppPublisher=Whiteley Research Inc.
+AppPublisherURL=http://www.wrcad.com
+
+OutputBaseFilename=fasthenry-VERSION-setup
+
+Compression=lzma
+
+DefaultDirName=c:\usr\local
+DirExistsWarning=no
+
+PrivilegesRequired=admin
+
+UninstallFilesDir={app}\share\fasthenry\uninstall
+UninstallDisplayIcon={app}\bin\fasthenry.exe
+
+[Files]
+
+Source: "data\bin\*.exe"; DestDir: "{app}\bin"
+Source: "data\share\fasthenry\examples\*"; DestDir: "{app}\share\fasthenry\examples"
+Source: "data\share\fasthenry\docs\*"; DestDir: "{app}\share\fasthenry\docs"
+
+[code]
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\fasthenry') then begin
+    MsgBox('There is an installed fasthenry present from the old' #13 'install tool.  You must uninstall fasthenry before proceeding.', mbInformation, MB_OK);
+    Result := False;
+  end;
+end;
+

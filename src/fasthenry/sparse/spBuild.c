@@ -20,12 +20,12 @@
  *
  *  >>> Other functions contained in this file:
  *  spcFindElementInCol
- *  Translate
  *  spcCreateElement
  *  spcLinkRows
- *  EnlargeMatrix
- *  ExpandTranslationArrays
  */
+static void Translate();
+static EnlargeMatrix();
+static ExpandTranslationArrays();
 
 
 /*
@@ -52,6 +52,8 @@ static char RCSid[] =
 #endif
 
 
+
+
 /*
  *  IMPORTS
  *
@@ -70,9 +72,6 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
-// Enrico prototypes
-static void Translate();
-static ExpandTranslationArrays();
 
 
 

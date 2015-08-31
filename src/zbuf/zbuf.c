@@ -34,9 +34,6 @@ of this software.
 
 #include "mulGlobal.h"
 
-// Enrico
-#include <string.h>
-
 main(argc, argv)
 int argc;
 char *argv[];
@@ -51,7 +48,7 @@ char *argv[];
   char *fname, *concat3();
 
   extern int fulldirops, fullPqops;
-  extern int num_dummy_panels, num_dielec_panels;
+  extern int num_dummy_panels, num_dielec_panels; 
   extern int num_both_panels, num_cond_panels, up_size, eval_size;
   extern char *title, *ps_file_base, *in_file_name;
   extern long memcount;
@@ -94,7 +91,7 @@ char *argv[];
   /* get the list of all panels in the problem */
   /* - many command line parameters having to do with the postscript
        file dumping interface are passed back via globals (see mulGlobal.c) */
-  chglist = input_problem(argv, argc, &autmom, &autlev, &relperm,
+  chglist = input_problem(argv, argc, &autmom, &autlev, &relperm, 
 			  &numMom, &numLev, &name_list, &num_cond);
 
   /* just dump the psfile */
@@ -133,7 +130,7 @@ char *st1, *st2, *st3;
   length = strlen(st1);
   length += strlen(st2);
   length += strlen(st3);
-
+  
   CALLOC(allthree, length+1, char, ON, AMSC);
 
   allthree[0] = '\0';

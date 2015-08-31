@@ -365,7 +365,8 @@ double w;
     mark_dup_mesh(Mlist, meshnum, meshsize, is_dup, findx);
 
     if (debug == 1) {
-      fp = fopen("chkinv.mat","w");
+      /* SRW -- this is binary data */
+      fp = fopen("chkinv.mat","wb");
       if (fp == NULL) {printf("no open\n"); exit(1); }
       savecmplx(fp, "before", meshmat, meshsize, meshsize);
     }
@@ -635,7 +636,8 @@ int size;
   printf("Dumping Preconditioner...\n");
   CALLOC(temprow, cols, double, ON, IND);
 
-  fp = fopen("Pre.mat","w");
+  /* SRW -- this is binary data */
+  fp = fopen("Pre.mat","wb");
   if (fp == NULL) {
     fprintf(stderr,"Couldn't open Pre\n");
     exit(1);
@@ -779,7 +781,8 @@ double w;
 	meshmat[i][j] = indsys->MtZM[meshnum[i]][meshnum[j]];
 
     if (debug == 1) {
-      fp = fopen("chkinv.mat","w");
+      /* SRW -- this is binary data */
+      fp = fopen("chkinv.mat","wb");
       if (fp == NULL) {printf("no open\n"); exit(1); }
       savecmplx(fp, "before", meshmat, meshsize, meshsize);
     }

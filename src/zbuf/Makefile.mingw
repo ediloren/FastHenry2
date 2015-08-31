@@ -5,6 +5,7 @@
 SHELL = /bin/sh
 AWK = awk
 RM = /bin/rm
+CC = gcc
 
 MAKETYPE = other
 # normally overidden by master Makefile
@@ -38,22 +39,11 @@ $(IO)/dump_struct.c $(IO)/savemat_mod.c
 
 LIBS = -lm
 
-# These compile flags are needed to account for differences in the
-#  resource usage system call used to get CPU time and memory use data
-#  - also used to select the correct CC macro definition for AIX machines
-#
-# for x86 64bit generic machine use (timers not supported)
-CFLAGS = -O -DOTHER -m64
-# for most machines running 4.2/3 use (only necessary if timers are needed)
-#CFLAGS = -O -DFOUR
-# for most machines running System V use (only necessary if timers are needed)
-#CFLAGS = -O -DFIVE
-# for IBM AIX systems use
-#CC = xlc
+CFLAGS = -O -DOTHER -DNO_SBRK -DNO_ATANH -DNO_ISNAN -DNO_GETHOSTNAME
 
 zbuf: $(OBJS)
 	$(CC) -o zbuf $(CFLAGS) $(OBJS) $(LIBS)
-	mv zbuf $(BIN)/zbuf
+	mv zbuf.exe $(BIN)/zbuf.exe
 
 clean:
 	$(RM) -f *.o

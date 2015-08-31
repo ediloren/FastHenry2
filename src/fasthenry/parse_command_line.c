@@ -26,7 +26,7 @@ char **argv;
   Option *opt_list;
   ind_opts *opts;
   int errflag;
-
+  
   opts = (ind_opts *)Pmalloc(sizeof(ind_opts));
   opt_list =
     gather_opts(argc, argv, "s:m:p:o:l:f:g:a:d:r:hMk:t:b:c:e:i:D:x:S:R:v");
@@ -39,15 +39,15 @@ char **argv;
 
   errflag = 0;
   for( ; opt_list != NULL && errflag == 0; opt_list = opt_list->next) {
-    if (opt_list->op != '\0' && opt_list->arg != NULL)
+    if (opt_list->op != '\0' && opt_list->arg != NULL) 
       tolowercase(opt_list->arg);
     switch(opt_list->op) {
     case 's':
-      if (strncmp(opt_list->arg,"ludecomp",6) == 0)
+      if (strncmp(opt_list->arg,"ludecomp",6) == 0) 
 	opts->soln_technique = LUDECOMP;
-      else if (strncmp(opt_list->arg,"iter",4) == 0)
+      else if (strncmp(opt_list->arg,"iter",4) == 0) 
 	opts->soln_technique = ITERATIVE;
-      /* else if (strncmp(opt_list->arg,"auto",4) == 0)
+      /* else if (strncmp(opt_list->arg,"auto",4) == 0) 
 	opts->soln_technique = AUTO; */
       else {
 	fprintf(stderr, "Unknown soln technique: %s\n",opt_list->arg);
@@ -58,7 +58,7 @@ char **argv;
     case 'm':
       if (strncmp(opt_list->arg,"direct",6) == 0) opts->mat_vect_prod = DIRECT;
       else if (strncmp(opt_list->arg,"multi",5) == 0) opts->mat_vect_prod = MULTIPOLE;
-      /* else if (strncmp(opt_list->arg,"auto",4) == 0)
+      /* else if (strncmp(opt_list->arg,"auto",4) == 0) 
 	 opts->mat_vect_prod = AUTO; */
       else {
 	fprintf(stderr, "Unknown matrix vector product technique: %s\n",opt_list->arg);
@@ -68,19 +68,19 @@ char **argv;
 
     case 'p':
       if (read_on_off(opt_list->arg, &opts->precond) == FALSE) {
-	if (strncmp(opt_list->arg, "loc", 3) == 0)
+	if (strncmp(opt_list->arg, "loc", 3) == 0) 
 	  opts->precond = LOC;
-	else if (strncmp(opt_list->arg, "sparse", 3) == 0)
+	else if (strncmp(opt_list->arg, "sparse", 3) == 0) 
 	  opts->precond = SPARSE;
-	else if (strncmp(opt_list->arg, "cube", 3) == 0)
+	else if (strncmp(opt_list->arg, "cube", 3) == 0) 
 	  opts->precond = SPARSE;
-	else if (strncmp(opt_list->arg, "seg", 3) == 0)
+	else if (strncmp(opt_list->arg, "seg", 3) == 0) 
 	  opts->precond = SEGML;
-	else if (strncmp(opt_list->arg, "diag", 3) == 0)
+	else if (strncmp(opt_list->arg, "diag", 3) == 0) 
 	  opts->precond = DIAGL;
-	else if (strncmp(opt_list->arg, "posdef", 3) == 0)
+	else if (strncmp(opt_list->arg, "posdef", 3) == 0) 
 	  opts->precond = POSDEF_LOC;
-	else if (strncmp(opt_list->arg, "shells", 3) == 0)
+	else if (strncmp(opt_list->arg, "shells", 3) == 0) 
 	  opts->precond = SHELLS;
 	else {
 	  fprintf(stderr,"Unknown preconditioner setting: %s\n",opt_list->arg);
@@ -106,11 +106,11 @@ char **argv;
 
     case 'f':
       if (strcmp(opt_list->arg, "off") == 0) opts->makeFastCapFile = OFF;
-      else if (strcmp(opt_list->arg, "simple") == 0)
+      else if (strcmp(opt_list->arg, "simple") == 0) 
 	opts->makeFastCapFile |= SIMPLE;
-      else if (strcmp(opt_list->arg, "refined") == 0)
+      else if (strcmp(opt_list->arg, "refined") == 0) 
 	opts->makeFastCapFile |= REFINED;
-      else if (strcmp(opt_list->arg, "both") == 0)
+      else if (strcmp(opt_list->arg, "both") == 0) 
 	opts->makeFastCapFile |= BOTH_FCAP;
       else if (strcmp(opt_list->arg, "hierarchy") == 0)
 	opts->makeFastCapFile |= HIERARCHY;
@@ -122,11 +122,11 @@ char **argv;
 
     case 'g':
       if (strcmp(opt_list->arg, "off") == 0) opts->gp_draw = OFF;
-      else if (strcmp(opt_list->arg, "on") == 0)
+      else if (strcmp(opt_list->arg, "on") == 0) 
 	opts->gp_draw = THIN;
-      else if (strcmp(opt_list->arg, "thin") == 0)
+      else if (strcmp(opt_list->arg, "thin") == 0) 
 	opts->gp_draw = THIN;
-      else if (strcmp(opt_list->arg, "thick") == 0)
+      else if (strcmp(opt_list->arg, "thick") == 0) 
 	opts->gp_draw = THICK;
       else {
 	fprintf(stderr, "Unknown ground plane draw setting: %s\n",opt_list->arg);
@@ -140,7 +140,7 @@ char **argv;
 	errflag++;
       }
       break;
-
+      
     case 'i':
       if (sscanf(opt_list->arg, "%d",&opts->init_refine) != 1) {
 	fprintf(stderr, "Unknown initial refinement level: %s\n",
@@ -148,7 +148,7 @@ char **argv;
 	errflag++;
       }
       break;
-
+      
     case 'r':
       if (sscanf(opt_list->arg, "%d",&opts->orderROM) != 1) {
 	fprintf(stderr, "Unspecified order for reduced order model: %s\n",
@@ -164,49 +164,49 @@ char **argv;
     case 'M':
       opts->onlyROM = 1;
       break;
-
+      
     case 'd':
-      if (strcmp(opt_list->arg, "off") == 0)
+      if (strcmp(opt_list->arg, "off") == 0) 
 	opts->dumpMats = OFF;
-      else if (strcmp(opt_list->arg, "on") == 0)
+      else if (strcmp(opt_list->arg, "on") == 0) 
 	opts->dumpMats |= DUMP_ALL;
-      else if (strcmp(opt_list->arg, "mrl") == 0)
+      else if (strcmp(opt_list->arg, "mrl") == 0) 
 	opts->dumpMats |= MRL;
-      else if (strcmp(opt_list->arg, "mzmt") == 0)
+      else if (strcmp(opt_list->arg, "mzmt") == 0) 
 	opts->dumpMats |= MZMt;
-      else if (strcmp(opt_list->arg, "meshes") == 0)
+      else if (strcmp(opt_list->arg, "meshes") == 0) 
 	opts->dumpMats |= MESHES;
-      else if (strcmp(opt_list->arg, "pre") == 0)
+      else if (strcmp(opt_list->arg, "pre") == 0) 
 	opts->dumpMats |= PRE;
-      else if (strcmp(opt_list->arg, "grids") == 0)
+      else if (strcmp(opt_list->arg, "grids") == 0) 
 	opts->dumpMats |= GRIDS;
-      else if (strcmp(opt_list->arg, "a") == 0)
+      else if (strcmp(opt_list->arg, "a") == 0) 
 	opts->dumpMats |= DUMP_A;
-      else if (strcmp(opt_list->arg, "m") == 0)
+      else if (strcmp(opt_list->arg, "m") == 0) 
 	opts->dumpMats |= DUMP_M;
-      else if (strcmp(opt_list->arg, "rl") == 0)
+      else if (strcmp(opt_list->arg, "rl") == 0) 
 	opts->dumpMats |= DUMP_RL;
-      else if (strcmp(opt_list->arg, "ls") == 0)
+      else if (strcmp(opt_list->arg, "ls") == 0) 
 	opts->dumpMats |= DUMP_Ls;
       else {
 	fprintf(stderr, "Unknown dumpMats option: %s\n",opt_list->arg);
 	errflag++;
       }
       break;
-
+      
     case 'k':
-      if (strcmp(opt_list->arg, "matlab") == 0)
+      if (strcmp(opt_list->arg, "matlab") == 0) 
 	opts->kind = MATLAB;
-      else if (strcmp(opt_list->arg, "text") == 0)
+      else if (strcmp(opt_list->arg, "text") == 0) 
 	opts->kind = TEXT;
-      else if (strcmp(opt_list->arg, "both") == 0)
+      else if (strcmp(opt_list->arg, "both") == 0) 
 	opts->kind |= BOTH_TYPES;
       else {
 	fprintf(stderr, "Unknown kind of dump option: %s\n",opt_list->arg);
 	errflag++;
       }
       break;
-
+      
     case 't':
       if (sscanf(opt_list->arg, "%lf",&opts->tol) != 1) {
 	fprintf(stderr, "Can't interpret tolerance: %s\n",opt_list->arg);
@@ -255,9 +255,9 @@ char **argv;
 
     case 'S':
        /* this points to a string of argv[] so shouldn't go away */
-      opts->suffix = opt_list->arg;
+      opts->suffix = opt_list->arg;  
       break;
-
+      
     case 'R':
       if (sscanf(opt_list->arg, "%lf",&opts->shell_r0) != 1) {
 	fprintf(stderr, "Can't interpret precond shell radius: %s\n",
@@ -298,7 +298,7 @@ char **argv;
     }
   }
 
-  if (errflag != 0)
+  if (errflag != 0) 
     Describe_Usage(argv[0]);   /* also exits */
 
   fix_and_print_opts(opts);
@@ -388,7 +388,7 @@ int *takearg;
 
   pos = strchr(string, op);
 
-  if (pos == NULL)
+  if (pos == NULL) 
     return 0;
   else {
     if (pos[1] == ':') *takearg = 1;
@@ -411,14 +411,14 @@ char **argv;
     fprintf(stderr,"Need an argument ");
     return BAD;
   }
-
+  
   return GOOD;
 }
 
 Describe_Usage(name)
 char *name;
 {
-  fprintf(stderr,
+  fprintf(stderr, 
 "Usage: %s [<input file>] [<Options>]\n",name);
 
 
@@ -474,8 +474,8 @@ char *name;
   -v                          = Regurgitate internal representation to stdout.\n \
                                 Good for seeing what FastHenry thinks it read.\n \
 ");
-
-  exit(0);
+  
+  exit(1);
 }
 
 /*
@@ -500,7 +500,7 @@ int *on_off;
   if(strcmp(str, "on") == 0) *on_off = ON;
   else if (strcmp(str, "off") == 0) *on_off = OFF;
   else return FALSE;
-
+  
   return TRUE;
 }
 
@@ -517,18 +517,17 @@ ind_opts *opts;
   strcpy(oneport->str, str);
 
   oneport->next = opts->portlist;
-
+    
   opts->portlist = oneport;
 }
-
+      
 fix_and_print_opts(opts)
 ind_opts *opts;
 {
-  long clock;
+  time_t clock;
   char hostname[BUFSIZ];
 
   fprintf(stdout, "Running FastHenry %s (%s)\n", FHVERSION, FHDATE);
-  fprintf(stdout, "Source code fixes and compilation by FastFieldSolvers, 2012\n");
 
   time(&clock);
   fprintf(stdout, "  Date: %s", ctime(&clock));
@@ -565,7 +564,7 @@ ind_opts *opts;
   }
   else {
     printf("Solution technique: ITERATIVE\n");
-    if (opts->mat_vect_prod == DIRECT)
+    if (opts->mat_vect_prod == DIRECT) 
       printf("Matrix vector product method: DIRECT\n");
     else {
       printf("Matrix vector product method: MULTIPOLE\n");
@@ -577,5 +576,5 @@ ind_opts *opts;
       printf("Preconditioner: OFF\n");
     printf("Error tolerance: %lg\n",opts->tol);
   }
-
+  
 }

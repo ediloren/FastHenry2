@@ -147,7 +147,7 @@ int allocate;
   for(k = 0; k < size-1; k++) {	/* loop on rows */
     if(mat[k][k] == 0.0) {
       fprintf(stderr, "ludecomp: zero piovt\n");
-      exit(0);
+      exit(1);
     }
     for(i = k+1; i < size; i++) { /* loop on remaining rows */
       factor = (mat[i][k] /= mat[k][k]);
@@ -390,6 +390,7 @@ int i,j;
 char fname[100];
 
   sprintf(fname, "%s.m", name);
+  /* SRW -- this is ascii data */
   foo = fopen(fname, "w");
   fprintf(foo, "%s = [\n", name);
   for(i=0; i < size; i++) {

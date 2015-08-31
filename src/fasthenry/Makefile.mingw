@@ -1,8 +1,9 @@
-CFLAGS = -O -DFOUR -m64
+CFLAGS = -O -DOTHER -DNO_SBRK -DNO_ATANH -DNO_ISNAN -DNO_GETHOSTNAME
 
 SHELL = /bin/sh
 RM = /bin/rm
 BIN = ../../bin
+CC = gcc
 
 SPLIB = sparse/sparse.a
 
@@ -24,10 +25,10 @@ NONUNIHEAD = gp.h
 
 fasthenry:	$(OBJS) $(MOBJS) $(NONUNIOBJS) $(SPLIB)
 	$(CC) -o fasthenry $(CFLAGS) $(OBJS) $(MOBJS) $(NONUNIOBJS) $(SPLIB) -lm
-	mv fasthenry $(BIN)/fasthenry
+	mv fasthenry.exe $(BIN)/fasthenry.exe
 
 $(SPLIB):
-	cd sparse; make
+	cd sparse; make CC=$(CC)
 
 clean:
 	$(RM) -f *.o

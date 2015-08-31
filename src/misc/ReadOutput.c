@@ -14,9 +14,6 @@
 
 #include <stdio.h>
 #include "cmplx.h"
-// Enrico
-#include <stdlib.h>
-
 #define LINEMAX 100000
 #define PI 3.141592654
 

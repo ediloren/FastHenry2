@@ -64,7 +64,7 @@ ssystem *sys;
       if(eval_size < MAXSIZ) {
 	fprintf(stderr, 
 		"mulMatDirect: non-block direct methods not supported\n");
-	exit(0);
+	exit(1);
 	/* if this is going to work, need a special, condensing Q2P
 	   as well as some way to use it in the framework of the GCR loop */
 	nextc->directmats[0] = Q2P(nextc->chgs, eval_size,

@@ -23,8 +23,8 @@ int *startrows;
 {
 int i, j;
 CX **diagBlock;
-  if(startrows[0] != 0) { printf("startrow not zero\n"); exit(0);}
-  if(startrows[numblocks] != size) { printf("startrow not size\n"); exit(0);}
+  if(startrows[0] != 0) { printf("startrow not zero\n"); exit(1);}
+  if(startrows[numblocks] != size) { printf("startrow not size\n"); exit(1);}
 
   for(i=0; i < numblocks; i++) {
     /* First invert the diagonal block. */

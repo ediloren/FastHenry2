@@ -3,10 +3,10 @@
 #  Ken Kundert
 #  UC Berkeley
 #
-CFLAGS = -O -m64
+CFLAGS = -O
 LINTFLAGS = -lc -lm
 SHELL = /bin/sh
-CC = cc
+#CC = cc
 
 HFILES = spConfig.h spDefs.h spMatrix.h
 CFILES = spAllocate.c spBuild.c spFactor.c spOutput.c spSolve.c spUtils.c \

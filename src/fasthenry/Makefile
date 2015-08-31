@@ -1,4 +1,4 @@
-CFLAGS = -O -DFOUR -m64
+CFLAGS = -O -DFOUR
 
 SHELL = /bin/sh
 RM = /bin/rm
@@ -27,7 +27,7 @@ fasthenry:	$(OBJS) $(MOBJS) $(NONUNIOBJS) $(SPLIB)
 	mv fasthenry $(BIN)/fasthenry
 
 $(SPLIB):
-	cd sparse; make
+	cd sparse; make CC=$(CC)
 
 clean:
 	$(RM) -f *.o

@@ -1381,6 +1381,9 @@ SEGMENT *make_one_seg(x0,y0,z0,x1,y1,z1, width, height, wx, wy, wz, gp, indsys,
   sprintf(name, "%s_%d_%d", gp->grndp->name, node0->number , node1->number);
 
   return makeseg(name, node0, node1, height, width, gp->grndp->sigma, 
+#if SUPERCON == ON
+		 gp->grndp->lambda,
+#endif
 		 gp->grndp->hinc, 1, gp->grndp->rh, dontcare, widthdir, 
 		 indsys->num_segs, GPTYPE, indsys); 
 
@@ -1676,6 +1679,7 @@ dump_leaf_cells_to_file(cell, fname)
 {
   FILE *fp;
 
+  /* SRW -- this is ascii data */
   if ( (fp = fopen(fname, "w")) == NULL) {
     fprintf(stderr, "dump_leaf_cells_to_file: couldn't open file\n");
     return;

@@ -77,11 +77,11 @@ int n, m;
 {
   if(m > n) {
     fprintf(stderr, "index: m = %d > n = %d\n", m, n);
-    exit(0);
+    exit(1);
   }
   if(n < 0 || m < 0) {
     fprintf(stderr, "index: n = %d or m = %d negative\n", n, m);
-    exit(0);
+    exit(1);
   }
   return(m + (n*(n+1))/2);
 }
@@ -98,15 +98,15 @@ int n, m, cterms;		/* cterms is costerms(order) */
 {
   if(m > n) {
     fprintf(stderr, "sindex: m = %d > n = %d\n", m, n);
-    exit(0);
+    exit(1);
   }
   if(n < 0 || m < 0) {
     fprintf(stderr, "sindex: n = %d or m = %d negative\n", n, m);
-    exit(0);
+    exit(1);
   }
   if(m == 0) {
     fprintf(stderr, "sindex: attempt to index M%d^0\n", n);
-    exit(0);
+    exit(1);
   }
   return(cterms + m + (n*(n+1))/2 - (n+1));
 }
@@ -122,7 +122,7 @@ int e;				/* exponent, computes i^e */
   if(e == 0) return(1.0);
   if(e % 2 != 0) {
     fprintf(stderr, "iPwr: odd exponent %d\n", e);
-    exit(0);
+    exit(1);
   }
   else {
     e = e/2;			/* get power of negative 1 */
@@ -141,7 +141,7 @@ int x;
   if(x == 0 || x == 1) return(1.0);
   else if(x < 0) {
     fprintf(stderr, "fact: attempt to take factorial of neg no. %d\n", x);
-    exit(0);
+    exit(1);
   }
   else {
     while(x > 1) {

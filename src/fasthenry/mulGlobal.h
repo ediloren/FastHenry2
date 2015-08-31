@@ -32,6 +32,10 @@ or any third party on account of or arising from this Agreement or use
 of this software.
 */
 
+/* S. R. Whiteley (stevew@srware.com) adapted this code for
+ * superconductors 6/29/96.  These modifications are active
+ * when the preprocessor variable SUPERCON is defined.
+ */
 
 /* # ***** sort to /src/header
    # ***** */
@@ -65,7 +69,7 @@ extern char *   realloc();
 
 #define VERSION 3.0
 
-/***********************************************************************
+/*********************************************************************** 
   macros for allocation with checks for NULL pntrs and 0 byte requests
   - also keep an allocated memory count
   - CALLOC() is used when the memory must be zeroed
@@ -113,11 +117,15 @@ extern long membins[1001];
 #define AMSC 9
 #define IND 10
 
+#ifdef NO_SBRK
+#define sbrk(x) 0
+#endif
+
 #define DUMPALLOCSIZ                                                   \
 {                                                                      \
   (void)fprintf(stderr,                                                \
 		"Total Memory Allocated: %d kilobytes (brk = 0x%x)\n", \
-		memcount/1024, sbrk(0));                               \
+		memcount/1024, sbrk(0));			       \
 /* # ***** awked out for release */                                    \
   (void)fprintf(stderr, " Q2M  matrix memory allocated: %7.d kilobytes\n",\
 		memQ2M/1024);                                          \
@@ -173,7 +181,7 @@ extern long membins[1001];
        DUMPRSS;                                                             \
        (void)fflush(stderr);                                                \
        (void)fflush(stdout);                                                \
-       if(FLAG == ON) exit(0);                                              \
+       if(FLAG == ON) exit(1);                                              \
      }                                                                      \
      else {                                                                 \
        memcount += ((NUM)*sizeof(TYPE));                                    \
@@ -190,7 +198,7 @@ extern long membins[1001];
        else if(MTYP == IND) memIND += ((NUM)*sizeof(TYPE));                 \
        else {                                                               \
          (void)fprintf(stderr, "CALLOC: unknown memory type %d\n", MTYP);   \
-         exit(0);                                                           \
+         exit(1);                                                           \
        }                                                                    \
      /*if ((NUM)*sizeof(TYPE) >= 10000)                                     \
          membins[1000] += 1;                                                \
@@ -215,7 +223,7 @@ extern long membins[1001];
        DUMPRSS;                                                              \
        (void)fflush(stderr);                                                 \
        (void)fflush(stdout);                                                 \
-       if(FLAG == ON) exit(0);                                               \
+       if(FLAG == ON) exit(1);                                               \
      }                                                                       \
      else {                                                                 \
        memcount += ((NUM)*sizeof(TYPE));                                    \
@@ -232,7 +240,7 @@ extern long membins[1001];
        else if(MTYP == IND) memIND += ((NUM)*sizeof(TYPE));                 \
        else {                                                               \
          (void)fprintf(stderr, "MALLOC: unknown memory type %d\n", MTYP);   \
-         exit(0);                                                           \
+         exit(1);                                                           \
        }                                                                    \
      /*if ((NUM)*sizeof(TYPE) >= 10000)                                     \
          membins[1000] += 1;                                                \
@@ -324,7 +332,7 @@ misc. global macros
 #define NOTFND -2
 
 /***********************************************************************
-
+ 
   configuration and debug flags
 
 ***********************************************************************/
@@ -376,6 +384,7 @@ misc. global macros
 #define ABSTOL 0.01		/* iterations until ||res||inf < ABSTOL */
 #define MAXITER size		/* max num iterations ('size' => # panels) */
 #define EXRTSH 0.9		/* exact/ttl>EXRTSH for lev => make last lev */
+#define SUPERCON ON     /* handle superconductive conductors */
 /* (add any new configuration flags to dumpConfig() in mulDisplay.c) */
 
 /* Output Format Configuration */

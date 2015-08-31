@@ -206,7 +206,7 @@ int pseudo_lev;
 	fprintf(stderr, 
 		"placeq: out of cube pntr space - increase MAXDEP == %d\n", 
 		MAXDEP);
-	exit(0);
+	exit(1);
       }
 
       length = (1.01 * length0)/side;
@@ -216,19 +216,19 @@ int pseudo_lev;
 	CALLOC(cubes[i], side, cube***, OFF, AMSC);
 	if(cubes[i] == NULL) {
 	  fprintf(stderr, "placeq: %d levels set up\n", i-1);
-	  exit(0);
+	  exit(1);
 	}
 	for(j=0; j < side; j++) {
 	  CALLOC(cubes[i][j], side, cube**, OFF, AMSC);
 	  if(cubes[i][j] == NULL) {
 	    fprintf(stderr, "placeq: %d levels set up\n", i-1);
-	    exit(0);
+	    exit(1);
 	  }
 	  for(k=0; k < side; k++) {
 	    CALLOC(cubes[i][j][k], side, cube*, OFF, AMSC);
 	    if(cubes[i][j][k] == NULL) {
 	      fprintf(stderr, "placeq: %d levels set up\n", i-1);
-	      exit(0);
+	      exit(1);
 	    }
 	  }
 	}
@@ -252,7 +252,7 @@ int pseudo_lev;
 	  CALLOC(nextc, 1, cube, OFF, AMSC);
 	  if(nextc == NULL) {
 	    fprintf(stderr, "placeq: %d levels set up\n", i-1);
-	    exit(0);
+	    exit(1);
 	  }
 	  cubes[i][xindex][yindex][zindex] = nextc;
 	  nextc->upnumvects = 1;
@@ -260,7 +260,7 @@ int pseudo_lev;
 	  CALLOC(nextc->upnumeles, 1, int, OFF, AMSC);
 	  if(nextc->upnumeles == NULL) {
 	    fprintf(stderr, "placeq: %d levels set up\n", i-1);
-	    exit(0);
+	    exit(1);
 	  }
 	  nextc->upnumeles[0] = 1;
 
@@ -548,7 +548,7 @@ cube *nextc, *****cubes = sys->cubes;
   length = (1.01 * length) / side;
   if(length == 0) {
     fprintf(stderr,"placeq: All the lengths in the problem are zero\n");
-    exit(0);
+    exit(1);
   }
   sys->length = length;
   sys->minx = minx;

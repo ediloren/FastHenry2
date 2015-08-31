@@ -34,8 +34,6 @@ of this software.
 
 #include "mulGlobal.h"
 #include "quickif.h"
-// Enrico
-#include <string.h>
 
 /*
   tells if any conductor name alias matches a string
@@ -76,7 +74,7 @@ Name *cur_name;
 }
 
 /*
-  adds an alias
+  adds an alias 
 */
 void add_to_alias(cur_name, new_name)
 Name *cur_name;
@@ -143,7 +141,7 @@ int *num_cond;
   /* check to see if name is present */
   for(cur_name = *name_list, i = 1; cur_name != NULL;
       cur_name = cur_name->next, i++) {
-    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name))
+    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name)) 
 	return(i); /* return conductor number */
     prev_name = cur_name;
   }
@@ -174,7 +172,7 @@ Name *name_list;
   /* check to see if name is present */
   for(cur_name = name_list, i = 1; cur_name != NULL;
       cur_name = cur_name->next, i++) {
-    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name))
+    if(!strcmp(cur_name->name, name) || alias_match(cur_name, name)) 
 	return(i); /* return conductor number */
     prev_name = cur_name;
   }
@@ -200,7 +198,7 @@ int cond_num;
   }
 
   /* number not found */
-  fprintf(stderr,
+  fprintf(stderr, 
 	  "getConductorName: conductor no. %d not defined\n", cond_num);
   return(NULL);
 }
@@ -265,7 +263,7 @@ Name **name_list;
     if(!strcmp(cur_name->name, old_name) || alias_match(cur_name, old_name)) {
       /* old name is cur name or old name is an alias */
       /* if new name isn't in alias list, add it to alias list */
-      if(!alias_match(cur_name, new_name))
+      if(!alias_match(cur_name, new_name)) 
 	  add_to_alias(cur_name, new_name);
       return(TRUE);
     }
@@ -306,16 +304,16 @@ FILE *fp;
 
   /* save the title, strip leading '0' */
   if(title[0] == '\0') strcpy(title, delcr(&line[1]));
-
+  
   /* read in and load structs */
   while(fgets(line1, sizeof(line1), fp) != NULL) {
     if(line1[0] == 'Q' || line1[0] == 'q') {
-      if(sscanf(line1,
+      if(sscanf(line1, 
 		"%s %s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-		temp, condstr,
+		temp, condstr, 
 		&x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3, &x4, &y4, &z4)
 	 != 14) {
-	fprintf(stderr, "quickif: bad quad format, line %d:\n%s\n",
+	fprintf(stderr, "quickif: bad quad format, line %d:\n%s\n", 
 		linecnt, line1);
 	exit(0);
       }
@@ -332,7 +330,7 @@ FILE *fp;
 	CALLOC(curquad->next, 1, quadl, ON, AMSC);
 	curquad = curquad->next;
       }
-
+      
       /* load quad struct */
       if(surf_type == CONDTR || surf_type == BOTH)
 	  curquad->cond = getConductorNum(condstr, name_list, num_cond);
@@ -354,9 +352,9 @@ FILE *fp;
     }
     else if(line1[0] == 'T' || line1[0] == 't') {
       if(sscanf(line1, "%s %s %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-		temp, condstr, &x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3)
+		temp, condstr, &x1, &y1, &z1, &x2, &y2, &z2, &x3, &y3, &z3) 
 	 != 11) {
-	fprintf(stderr, "quickif: bad tri format, line %d:\n%s\n",
+	fprintf(stderr, "quickif: bad tri format, line %d:\n%s\n", 
 		linecnt, line1);
 	exit(0);
       }
@@ -373,7 +371,7 @@ FILE *fp;
 
       /* add suffix */
       strcat(condstr, name_suffix);
-
+      
       /* load tri struct */
       if(surf_type == CONDTR || surf_type == BOTH)
 	  curtri->cond = getConductorNum(condstr, name_list, num_cond);
@@ -392,7 +390,7 @@ FILE *fp;
     }
     else if(line1[0] == 'N' || line1[0] == 'n') {
       if(sscanf(line1, "%s %s %s", temp, condstr, temp2) != 3) {
-	fprintf(stderr, "quickif: bad rename format, line %d:\n%s\n",
+	fprintf(stderr, "quickif: bad rename format, line %d:\n%s\n", 
 		linecnt, line1);
 	exit(0);
       }
@@ -405,7 +403,7 @@ FILE *fp;
 	strcat(condstr, name_suffix);
 	strcat(temp2, name_suffix);
 
-	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE)
+	if(renameConductor(condstr, temp2, name_list, num_cond) == FALSE) 
 	    exit(0);
       }
 
@@ -414,12 +412,12 @@ FILE *fp;
     else if(line1[0] == '%' || line1[0] == '*' ||
 	    line1[0] == '#') linecnt++; /* ignore comments */
     else {
-      fprintf(stderr, "quickif: bad line format, line %d:\n%s\n",
+      fprintf(stderr, "quickif: bad line format, line %d:\n%s\n", 
 		linecnt, line1);
       exit(0);
     }
   }
-
+	
   /* setup tris in charge structs */
   for(curtri = fsttri; curtri != NULL; curtri = curtri->next) {
 

@@ -20,12 +20,14 @@ SYS *indsys;
   GROUNDPLANE *gp;
   int thin;
 
+  /* SRW -- this is ascii data */
   fp = fopen(fname,"w");
   if (fp == NULL) {
     printf("can't open zbuffile to write \n");
     exit(1);
   }
 
+  /* SRW -- this is ascii data */
   shade_fp = fopen(shading_name,"w");
   if (fp == NULL) {
     printf("can't open shading file to write \n");

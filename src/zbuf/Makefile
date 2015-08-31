@@ -42,8 +42,8 @@ LIBS = -lm
 #  resource usage system call used to get CPU time and memory use data
 #  - also used to select the correct CC macro definition for AIX machines
 #
-# for x86 64bit generic machine use (timers not supported)
-CFLAGS = -O -DOTHER -m64
+# for generic machine use (timers not supported)
+CFLAGS = -O -DOTHER
 # for most machines running 4.2/3 use (only necessary if timers are needed)
 #CFLAGS = -O -DFOUR
 # for most machines running System V use (only necessary if timers are needed)

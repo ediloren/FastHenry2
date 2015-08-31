@@ -40,15 +40,20 @@ of this software.
 #include "cmplx.h"
 #include "mulGlobal.h"
 
-#define FHVERSION "3.0.1"
-#define FHDATE "28May12"
+#if SUPERCON == ON
+#define FHVERSION "3.0wr"
+#define FHDATE "29Sep96, mod 27Apr04"
+#else
+#define FHVERSION "3.0"
+#define FHDATE "29Sep96"
+#endif
 
 #define AVER_MAT_MAX 110        /* These are two constants used to */
 #define MAX_DIV_RAT 0.25        /* decide partitioning level      */
 
 #define MAX_PRE_LEVEL 6         /* maximum allowed level if  */
                                 /* auto_refine == OFF */
-
+ 
 /*#define MAXITERS 200 */           /* Maximum number of GMRES iters */
 #define FILS_PER_MESH 2         /* filaments per mesh for breaking big loops.*/
 #define PI 3.14159265358979323846
@@ -154,7 +159,7 @@ typedef struct Nodelist{
   double x, y, z;                     /* coordinates of the node */
 
   struct Nodelist *next;
-} NODELIST;
+} NODELIST;       
 
 /* temporary list of holes to be made.
    (used in addgroundplane() in file readGeom.c */
@@ -184,7 +189,7 @@ typedef struct sseg_ptr {
   char type;   /* NORMAL means seg is a SEGMENT, PSEUDO means seg is PSEUDO */
   void *segp;   /* a pointer to either a SEGMENT or a PSEUDO_SEG */
 } seg_ptr;
-
+ 
 typedef struct Filament {
   double x[2], y[2], z[2];  /* endpoints */
   double length, area, width, height;
@@ -226,12 +231,17 @@ typedef struct Segment {
                        /* in the direction of width*/
    int number;         /* an arbitrary number for the segment */
    int type;    /* CMS 8/21/92 -- type of structure the segment is in */
-   double length;
+   double length;      
    double area;        /* area of cross section */
    double width, height;  /*width and height to cross section */
    int hinc, winc;             /* number of filament divisions in each dir */
    NODES *node[2];                /* nodes at the ends */
    double sigma;              /* conductivity */
+#if SUPERCON == ON
+   double lambda;             /* London penetration depth for superconductor */
+   double r1;                 /* resistive part of 1/sigma */
+   double r2;                 /* reactive part of 1/sigma  */
+#endif
    double r_width, r_height;  /*ratio of adjacent fil widths(see assignFil())*/
    int num_fils;               /* hinc*winc */
    FILAMENT *filaments;        /* this segment's filaments */
@@ -251,9 +261,9 @@ typedef struct pseudo_seg {
   NODES *node[2];
   char type;  /* Voltage source, or ground plane */
   struct pathlist *loops;   /* loops in which this segment is a member */
-  int upper_num_segs;  /* an upper bound on the number of real segments for
+  int upper_num_segs;  /* an upper bound on the number of real segments for 
                           this pseudo_seg.  For estimating num_meshes before
-			  big loops are broken into small ones for new
+			  big loops are broken into small ones for new 
 			  preconditioner 			  */
   int is_deleted;
 } PSEUDO_SEG;
@@ -282,7 +292,7 @@ typedef struct _int_list {
 
 typedef struct external {
   PSEUDO_SEG *source;   /* this branch will represent the 1 volt source */
-  int_list *indices;    /* indices of the loops into the M matrix */
+  int_list *indices;    /* indices of the loops into the M matrix */ 
   int Yindex;           /* index in the final impedance matrix, Y */
   int col_Yindex;       /* column number, in case -x option is used */
   struct pathlist *loops;
@@ -290,7 +300,7 @@ typedef struct external {
   char *portname;
   struct external *next;
 } EXTERNAL;
-
+  
 typedef struct melement {  /* an element of the M matrix */
   int filindex;     /* filament number (column of M) */
                 /* note: filindex is really a mesh index in indsys->Mtrans */
@@ -302,16 +312,16 @@ typedef struct melement {  /* an element of the M matrix */
 typedef struct _minfo {  /* info about a mesh */
   int type;               /* UNCONSTRAINED or CONSTRAINED */
   int mesh_num;           /* mesh number for this mesh */
-  /* The following apply only if it is CONSTRAINED or is a constraint for
+  /* The following apply only if it is CONSTRAINED or is a constraint for 
      another mesh */
-  int constraining_mesh;  /* if type==CONSTRAINED then this mesh must have
+  int constraining_mesh;  /* if type==CONSTRAINED then this mesh must have 
 			     the same mesh current as constraining_mesh */
   int other_mesh;      /* we need one more reference mesh that is constained
 			   but not the constraining mesh.  For precond */
   int first;            /* Mesh number for first mesh in Mlist for this group*/
   int num_meshes;             /* number of meshes */
 } Minfo;
-
+  
 typedef struct precond_element { /* An element in the preconditioner */
                                /* Each row will be saved as a linked list */
                                /* these */
@@ -348,6 +358,9 @@ double ux1, uy1, uz1;            /* unit vector along side 1 */
 double ux2, uy2, uz2;            /* unit vector along side 2 */
 double unitdiag;                 /* magnitude of (dx1,dy1,dz1)+(dx2,dy2,dz2) */
 double sigma;                    /* conductivity of all the segments */
+#if SUPERCON == ON
+double lambda;                /* London penetration depth for superconductor */
+#endif
 int hinc;                        /* number of filaments to stack in a seg */
 double rh;                       /* ratio of adjacent fil heights in a seg */
 double thick;                    /* thickness of plane */
@@ -383,7 +396,7 @@ typedef struct indsystem {
   int num_mesh;                /* number of meshes */
   int num_trees;               /* # of trees (physically separate conductors)*/
   int tree_meshes;             /* big loops from graph */
-  int extra_meshes;            /* upper bound on number of meshes from
+  int extra_meshes;            /* upper bound on number of meshes from 
 				  breaking big loops for new precond */
   int num_extern;             /* number of external nodes (also # conductors)*/
   int num_sub_extern;         /* no. of ports (conductors) requested with -x*/
@@ -439,7 +452,7 @@ typedef struct pathlist {
   SPATH *path;
   struct pathlist *next;
 } PATHLIST;
-
+  
 /* list of segments connect to a node */
 typedef struct seglist {
   seg_ptr seg;
@@ -480,7 +493,7 @@ struct _ind_opts {
   int precond;           /* ON or OFF */
   int order;             /* multipole expansion order */
   int level;             /* multipole partition level. AUTO,0,1...*/
-  int makeFastCapFile;   /* Make a fastcap file of the structure.
+  int makeFastCapFile;   /* Make a fastcap file of the structure. 
 			    OFF, SIMPLE, REFINED, BOTH */
   int gp_draw;           /* Draw ground planes in fastcap file.
 			    OFF - just make outline. ON - Draw all segs */
@@ -501,7 +514,7 @@ struct _ind_opts {
   double shell_r0;       /* radius for shell preconditioner */
   int regurgitate;        /* whether or not to spit input file back out */
   char *fname;           /* input filename */
-} /* ind_opts */;
+} /* ind_opts */;  
 
 /* stuff for mutual terms lookup table */
 typedef struct _table {
@@ -526,7 +539,7 @@ typedef struct _alloc_info {
   AllocList *head;
 } AllocInfo;
 
-enum degen_type {brick = 0, flat = 1, skinny = 2, too_long = 3, too_short = 4,
+enum degen_type {brick = 0, flat = 1, skinny = 2, too_long = 3, too_short = 4, 
 		   short_flat = 5, short_skinny = 6, impossible = 7};
 
 PATHLIST *add_to_front();

@@ -21,13 +21,13 @@
  *
  *  >>> Other functions contained in this file:
  *  spcGetElement
- *  InitializeElementBlocks
  *  spcGetFillin
- *  RecordAllocation
- *  AllocateBlockOfAllocationList
- *  EnlargeMatrix
- *  ExpandTranslationArrays
  */
+static  InitializeElementBlocks();
+static  RecordAllocation();
+static  AllocateBlockOfAllocationList();
+static  EnlargeMatrix();
+static  ExpandTranslationArrays();
 
 
 /*
@@ -54,9 +54,6 @@ static char RCSid[] =
 #endif
 
 
-//MatrixPtr Matrix;
-//int  InitialNumberOfElements, NumberOfFillinsExpected;
-
 
 /*
  *  IMPORTS
@@ -76,10 +73,6 @@ static char RCSid[] =
 #include "spDefs.h"
 
 
-// Enrico, prototypes
-static InitializeElementBlocks();
-static RecordAllocation();
-static AllocateBlockOfAllocationList();
 
 
 
@@ -558,7 +551,7 @@ char  *AllocatedPtr;
 
 
 /*
- *  ADD A BLOCK OF SLOTS TO ALLOCATION LIST
+ *  ADD A BLOCK OF SLOTS TO ALLOCATION LIST     
  *
  *  This routine increases the size of the allocation list.
  *

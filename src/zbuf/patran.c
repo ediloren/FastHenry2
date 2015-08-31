@@ -34,18 +34,16 @@ of this software.
 
 /**************************************************************************
 
-  This is the subroutine that handles PATRAN to FastCap interface.
+  This is the subroutine that handles PATRAN to FastCap interface.  
   Patfront returns a pointer to a linked list of charge structures.
 
   Written by Songmin Kim, July 24, 1990.
 
 **************************************************************************/
 #include "mulGlobal.h"
-// Enrico
-#include <string.h>
 
 #define BIG 35000              /* Size of element and node serach table. */
-#define SMALL_NUMBER 0.005     /* See functions if_same_coord() and
+#define SMALL_NUMBER 0.005     /* See functions if_same_coord() and 
 				 grid_equiv_check(). */
 
 int type_number, ID, IV, KC, N1, N2, N3, N4, N5;
@@ -127,7 +125,7 @@ char *name_suffix;
 
 
 /****************************************************************************
-
+ 
   This part of code is for reading in Patran Neutral files.
 
 ****************************************************************************/
@@ -140,18 +138,18 @@ double *trans_vector;
 {
   int END=0;
 
-  /* Reads in the first line from each card, and branch off.  ID, IV, KC,
+  /* Reads in the first line from each card, and branch off.  ID, IV, KC, 
      N1, N2, N3, N4 and N5 are global variables accessible by subroutines. */
 
   while (!END) {
     if(line[0] == '2') {	/* if first line */
-      sscanf(line,"%d %d %d %d %d %d %d %d %d",
-	   &type_number, &ID, &IV, &KC, &N1, &N2, &N3, &N4, &N5);
+      sscanf(line,"%d %d %d %d %d %d %d %d %d", 
+	   &type_number, &ID, &IV, &KC, &N1, &N2, &N3, &N4, &N5);    
       line[0] = '0';
     }
-    else fscanf(stream,"%d %d %d %d %d %d %d %d %d",
+    else fscanf(stream,"%d %d %d %d %d %d %d %d %d", 
 		&type_number, &ID, &IV, &KC, &N1, &N2, &N3, &N4, &N5);
-
+      
 
     switch (type_number) {
     case 25:
@@ -209,13 +207,13 @@ file_title(stream)
   FILE *stream;
 {
   char line[BUFSIZ], *delcr();
-
+  
   fgets(line, sizeof(line), stream);
   if(title[0] == '\0') strcpy(title, delcr(line));
 }
 
 
-/* Since the summary card has informations on the number of elements and
+/* Since the summary card has informations on the number of elements and 
    nodes, this function allocates spaces for nodes and elements, and sets up
    the global pointers to these arrays. */
 
@@ -230,12 +228,12 @@ summary_data(stream)
   current_node = list_nodes;
   current_element = list_elements;
 
-  waste_line(1,stream);
+  waste_line(1,stream); 
 }
 
 
-/* Current_node is the global variable that points to the next entry in
-   node array, list_nodes, which is preallocated by summary_data function.
+/* Current_node is the global variable that points to the next entry in 
+   node array, list_nodes, which is preallocated by summary_data function. 
    Node_search_table is sorted by node ID to make indexing of a node easier. */
 
 node_data(stream, trans_vector)
@@ -245,19 +243,19 @@ double *trans_vector;
   double tmp_coord[3];
   int i;
 
-  fscanf(stream,"%lf %lf %lf",tmp_coord,tmp_coord+1,tmp_coord+2);
+  fscanf(stream,"%lf %lf %lf",tmp_coord,tmp_coord+1,tmp_coord+2);  
   waste_line(1,stream);
-
-  for (i=0; i<3; i++)
+  
+  for (i=0; i<3; i++) 
       current_node->coord[i] = tmp_coord[i] + trans_vector[i];
   node_search_table[ID] = current_node;
   current_node++;
 }
 
 
-/* Current_element is the global variable that points to the next entry in
+/* Current_element is the global variable that points to the next entry in 
    element array, list_elements, which is preallocated by summary_data
-   function.  Element_search_table is sorted by element ID to make indexing
+   function.  Element_search_table is sorted by element ID to make indexing 
    of an element easier.  */
 
 element_data(stream)
@@ -271,23 +269,23 @@ element_data(stream)
   if ((IV != 3) && (IV != 4)) waste_line(KC,stream);
   else {
     fscanf(stream,"%d %d %d %d %f %f %f",
-           &num_nodes,&tmp,&tmp,&tmp,&tmp1,&tmp1,&tmp1);
+           &num_nodes,&tmp,&tmp,&tmp,&tmp1,&tmp1,&tmp1); 
     current_element->num_nodes = num_nodes;
-
+    
     /* IV==3 and 4 imply triangular and quad elements, respectively. */
     if (IV==3) fscanf(stream,"%d %d %d",corner,corner+1,corner+2);
     else fscanf(stream,"%d %d %d %d",corner,corner+1,corner+2,corner+3);
-
+    
     for (i=0; i<num_nodes; i++) current_element->corner[i] = corner[i];
     element_search_table[ID] = current_element;
     current_element++;
-
+  
     if (N1) waste_line(1,stream);
   }
 }
 
-/* Grid data are linked together by next and prev pointers within GRID
-   structure.  Start_grid is the global variable that points to the very
+/* Grid data are linked together by next and prev pointers within GRID 
+   structure.  Start_grid is the global variable that points to the very 
    first GRID structure created.  */
 
 grid_data(stream, trans_vector)
@@ -312,14 +310,14 @@ double *trans_vector;
 
   fscanf(stream, "%lf %lf %lf", coord, coord+1, coord+2);
   for (i=0; i<3; i++) current_grid->coord[i] = coord[i] + trans_vector[i];
-  prev_grid = current_grid;
+  prev_grid = current_grid;    
   current_grid->next=0;
   number_grids++;
 }
 
 
-/* Patch data are linked together by next and prev pointers within PATCH
-   structure.  Start_patch is the global variable that points to the very
+/* Patch data are linked together by next and prev pointers within PATCH 
+   structure.  Start_patch is the global variable that points to the very 
    first PATCH structure created.  */
 
 patch_data(stream)
@@ -342,7 +340,7 @@ patch_data(stream)
   if (prev_patch) prev_patch->next = current_patch;
 
   waste_line(9,stream);
-  fscanf(stream, "%f %f %f %d %d %d %d",
+  fscanf(stream, "%f %f %f %d %d %d %d", 
 	 &tmp, &tmp, &tmp, corner, corner+1, corner+2, corner+3);
   for (i=0; i<4; i++) current_patch->corner[i] = corner[i];
   prev_patch = current_patch;
@@ -351,9 +349,9 @@ patch_data(stream)
 }
 
 
-/* CFEG data are linked together with next and prev pointers within CFEG
+/* CFEG data are linked together with next and prev pointers within CFEG 
    structure.  Start_cfeg is the global variable that points to the very
-   first CFEG structure created.  CFEG table has the result from meshing
+   first CFEG structure created.  CFEG table has the result from meshing 
    a patch. */
 
 CFEG_table(stream)
@@ -370,7 +368,7 @@ CFEG_table(stream)
   }
 
   waste_line(1,stream);
-  fscanf(stream,"%d %d %d %d %d %d %d %d",
+  fscanf(stream,"%d %d %d %d %d %d %d %d", 
          &NDIM, &LSHAPE, &NODES, &ICONF, &LPH, &LPH_ID, &tmp, &tmp);
 
   if (LPH != 3) waste_line(KC-2,stream);
@@ -381,21 +379,21 @@ CFEG_table(stream)
     current_cfeg->NELS = IV; NELS = IV;
     current_cfeg->prev = prev_cfeg;
     if (prev_cfeg) prev_cfeg->next = current_cfeg;
-
+    
     /* This is the list of elements associated with this particular patch. */
     CALLOC(element_list, NELS, int, ON, AMSC);
     current_cfeg->element_list = element_list;
-
-    current_cfeg->LPH = LPH;
+        
+    current_cfeg->LPH = LPH;             
     current_cfeg->LPH_ID = LPH_ID;
     current_cfeg->LSHAPE = LSHAPE;
     current_cfeg->NDIM = NDIM;
     current_cfeg->NODES = NODES;
     current_cfeg->ICONF = ICONF;
-
+    
     if (LSHAPE==3) {                  /* Triangular elements. */
       for (i=1; i<=NELS/2; i++) {
-        fscanf(stream, "%d %d %d %d %d %d %d %d %d %d",
+        fscanf(stream, "%d %d %d %d %d %d %d %d %d %d", 
           &tmp,&tmp,&tmp,&tmp,&element_num1,&tmp,&tmp,&tmp,&tmp,&element_num2);
         *element_list++ = element_num1;
         *element_list++ = element_num2;
@@ -407,7 +405,7 @@ CFEG_table(stream)
     }
     else if (LSHAPE==4) {             /* Quad elements. */
       for (i=1; i<=NELS/2; i++) {
-        fscanf(stream, "%d %d %d %d %d %d %d %d %d %d",
+        fscanf(stream, "%d %d %d %d %d %d %d %d %d %d", 
           &tmp,&tmp,&tmp,&tmp,&element_num1,&tmp,&tmp,&tmp,&tmp,&element_num2);
         *element_list++ = element_num1;
         *element_list++ = element_num2;
@@ -425,7 +423,7 @@ CFEG_table(stream)
   reads in name data cards and puts information into NAME struct linked list
   - for every component (each must contain at least 1 conductor surface patch)
     stores the component name and patch ID numbers in that component
-  - later Song's patch list is used in assign_names() to set the patch
+  - later Song's patch list is used in assign_names() to set the patch 
     conductor ID numbers
   - the output routine looks at the first sm_patch struct associated with
     each NAME struct to determine the number of the corresponding cond name
@@ -441,7 +439,7 @@ FILE *stream;
     CALLOC(start_name, 1, NAME, ON, AMSC);
     current_name = start_name_this_time = start_name;
   }
-  else{
+  else{ 
     CALLOC(current_name->next, 1, NAME, ON, AMSC);
     current_name = current_name->next;
     if(start_name_this_time == NULL) {	/* if 1st time on this patfront call */
@@ -456,7 +454,7 @@ FILE *stream;
   CALLOC(current_name->name, len+1, char, ON, AMSC);
   delcr(line);
   strcpy(current_name->name, line);
-
+  
   /* input NTYPE ID pair lines until no more, save patch id's that come in */
   for(i = iv = 0; i < KC-1; i++) {	/* loop on lines */
     for(j = 0; j < 5 && iv < IV/2; j++, iv++) { /* loop on items */
@@ -476,16 +474,16 @@ FILE *stream;
     }
   }
   if(patch_cnt == 0) {
-    fprintf(stderr,
-	    "\nname_data: conductor '%s'\n  has no patch - redo naming so that one is included.\n",
+    fprintf(stderr, 
+	    "\nname_data: conductor '%s'\n  has no patch - redo naming so that one is included.\n", 
 	    current_name->name);
     exit(0);
   }
 }
 
-/* This function checks for coordinate-wise equivalent grid points.  Each
+/* This function checks for coordinate-wise equivalent grid points.  Each 
    grid structure has a list of equivalent grids.  If all three coordinates
-   from two grid points are within SMALL_NUMBER, defined in patran.h, then
+   from two grid points are within SMALL_NUMBER, defined in patran.h, then 
    they are equivalent.  */
 
 grid_equiv_check()
@@ -501,7 +499,7 @@ grid_equiv_check()
     grid_ptr_1 = grid_ptr_1->next;
   }
 
-  /* Begin search.  Grid N is compared with grids from N+1 through the end
+  /* Begin search.  Grid N is compared with grids from N+1 through the end 
      of the list.  */
   grid_ptr_1 = start_grid;
   while (grid_ptr_1) {
@@ -520,11 +518,11 @@ grid_equiv_check()
     grid_ptr_1 = grid_ptr_1->next;
   }
 
-  /* Print the equivalent grid information.
+  /* Print the equivalent grid information. 
   grid_ptr_1 = start_grid;
   while (grid_ptr_1) {
     printf("\nGrid %d : (%d)", grid_ptr_1->ID, grid_ptr_1->number_equiv_grids);
-    for (i=0; i<grid_ptr_1->number_equiv_grids; i++)
+    for (i=0; i<grid_ptr_1->number_equiv_grids; i++) 
       printf (" %d ", *(grid_ptr_1->equiv_ID+i));
     grid_ptr_1 = grid_ptr_1->next;
   } */
@@ -536,7 +534,7 @@ int if_same_coord(coord_1, coord_2)
 {
   int i;
 
-  for (i=0; i<3; i++)
+  for (i=0; i<3; i++) 
     if (fabs(coord_1[i] - coord_2[i]) > SMALL_NUMBER) return 0;
   return 1;
 }
@@ -566,10 +564,10 @@ char *str;
 ****************************************************************************/
 
 /* This function fills the table that shows the connectivity of patches.
-   If two patches share at least one common corner point, then they are
-   connected.  It is done by going through all the grid points and finding
+   If two patches share at least one common corner point, then they are 
+   connected.  It is done by going through all the grid points and finding 
    patches that are connected by the grid point.  The end result table is
-   symmetric.  */
+   symmetric.  */   
 
 fill_patch_patch_table(patch_patch_table)
   int *patch_patch_table;
@@ -580,9 +578,9 @@ fill_patch_patch_table(patch_patch_table)
 
   grid_ptr = start_grid;
   while (grid_ptr) {
-
+    
     /* Patch_count is generic counter of current position in the patch array,
-       start_patch.  Patch_count_save is index of the last patch that had
+       start_patch.  Patch_count_save is index of the last patch that had 
        the current grid as its corner.  */
     patch_count = 0;
     patch_count_save = 0;
@@ -591,12 +589,12 @@ fill_patch_patch_table(patch_patch_table)
 
     while (patch_ptr) {
       corner = patch_ptr->corner;
-      for (i=0; i<4; i++)
+      for (i=0; i<4; i++) 
 	if (if_same_grid(*corner++,grid_ptr)) {
-	  if (current_table_ptr) {  /* Have we already found another patch
+	  if (current_table_ptr) {  /* Have we already found another patch 
 				       with the same grid as its corner?  */
 	    *(current_table_ptr+patch_count)=1;
-	    *(patch_patch_table + (patch_count * number_patches)
+	    *(patch_patch_table + (patch_count * number_patches) 
 	      + patch_count_save)=1;
 	  }
 	  current_table_ptr = patch_patch_table + patch_count*number_patches;
@@ -610,7 +608,7 @@ fill_patch_patch_table(patch_patch_table)
 }
 
 
-/* Return 1 if ID matches grid_ptr's ID or IDs of its equivalent grids,
+/* Return 1 if ID matches grid_ptr's ID or IDs of its equivalent grids, 
    and 0 otherwise. */
 
 int if_same_grid(ID,grid_ptr)
@@ -622,7 +620,7 @@ int if_same_grid(ID,grid_ptr)
   if ((grid_ptr->ID)==ID) return 1;
   else {
     equiv_ID = grid_ptr->equiv_ID;
-    for (i=0; i<grid_ptr->number_equiv_grids; i++)
+    for (i=0; i<grid_ptr->number_equiv_grids; i++) 
       if (ID == equiv_ID[i]) return 1;
     return 0;
   }
@@ -640,7 +638,7 @@ assign_conductor(patch_patch_table)
 
   conductor_count=1;
 
-  /* Sets all the patches to conductor 0, meaning that it is yet to be
+  /* Sets all the patches to conductor 0, meaning that it is yet to be 
      assigned a conductor_ID.  */
   patch_ptr = start_patch;
   while (patch_ptr) {
@@ -648,13 +646,13 @@ assign_conductor(patch_patch_table)
     patch_ptr = patch_ptr->next;
   }
 
-  /* Current_table_ptr points the row that needs to be searched through.
+  /* Current_table_ptr points the row that needs to be searched through. 
      That row is associated with the current patch in need of a conductor
      number.  */
   current_table_ptr = patch_patch_table;
   patch_ptr = start_patch;
   while (patch_ptr) {
-    if ((patch_ptr->conductor_ID) == 0) {  /* If the patch is not assigned
+    if ((patch_ptr->conductor_ID) == 0) {  /* If the patch is not assigned 
 					      a conductor number. */
       patch_ptr->conductor_ID = conductor_count;
       depth_search(patch_patch_table,current_table_ptr,conductor_count);
@@ -668,7 +666,7 @@ assign_conductor(patch_patch_table)
   /* Prints the conductor information.
   patch_ptr = start_patch;
   while (patch_ptr) {
-    printf("\nPatch %d   Conductor %d",
+    printf("\nPatch %d   Conductor %d", 
 	   patch_ptr->ID, patch_ptr->conductor_ID);
     patch_ptr = patch_ptr->next;
   } */
@@ -689,14 +687,14 @@ depth_search(patch_patch_table,current_table_ptr,conductor_count)
   for (i=0; i<number_patches; i++) {
     if ((*(current_table_ptr+i)) != 0) {  /* If the current patch is connected
 					     to i'th patch. */
-      if (patch_ptr->conductor_ID == 0) {  /* If the patch is yet to be
+      if (patch_ptr->conductor_ID == 0) {  /* If the patch is yet to be 
 					      assigned a conductor number. */
 	patch_ptr -> conductor_ID = conductor_count;
 	new_table_ptr = patch_patch_table+i*number_patches;
 
-	/* Call depth_search recursively to continue searching for
+	/* Call depth_search recursively to continue searching for 
 	   connected patches. */
-	depth_search(patch_patch_table,new_table_ptr,conductor_count);
+	depth_search(patch_patch_table,new_table_ptr,conductor_count); 	
       }
     }
     patch_ptr=patch_ptr->next;
@@ -726,7 +724,7 @@ int cond_num;
 
 /****************************************************************************
 
-  The following functions create the linked list of charges that can be
+  The following functions create the linked list of charges that can be 
   used in Keith's FastCap program.
 
 ****************************************************************************/
@@ -767,7 +765,7 @@ char *name_suffix;
 /*      printf("\nCEFG %d  LPH %d LPH_ID %d Conductor_ID %d",
 	     cfeg_ptr->ID,cfeg_ptr->LPH,cfeg_ptr->LPH_ID,conductor_ID); */
 
-      /* For each patch, call the subroutine to handle the detail.
+      /* For each patch, call the subroutine to handle the detail. 
          Make sure all the lists of charges are linked. */
       element_list = cfeg_ptr->element_list;
       if (!first_pq) {
@@ -775,10 +773,10 @@ char *name_suffix;
 	current_pq = first_pq + NELS - 1;
       }
       else {
-	current_pq->next =
+	current_pq->next = 
 	  make_charges_patch(NELS,element_list,conductor_ID);
 	current_pq = (current_pq->next) + NELS - 1;
-      }
+      }	
     }
     cfeg_ptr=cfeg_ptr->next;
   }
@@ -810,33 +808,33 @@ charge *make_charges_patch(NELS,element_list,conductor_ID)
   /* NELS stands for number of elements. */
   for (i=0; i<NELS; i++) {
     (pq+i)->cond = conductor_ID;
-
+    
     /* Original element number in Neutral file can be a negative number.  */
     if ((element_number= *(element_list+i))<0) element_number= -element_number;
     element_ptr = element_search_table[element_number];
     element_corner_ptr = element_ptr->corner;
-
+    
     /* Pointers to the corner points' coordinates are set.  */
 
     if ((element_ptr->shape) == 4) {  /* Quadrilateral panels. */
       (pq+i)->shape = 4;
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[0], node_ptr->coord);
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[1], node_ptr->coord);
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[2], node_ptr->coord);
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[3], node_ptr->coord);
     }
     else {  /* Triangular panels. */
 /*printf("\nTTT\n");*/
       (pq+i)->shape = 3;
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[0], node_ptr->coord);
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[1], node_ptr->coord);
-      node_ptr = node_search_table[*(element_corner_ptr++)];
+      node_ptr = node_search_table[*(element_corner_ptr++)]; 
       VCOPY((pq+i)->corner[2], node_ptr->coord);
     }
   }
@@ -844,7 +842,7 @@ charge *make_charges_patch(NELS,element_list,conductor_ID)
 }
 
 
-/*
+/* 
   assigns correct conductor number to all patches in name structs
   - really already done implicitly in name_data by setting up sm_patch lists
   - conductor_ID of first patch is used as the number associated w/the name
@@ -898,15 +896,15 @@ assign_names()
 
   /* check to see if all conductors have a name and if too many names */
   if(cnt < conductor_count - 1) {
-    fprintf(stderr, "\nassign_names: %d conductors have no names\n",
+    fprintf(stderr, "\nassign_names: %d conductors have no names\n", 
 	    conductor_count - 1 - cnt);
     exit(0);
   }
   if(cnt > conductor_count - 1) {
-    fprintf(stderr, "\nassign_names: %d names given for %d conductors\n",
+    fprintf(stderr, "\nassign_names: %d names given for %d conductors\n", 
 	    cnt, conductor_count - 1);
     exit(0);
   }
 
-
+    
 }

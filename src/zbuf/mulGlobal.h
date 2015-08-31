@@ -44,9 +44,8 @@ extern char *   realloc();
 #else
 #include <stdlib.h>
 #endif /* end if NEWS */
-// Enrico
-extern char *   ualloc();
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 
 /* fastcap data structures */
@@ -62,9 +61,11 @@ extern char *   ualloc();
 #endif
 #endif
 
+extern char *ualloc();  /* SRW */
+
 #define VERSION 2.0
 
-/***********************************************************************
+/*********************************************************************** 
   macros for allocation with checks for NULL pntrs and 0 byte requests
   - also keep an allocated memory count
   - CALLOC() is used when the memory must be zeroed
@@ -102,6 +103,10 @@ extern long memMSC;
 #define AL2P 7
 #define AQ2PD 8
 #define AMSC 9
+
+#ifdef NO_SBRK
+#define sbrk(x) 0
+#endif
 
 #define DUMPALLOCSIZ                                                   \
 {                                                                      \
@@ -267,7 +272,7 @@ misc. global macros
 #define NOTFND -2
 
 /***********************************************************************
-
+ 
   configuration and debug flags
 
 ***********************************************************************/

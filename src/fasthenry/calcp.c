@@ -17,7 +17,16 @@ double *pfd;   /* left over from fastcap */
 
   if (pchg1->fil->filnumber == pchg2->fil->filnumber) 
     /* self term */
+#if SUPERCON == ON
+    { double tmp = selfterm(pchg1->fil);
+      struct Segment *seg1 = pchg1->fil->segm;
+      if (seg1->lambda != 0.0)
+        tmp += seg1->r2*pchg1->fil->length/pchg1->fil->area;
+      return (tmp);
+    }
+#else
     return selfterm(pchg1->fil);
+#endif
   else
     /* calculate mutual inductance of the two filaments */
     return mutual(pchg1->fil, pchg2->fil);

@@ -1,0 +1,96 @@
+#! /bin/sh
+
+program=fasthenry
+version="3.0wr"
+
+# The inno packager exeutable.
+inno="/inno-5.2.2/iscc"
+
+topdir=data
+
+rm -rf $topdir
+mkdir $topdir
+
+bin=$topdir/bin
+share=$topdir/share
+lib=$share/fasthenry
+docs=$lib/docs
+examples=$lib/examples
+
+srcbin=../bin
+srclib=..
+
+mkdir $bin
+mkdir $share
+mkdir $lib
+mkdir $docs
+mkdir $examples
+
+echo copying $srcbin
+install -sc -m 0755 -o Administrator -g None $srcbin/fasthenry.exe $bin
+install -sc -m 0755 -o Administrator -g None $srcbin/zbuf.exe $bin
+
+echo copying $srclib/examples
+cp $srclib/examples/30pin.inp $examples
+cp $srclib/examples/3d_example2.inp $examples
+cp $srclib/examples/3d_example2_coarse.inp $examples
+cp $srclib/examples/Zc_3d_examp2.mat $examples
+cp $srclib/examples/Zc_pin_con7.mat $examples
+cp $srclib/examples/broken.inp $examples
+cp $srclib/examples/gpexamp_copper.inp $examples
+cp $srclib/examples/hole.inp $examples
+cp $srclib/examples/holey_gp.inp $examples
+cp $srclib/examples/make_nonuniform.c $examples
+cp $srclib/examples/msm.inp $examples
+cp $srclib/examples/nonuni01.inp $examples
+cp $srclib/examples/onebargp.inp $examples
+cp $srclib/examples/pin-con2seg.inp $examples
+cp $srclib/examples/pin-con7.inp $examples
+cp $srclib/examples/pin-connect.inp $examples
+cp $srclib/examples/plane.in $examples
+cp $srclib/examples/rom_check_con7_r20.ckt $examples
+cp $srclib/examples/simple_gp.inp $examples
+cp $srclib/examples/sline1.inp $examples
+cp $srclib/examples/sline2.inp $examples
+cp $srclib/examples/template.inp $examples
+cp $srclib/examples/together.inp $examples
+cp $srclib/examples/together_nonuni.inp $examples
+cp $srclib/examples/trace.test.release $examples
+cp $srclib/examples/trace_over_mesh_new.inp $examples
+cp $srclib/examples/tree_sample.hier $examples
+cp $srclib/examples/tree_sample.inp $examples
+cp $srclib/examples/vias.inp $examples
+u2d $examples/*
+rm -f $examples/*~
+
+echo copying $srclib/doc
+cp $srclib/README $docs
+cp $srclib/README.MIT $docs
+cp $srclib/doc/README $docs/README.DOCS
+cp $srclib/doc/manual_001.ps $docs
+cp $srclib/doc/manual_002.ps $docs
+cp $srclib/doc/manual_003.ps $docs
+cp $srclib/doc/ms_thesis.ps $docs
+cp $srclib/doc/nonuniform_manual_1.ps $docs
+cp $srclib/doc/nonuniform_manual_2.ps $docs
+u2d $docs/README
+u2d $docs/README.MIT
+u2d $docs/README.DOCS
+rm -f $docs/*~
+
+echo Completed copying files to data directory
+
+sed -e s/VERSION/$version/ < $program.iss.in > $program.iss
+u2d $program.iss
+
+$inno $program.iss > build.log
+if [ $? != 0 ]; then
+    echo Compile failed!
+    exit 1
+fi
+
+mv Output/*.exe .
+rmdir Output
+rm $program.iss
+echo Done
+

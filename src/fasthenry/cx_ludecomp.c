@@ -28,7 +28,7 @@ int allocate;
   for(k = 0; k < size-1; k++) {	/* loop on rows */
     if(mat[k][k].real == 0.0 && mat[k][k].imag == 0.0) {
       fprintf(stderr, "ludecomp: zero pivot\n");
-      exit(0);
+      exit(1);
     }
     for(i = k+1; i < size; i++) { /* loop on remaining rows */
       /*factor = (mat[i][k] /= mat[k][k]);*/

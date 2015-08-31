@@ -13,18 +13,8 @@
  *  spPartition
  *
  *  >>> Other functions contained in this file:
- *  FactorComplexMatrix         CreateInternalVectors
- *  CountMarkowitz              MarkowitzProducts
- *  SearchForPivot              SearchForSingleton
- *  QuicklySearchDiagonal       SearchDiagonal
- *  SearchEntireMatrix          FindLargestInCol
- *  FindBiggestInColExclude     ExchangeRowsAndCols
- *  spcRowExchange              spcColExchange
- *  ExchangeColElements         ExchangeRowElements
- *  RealRowColElimination       ComplexRowColElimination
- *  UpdateMarkowitzNumbers      CreateFillin
- *  MatrixIsSingular            ZeroPivot
- *  WriteStatus
+ *  spcRowExchange
+ *  spcColExchange
  */
 
 
@@ -52,6 +42,7 @@ static char RCSid[] =
 #endif
 
 
+
 /*
  *  IMPORTS
  *
@@ -69,31 +60,32 @@ static char RCSid[] =
 #include "spMatrix.h"
 #include "spDefs.h"
 
-
-// Enrico, prototypes
-static FactorComplexMatrix();
-static CreateInternalVectors();
-static CountMarkowitz();
-static MarkowitzProducts();
-static ElementPtr SearchForPivot();
-static ElementPtr SearchForSingleton();
-static ElementPtr QuicklySearchDiagonal();
-static ElementPtr SearchDiagonal();
-static ElementPtr SearchEntireMatrix();
-static RealNumber FindLargestInCol();
-static RealNumber FindBiggestInColExclude();
-static ExchangeRowsAndCols();
-static ExchangeColElements();
-static ExchangeRowElements();
-static RealRowColElimination();
-static ComplexRowColElimination();
-static UpdateMarkowitzNumbers();
-static ElementPtr CreateFillin();
-static MatrixIsSingular();
-static ZeroPivot();
-
+static  FactorComplexMatrix();
+static  CreateInternalVectors();
+static  CountMarkowitz();
+static  MarkowitzProducts();
+static  ElementPtr SearchForPivot();
+static  ElementPtr SearchForSingleton();
+static  ElementPtr QuicklySearchDiagonal();
+static  ElementPtr SearchDiagonal();
+static  ElementPtr SearchEntireMatrix();
+static  RealNumber FindLargestInCol();
+static  RealNumber FindBiggestInColExclude();
+static  ExchangeRowsAndCols();
+static  ExchangeColElements();
+static  ExchangeRowElements();
+static  RealRowColElimination();
+static  ComplexRowColElimination();
+static  UpdateMarkowitzNumbers();
+static  ElementPtr CreateFillin();
+static  MatrixIsSingular();
+static  ZeroPivot();
+static  WriteStatus();
 
 
+
+
+
 /*
  *  ORDER AND FACTOR MATRIX
  *
@@ -507,7 +499,7 @@ ComplexNumber Mult, Pivot;
 /* Check for singular matrix. */
             Pivot = Dest[Step];
             if (CMPLX_1_NORM(Pivot) == 0.0) return ZeroPivot( Matrix, Step );
-            CMPLX_RECIPROCAL( *Matrix->Diag[Step], Pivot );
+            CMPLX_RECIPROCAL( *Matrix->Diag[Step], Pivot );  
         }
         else
         {   /* Update column using direct addressing scatter-gather. */
@@ -538,7 +530,7 @@ ComplexNumber Mult, Pivot;
 /* Check for singular matrix. */
             pElement = Matrix->Diag[Step];
             if (ELEMENT_MAG(pElement) == 0.0) return ZeroPivot( Matrix, Step );
-            CMPLX_RECIPROCAL( *pElement, *pElement );
+            CMPLX_RECIPROCAL( *pElement, *pElement );  
         }
     }
 
@@ -1052,7 +1044,7 @@ ElementPtr  SearchEntireMatrix();
     {
 /*
  * Either no singletons exist or they weren't acceptable.  Take quick first
- * pass at searching diagonal.  First search for element on diagonal of
+ * pass at searching diagonal.  First search for element on diagonal of 
  * remaining submatrix with smallest Markowitz product, then check to see
  * if it okay numerically.  If not, QuicklySearchDiagonal fails.
  */
@@ -2301,7 +2293,7 @@ ElementPtr  Element1, Element2;
  *
  *  Performs all required operations to exchange two columns. Those operations
  *  include: swap FirstInCol pointers, fixing up the NextInRow pointers,
- *  swapping column indexes in MatrixElements, and swapping Markowitz
+ *  swapping column indexes in MatrixElements, and swapping Markowitz 
  *  column counts.
  *
  *  >>> Arguments:

@@ -3,8 +3,7 @@
 #include "induct.h"
 #include "sparse/spMatrix.h"
 
-// redundant; already contained in "sparse/spMatrix.h"
-//double *spGetElement();
+/* SRW, alredy declared in spMatrix.h    double *spGetElement(); */
 
 static char outfname[80];
 
@@ -18,7 +17,7 @@ SYS *indsys;
 
   indsys->precond_type = precond_choice;
   indsys->precond_subtype = OFF;   /* will be changed below if necessary */
-
+  
   /* default */
   if (precond_choice == ON || precond_choice == SPARSE) {
     indsys->precond_type = SPARSE;
@@ -31,7 +30,7 @@ SYS *indsys;
   else if (precond_choice == POSDEF_LOC) {
     indsys->precond_type = LOC;
     indsys->precond_subtype = POSDEF_LOC;
-    if (indsys->opts->mat_vect_prod == DIRECT)
+    if (indsys->opts->mat_vect_prod == DIRECT) 
       fprintf(stderr,"Warning: -pposdef not supported with direct matrix\n \
 vector products.  POSDEF option ignored.\n");
   }
@@ -48,7 +47,7 @@ vector products.  POSDEF option ignored.\n");
     indsys->precond_subtype = SHELLS;
     radius_factor = indsys->opts->shell_r0;
   }
-
+    
   if (indsys->precond_type == SPARSE) {
 /*
     indsys->diagL = (double *)MattAlloc(indsys->num_fils,sizeof(double));
@@ -73,6 +72,12 @@ SYS *indsys;
       fil_j = &(seg1->filaments[j]);
       filnum_j = fil_j->filnumber;
       diagL[filnum_j] = selfterm(fil_j);
+#if SUPERCON == ON
+/* note that this routine is not used */
+      if (seg1->lambda != 0.0)
+        diagL[filnum_j] +=
+            seg1->r2*fil_j->length/fil_j->area;
+#endif
     }
   }
 }
@@ -123,8 +128,8 @@ double w;  /* frequency */
   }
 #endif
   }
-  else if (indsys->precond_subtype == CUBEL
-           || indsys->precond_subtype == SHELLS)
+  else if (indsys->precond_subtype == CUBEL 
+           || indsys->precond_subtype == SHELLS) 
     indPrecond(sys, indsys, w);
   else if (indsys->precond_subtype == SEGML)
     fill_bySegment(sys, indsys, w);
@@ -132,7 +137,7 @@ double w;  /* frequency */
     printf("Unknown Sparse Preconditioner\n");
     exit(1);
   }
-
+    
   if (indsys->opts->dumpMats & PRE) {
     concat4(outfname,"Pre",indsys->opts->suffix,".mat");
     if (spFileMatrix(Matrix, outfname, "Precond", 0, 1, 1) == 0)
@@ -141,7 +146,7 @@ double w;  /* frequency */
 
 }
 
-/* this is called by choose_and_setup_precond() and also by main() if
+/* this is called by choose_and_setup_precond() and also by main() if 
    dont_form_Z is true (fmin = 0) */
 create_sparMatrix(indsys)
 SYS *indsys;
@@ -161,7 +166,7 @@ SYS *indsys;
     fprintf(stderr,"Couldn't create sparse matrix, err %d\n", err);
     exit(1);
   }
-}
+} 
 
 fill_bySegment(sys, indsys, w)
 ssystem *sys;
@@ -198,7 +203,7 @@ double w;
 
   max_fils = 0;
   for(seg = indsys->segment; seg != NULL; seg = seg->next)
-    if (seg->num_fils > max_fils)
+    if (seg->num_fils > max_fils) 
       max_fils = seg->num_fils;
 
   fillist = (Filcube *)malloc(max_fils*sizeof(Filcube));
@@ -243,7 +248,7 @@ double w;
 	    while(k < nc->numnbrs && nc->nbrs[k] != fillist[j].fc)
 	      k++;
 	    if (k < nc->numnbrs) {
-	      mat[i][j] = mat[j][i] =
+	      mat[i][j] = mat[j][i] = 
 		(nc->directmats[k])[cindex][fillist[j].cindex];
 	    }
 	    else {
@@ -263,21 +268,21 @@ double w;
 	}
       }
     }
-
+	
     for(i = 0; i < num_fils; i++) {
       if (ismulti)
 	fili = fillist[i].pchg->fil->filnumber;
       else
 	fili = seg->filaments[i].filnumber;
       for(j = 0; j < num_fils; j++) {
-	if (ismulti)
+	if (ismulti) 
 	  filj = fillist[j].pchg->fil->filnumber;
 	else
 	  filj = seg->filaments[j].filnumber;
 	for(mtranj=Mtrans[filj]; mtranj != NULL; mtranj = mtranj->mnext) {
 	  for(mtrani=Mtrans[fili]; mtrani != NULL; mtrani = mtrani->mnext) {
 	    ((CX *)spGetElement(Matrix,mtrani->filindex+1,
-				mtranj->filindex+1))->imag
+				mtranj->filindex+1))->imag 
 				  += w*mtrani->sign*mat[i][j]*mtranj->sign;
 	    if (i == j)
 	      ((CX *)spGetElement(Matrix,mtrani->filindex+1,
@@ -300,7 +305,7 @@ double w;
 /* this is mostly called by fill_spPre() to form the precondtioner */
 /* it used be called from main() if we are solving by LU decomposition
    and fmin=0 (the MZMt matrix will be a sparse MRMt).  but
-   now has it's own function, fill_diagR()
+   now has it's own function, fill_diagR() 
 */
 fill_diagL(sys, indsys, w)
 ssystem *sys;
@@ -327,7 +332,7 @@ double w;
   CX *elem;
   int ismulti, filnum;
 
-  ismulti = (indsys->opts->mat_vect_prod == MULTIPOLE
+  ismulti = (indsys->opts->mat_vect_prod == MULTIPOLE 
              && indsys->opts->soln_technique != LUDECOMP);
 
   for(seg = indsys->segment; seg != NULL; seg = seg->next) {
@@ -350,7 +355,7 @@ double w;
 	  exit(1);
 	}
 	cindex = j;
-
+	
 	val = nc->directmats[0][cindex][cindex];
       }
       else {
@@ -363,7 +368,7 @@ double w;
       for(mtranj=Mtrans[filnum]; mtranj != NULL; mtranj = mtranj->mnext) {
 	  for(mtrani=Mtrans[filnum]; mtrani != NULL; mtrani = mtrani->mnext) {
 	    (elem = (CX *)spGetElement(Matrix,mtrani->filindex+1,
-				       mtranj->filindex+1))->imag
+				       mtranj->filindex+1))->imag 
 					 += w*mtrani->sign*val*mtranj->sign;
 	    elem->real += mtrani->sign*valR*mtranj->sign;
 	  }
@@ -376,7 +381,7 @@ double w;
    Called from main() if we are solving by LU decomposition
    and fmin=0 (the MZMt matrix will be a sparse MRMt).
 
-   It puts the resistance matrix into a sparse matrix structure for a quick
+   It puts the resistance matrix into a sparse matrix structure for a quick 
    solve.  I thought that separating it out and using real matrices
    for this part would increase speed, but it didn't seem to.
    The reordering and fillin manipulation must be dominating and
@@ -413,9 +418,9 @@ SYS *indsys;
 
 /* computes  mu/(4 pi r0) * (l_i,l_j) where (l_i,l_j) is the dot product
    of the vectors from one end of each fil to the other end and r0 is
-   the multipole cube side length times a factor (radius_factor) which
-   is specified on the command line or defaults to 0.87 = sqrt(3)*0.5
-   so that the sphere encompasses the whole cube */
+   the multipole cube side length times a factor (radius_factor) which 
+   is specified on the command line or defaults to 0.87 = sqrt(3)*0.5 
+   so that the sphere encompasses the whole cube */ 
 double shift_mutual(fil_i, fil_j, sys)
 FILAMENT *fil_i, *fil_j;
 ssystem *sys;

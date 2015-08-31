@@ -70,7 +70,7 @@ SYS *indsys;
   
 #if DIRSOL == ON || EXPGCR == ON
   /*fprintf(stderr, "DIRSOL and EXPGCR compile options not implemented\n");
-    exit(0);*/
+    exit(1);*/
   *numLev = 0;	       	/* put all the charges in first cube */
   *autlev = OFF;
 #endif
@@ -176,14 +176,14 @@ SYS *indsys;
   if(num_both_panels > 0) {
     fprintf(stderr, 
 	    "Thin cond panels on dielectric interfaces not supported\n");
-    exit(0);
+    exit(1);
   }
 
 #if CKCLST == ON
   fprintf(stdout, "Checking panels...");
   if(has_duplicate_panels(stdout, chglist)) {
     fprintf(stdout, "charge list has duplicates\n");
-    exit(-1);
+    exit(1);
   }
   fprintf(stdout, "no duplicates\n");
 #endif

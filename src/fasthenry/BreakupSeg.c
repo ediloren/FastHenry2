@@ -17,7 +17,7 @@ int is_initial;    /* is this the initial refinement call */
   for(seg = indsys->segment; seg != NULL; seg = seg->next) {
     if (seg->length > length/DIVFACT) {
       if (indsys->opts->auto_refine == ON || is_initial == TRUE) {
-	if (seg->type == NORMAL)
+	if (seg->type == NORMAL) 
 	  BreakupSeg(seg, length/DIVFACT, charges, indsys);
 	else if (!warned) {
 	  fprintf(stdout, "DivideSegs: Warning: tried to divide an indivisable segment.\n");
@@ -58,13 +58,11 @@ SYS *indsys;
   NPATH *apath;
   SPATH *condpath, *lastpath, *headpath, *condbeg, *condend;
   int backwards;
-
+    
   oldlength = seg->length;
   pieces = seg->length/maxlength + 1;
-
-  // Enrico, commented line because length
-  // is re-calculated later, see bug fix
-  //seg->length = seg->length/pieces;
+  
+  seg->length = seg->length/pieces;
   origsegnext = seg->next;
 
   node0 = seg->node[0];
@@ -79,32 +77,6 @@ SYS *indsys;
   x = nodelast->x + dx;
   y = nodelast->y + dy;
   z = nodelast->z + dz;
-
-  // Enrico, bug fix
-  // The following piece of code has a potential numerical problem.
-  // The problem arises when 'node0', 'node1' end points coordinates
-  // are big numbers, but the segment length is small.
-  // In this case, breaking up the segment, the new length of the first
-  // sub-segment was calculated
-  // with 'seg->length = seg->length/pieces;' (see above), while the new
-  // end points coodinates by calculating 'dx', 'dy', 'dz' (small) and
-  // adding them to 'node0->x', 'node0->y', 'node0->z' (big).
-  // A possible fix would be: x = node0->x + dx =
-  // = node0->x + (node1->x - node0->x)/ pieces = (node0->x*(pieces-1) + node1->x) / pieces;
-  // but since all new sub-segments nodes positions are calculated starting
-  // from 'dx', 'dy', 'dz' it is more straightforward to re-calculate
-  // the length, as it is done for all sub-segments but the first one
-  // later on by 'makeseg()'.
-  // Note that this bug caused the problems in 'joelself.c', see the bug
-  // fix in 'exact_mutual()', since there the segment length was again
-  // calculated (indirectly, as a projection) but starting from the nodes
-  // positions and then compared with the length stored in 'seg->length'
-  seg->length = sqrt( (node0->x - x)*(node0->x - x)
-		            + (node0->y - y)*(node0->y - y)
-		            + (node0->z - z)*(node0->z - z) );
-  //
-  // end of bug fix
-  //
 
   if (nodelast->type != NORMAL) {
     printf("Internal bug.  nodelast->type != NORMAL\n");
@@ -126,13 +98,13 @@ SYS *indsys;
   chgend = seg->filaments[seg->num_fils-1].pchg;
   oldnext = chgend->next;
   for(i = 1; i < pieces; i++) {
-
+    
     if (i != pieces - 1) {
       x = nodelast->x + dx;
       y = nodelast->y + dy;
       z = nodelast->z + dz;
       sprintf(name, "%s_%d",node0->name, i);
-      newnode = makenode(name, indsys->num_nodes++, x, y, z, nodelast->type,
+      newnode = makenode(name, indsys->num_nodes++, x, y, z, nodelast->type, 
 			 NULL);
       newnode->next = nodelast->next;
       nodelast->next = newnode;
@@ -148,23 +120,31 @@ SYS *indsys;
 
     sprintf(name, "%s_%d",seg->name,i);
     newseg = makeseg(name, nodelast, newnode, seg->height, seg->width,
-		     seg->sigma, seg->hinc, seg->winc, seg->r_height,
+		     seg->sigma,
+#if SUPERCON == ON
+		     seg->lambda, 
+#endif
+                     seg->hinc, seg->winc, seg->r_height,
 		     seg->r_width, seg->widthdir,
 		     indsys->num_segs++, NORMAL, NULL);
 
+#if SUPERCON == ON
+    newseg->r1 = seg->r1;  /* bug fix 6/19/01 */
+    newseg->r2 = seg->r2;
+#endif
     newseg->next = lastseg->next;
     lastseg->next = newseg;
 
     chgend = assignFil(newseg, &(indsys->num_fils), chgend);
-
+  
     lastseg = newseg;
-    nodelast = newnode;
+    nodelast = newnode;    
 
   } /* for(i = pieces..) */
   chgend->next = oldnext;
 
 }
-
+    
 alterFils(seg, node, dx, dy, dz)
 SEGMENT *seg;
 NODES *node;

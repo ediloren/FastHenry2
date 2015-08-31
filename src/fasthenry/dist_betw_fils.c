@@ -9,7 +9,7 @@ double dist_between();
 double min_endpt_sep();
 double dist_betw_pt_and_fil();
 
-/* The line defined by fil1 is r = s1 + t1*D1 where s1 is the vector
+/* The line defined by fil1 is r = s1 + t1*D1 where s1 is the vector 
    (fil1->x[0], y[0], z[0]) and D1 is (x[1] - x[0], y[1] - y[0], z[1] - z[0]).
     t1 is a scalar from 0 to 1.  Similarly for fil2 */
 
@@ -22,7 +22,7 @@ int *parallel;
   double D1[3], D2[3], s1[3], s2[3], e[3], *D, t1, t2, s1ms2[3], s1me[3];
   double D1D1, D1D2, D2D2, D1s1s2, D2s1s2;
   double tmp1, tmp2;
-
+  
   s1[XX] = fil1->x[0];
   s1[YY] = fil1->y[0];
   s1[ZZ] = fil1->z[0];
@@ -37,28 +37,13 @@ int *parallel;
   getD(fil1, D1);
   getD(fil2, D2);
 
-  // square of the length of fil1 (square of the modulus of the vector joining the endpoints)
   D1D1 = vdotp(D1,D1);
-  // cosine of the angle between fil1 and fil2 (times both modulus)
   D1D2 = vdotp(D1,D2);
   D2D2 = vdotp(D2,D2);
   D1s1s2 = vdotp(D1,s1ms2);
   D2s1s2 = vdotp(D2,s1ms2);
 
-  // Compiled with gcc under Fedora 16, this code triggered an error (t = 1
-  // in dist_betw_pt_and_fil() )
-  if(fabs(D1D1) < EPS) {
-    printf("Internal error in dist_betw_fils: D1D1 too small!\n");
-  }
-  if(fabs(D2D2) < EPS) {
-    printf("Internal error in dist_betw_fils: D2D2 too small!\n");
-  }
-
   tmp1 = D1D2*D1D2/D1D1 - D2D2;
-
-  if(fabs(D2D2) < EPS) {
-    printf("Internal error in dist_betw_fils: D2D2 too small!\n");
-  }
 
   if (fabs(tmp1/D2D2) < EPS) {
     /* fils are parallel */
@@ -71,9 +56,6 @@ int *parallel;
   t2 = (D1D2*D1s1s2/D1D1 - D2s1s2)/tmp1;
   t1 = (t2*D1D2 - D1s1s2)/D1D1;
 
-  // debug
-  //printf("t1 %g, t2 %d\n");
-
   if (t1 <= 1 && t1 >= 0) {
     if (t2 <= 1 && t2 >= 0) {
       getr(&x1,&y1,&z1,s1,t1,D1);
@@ -81,31 +63,19 @@ int *parallel;
       return dist_between(x1,y1,z1,x2,y2,z2);
     }
     else
-// debug
-  if(t2 == 1.0) {
-    printf("Internal error in dist_betw_fils: t2 is %g!\n", t2);
-  }
-//printf("t2 %d\n");
-
-     /* nearest point along fil2 is outside line segment defining filament */
+      /* nearest point along fil2 is outside line segment defining filament */
       return dist_betw_pt_and_fil(fil1, D1, s1, D1D1, fil2,t2);
   }
   else {
     if (t2 <= 1 && t2 >= 0) {
-
- // debug
-  if(t1 == 1.0) {
-    printf("Internal error in dist_betw_fils: t1 is %g!\n", t1);
-  }
-//printf("t1 %g\n");
-     /* nearest point along fil1 is outside line segment defining filament */
+      /* nearest point along fil1 is outside line segment defining filament */
       return dist_betw_pt_and_fil(fil2, D2, s2, D2D2, fil1,t1);
-    }
-    else
+    }    
+    else 
       /* both point are out of range, just compare endpoints */
       return min_endpt_sep(fil1,fil2);
   }
-
+  
 }
 
 getD(fil, D)
@@ -200,9 +170,9 @@ double *D, *s, t, DD;
   sme[XX] = s[XX] - e[XX];
   sme[YY] = s[YY] - e[YY];
   sme[ZZ] = s[ZZ] - e[ZZ];
-
+  
   Dsme = vdotp(D,sme);
-
+  
   tnew = -Dsme/DD;
 
   if (tnew <= 1 && tnew >= 0) {
@@ -218,7 +188,7 @@ double *D, *s, t, DD;
     else
       idx = 1;
 
-    return dist_between(e[XX], e[YY], e[ZZ],
+    return dist_between(e[XX], e[YY], e[ZZ], 
 			fil_line->x[idx], fil_line->y[idx], fil_line->z[idx]);
   }
 }
@@ -241,7 +211,7 @@ fill_Gquad()
 
   Gweight = (double **)MattAlloc(MAXsubfils+1, sizeof(double *));
   Gpoint = (double **)MattAlloc(MAXsubfils+1, sizeof(double *));
-
+  
   for(i = 1; i <= MAXsubfils; i++) {
     Gweight[i] = (double *)MattAlloc(i, sizeof(double));
     Gpoint[i] = (double *)MattAlloc(i, sizeof(double));
@@ -283,7 +253,7 @@ int nfils;
     wy = wy/mag;
     wz = wz/mag;
   }
-
+  
   hx = -wy*(fil->z[1] - fil->z[0]) + (fil->y[1] - fil->y[0])*wz;
   hy = -wz*(fil->x[1] - fil->x[0]) + (fil->z[1] - fil->z[0])*wx;
   hz = -wx*(fil->y[1] - fil->y[0]) + (fil->x[1] - fil->x[0])*wy;
@@ -325,7 +295,7 @@ main()
     scanf("%lf %lf %lf", &(fil1.x[0]), &(fil1.y[0]), &(fil1.z[0]));
     printf("fil1 2: ");
     scanf("%lf %lf %lf", &(fil1.x[1]), &(fil1.y[1]), &(fil1.z[1]));
-
+    
     printf("fil2 1: ");
     scanf("%lf %lf %lf", &(fil2.x[0]), &(fil2.y[0]), &(fil2.z[0]));
     printf("fil2 2: ");
@@ -334,7 +304,7 @@ main()
     printf("dist = %lg\n",dist_betw_fils(&fil1, &fil2));
   }
 }
-#endif
+#endif 
 
 gquad_weights(N,p,w)
 int N;
@@ -344,7 +314,7 @@ double *p,*w;
 
   if ( !((N>=2)&&(N<=6)) &&(N!=19)&&(N!=30)&&(N!=25)&&(N!=15)&&(N!=10)) {
     fprintf(stderr,"Hey, bad number of Guassian Quad points\n");
-    exit(0);
+    exit(1);
   }
   if (N==10) {
     p[1]= -.9739065285; p[10]= -p[1];

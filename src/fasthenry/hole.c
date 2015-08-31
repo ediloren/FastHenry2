@@ -27,7 +27,7 @@ char *str, *line;
     }
     if (*str == '\0')
       return TRUE;
-    else
+    else 
       return FALSE;
   }
 }
@@ -53,9 +53,9 @@ int *skip;
   HoleList *holep;
   char *linep;
   double *vals;
-
+  
   holep = (HoleList *)Gmalloc(sizeof(HoleList));
-
+  
   name[MAXNAME-1] = '\0';
   sscanf(line, "%19s%n",name,&skip1);
   line+=skip1;
@@ -78,7 +78,7 @@ int *skip;
   holep->relx = relx;
   holep->rely = rely;
   holep->relz = relz;
-
+    
   skip3 = 0;
   while(isspace(*line) && *line != '\0') {
     line++;
@@ -86,8 +86,8 @@ int *skip;
   }
 
   if (*line != '(')
-    hole_error("Values for hole must start with '('",line,holep);
-
+    hole_error("Values for hole must start with '('",line,holep); 
+  
   /* let's count how many values we have first */
   linep = line;
   holep->numvals = 0;
@@ -137,10 +137,10 @@ char *line;
     skip++;
     line++;
   }
-
+  
   return skip;
 }
-
+  
 /* End of string test */
 eos(chr)
 char chr;
@@ -158,7 +158,7 @@ HoleList *holep;
   fprintf(stderr, "Where type is a string, and valn is a floating point value\n");
   exit(1);
 }
-
+  
 is_one_of(letter, one_of)
 char letter, *one_of;
 {
@@ -205,7 +205,7 @@ HoleList *holep;
     hole_user6(holep, gp, relx, rely, relz, units);
   else if (strncmp("user7",holep->func,5) == 0)
     hole_user7(holep, gp, relx, rely, relz, units);
-  else
+  else 
     hole_error("Unknown type of hole","",holep);
 }
 
@@ -220,14 +220,14 @@ double relx,rely,relz,units;
   double *vals = holep->vals;
   int i1,j1;
 
-  if (holep->numvals != 3)
+  if (holep->numvals != 3) 
     hole_error("Exactly 3 values required for a point hole.","",holep);
 
   delete_node(find_nearest_gpnode(vals[0]*units + relx, vals[1]*units + rely,
 			      vals[2]*units + relz, gp, &i1, &j1));
 }
 
-/* The following function creates a hole which is in the shape of
+/* The following function creates a hole which is in the shape of 
    a rectangle whose edges are parallel to the ground plane edges.
    The 6 values in holep->vals are two (x,y,z) pairs which represent
    opposite corners of the rectangle.
@@ -242,7 +242,7 @@ double relx,rely,relz,units;
   double *vals = holep->vals;
   int i_beg, i_end, j_beg, j_end, i, j;
 
-  if (holep->numvals != 6)
+  if (holep->numvals != 6) 
     hole_error("Exactly 6 values required for a square hole.","",holep);
 
   node1 = find_nearest_gpnode(vals[0]*units + relx, vals[1]*units + rely,
@@ -259,7 +259,7 @@ double relx,rely,relz,units;
     i_beg = i2;
     i_end = i1;
   }
-
+  
   if (j1 <= j2) {
     j_beg = j1;
     j_end = j2;
@@ -276,7 +276,7 @@ double relx,rely,relz,units;
 }
 
 /* The following function makes a hole in the shape of a circle.
-   It takes 4 values in holep->vals.  The first three are (x,y,z) of
+   It takes 4 values in holep->vals.  The first three are (x,y,z) of 
    the center and the last is the radius, R.
 */
 hole_circle(holep, gp, relx, rely, relz, units)
@@ -293,7 +293,7 @@ double relx,rely,relz,units;
   double edge2;
   int k_up, k_down, p_left, p_right;
 
-  if (holep->numvals != 4)
+  if (holep->numvals != 4) 
     hole_error("Exactly 4 values required for a circular hole.","(x,y,z,radius)",holep);
 
   center[0] = holep->vals[0]*units + relx;
@@ -301,7 +301,7 @@ double relx,rely,relz,units;
   center[2] = holep->vals[2]*units + relz;
 
   R = holep->vals[3]*units;
-
+ 
   /* find node nearest to center as a place to start (a 'reference')*/
   nodec = find_nearest_gpnode(center[0], center[1], center[2], gp, &ic, &jc);
 

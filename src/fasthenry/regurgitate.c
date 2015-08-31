@@ -120,11 +120,19 @@ char *suffix;
   fprintf(stdout, "* Segments for %s\n",suffix);
   for(seg = indsys->segment; seg != NULL; seg = seg->next) {
     if (seg->type == NORMAL) {
+#if SUPERCON == ON
+      fprintf(stdout, "%s%s %s%s %s%s w=%lg h=%lg nhinc=%d nwinc=%d rw=%lg rh=%lg sigma=%lg lambda=%lg",
+              seg->name, suffix, seg->node[0]->name, suffix, 
+              seg->node[1]->name, suffix, seg->width, 
+              seg->height, seg->hinc, 
+              seg->winc, seg->r_width, seg->r_height, seg->sigma, seg->lambda);
+#else
       fprintf(stdout, "%s%s %s%s %s%s w=%lg h=%lg nhinc=%d nwinc=%d rw=%lg rh=%lg sigma=%lg",
               seg->name, suffix, seg->node[0]->name, suffix, 
               seg->node[1]->name, suffix, seg->width, 
               seg->height, seg->hinc, 
               seg->winc, seg->r_width, seg->r_height, seg->sigma);
+#endif
       if (seg->widthdir != NULL)
         fprintf(stdout, " wx=%lg wy=%lg wz=%lg \n", seg->widthdir[XX],
                 seg->widthdir[YY], seg->widthdir[ZZ]);
@@ -159,6 +167,9 @@ char *suffix;
     fprintf(stdout, "+ thick=%lg ", gp->thick);
     fprintf(stdout, "segwid1=%lg segwid2=%lg ", gp->segwid1, gp->segwid2);
     fprintf(stdout, "sigma=%lg\n", gp->sigma);
+#if SUPERCON == ON
+    fprintf(stdout, "lambda=%lg\n", gp->lambda);
+#endif
 
     for(nodel = gp->usernode_coords; nodel != NULL; nodel=nodel->next) {
       fprintf(stdout, "+ %s (%lg, %lg, %lg)\n", nodel->name, nodel->x, 

@@ -1,161 +1,170 @@
-FastHenry 3.0.1 information.
- 
-Updated May 28th 2012 by FastFieldSolvers, www.fastfieldsolvers.com
 
-FastHenry is a program for the efficient extraction of inductances and 
-resistances of complex 3-D geometries of conductors.  
+                       F a s t H e n r y   3 . 0 w r
+                       -----------------------------
+                                 10-21-2001
 
-Configuring for your machine:
+Modifications by:        Stephen R. Whiteley  (stevew@wrcad.com)
+                         Whitleley Research Inc.
 
-  1.  Change to the fasthenry-3.0 directory
+** This is the fasthenry-3.0-12Nov96 distribution with the following
+   changes:
 
-     prompt %   cd fasthenry-3.0
+  1) Support for superconductive elements has been added.  This release
+     is the successor to fasthenry-2.0S.
 
-  2.  Configure for your machine  (sets the compilation flags)
+  2) All references to "malloc.h" in the source code have been changed
+     to "stdlib.h" to avoid a cascade of warnings during compilation.
 
-    SunOS 4.x, IBM RS 6000's, and other 4.2/3 BSD systems(?):
-      prompt %   config default
+  3) A long expression in mutual.c which triggered a compiler bug in
+     Red Hat Linux 6.0 has been altered to avoid the bug.
 
-    DEC 5000s:
-      prompt %   config dec
+  4) This version of fasthenry returns status 0 if there are no
+     errors, nonzero if an error occurs.  The original version had
+     undefined return status.
 
-    DEC Alphas:
-      prompt %   config alpha
+  5) The latex files for the manual have been eliminated, since they
+     are useless without the figures.  The master's thesis has been
+     included instead (in the doc directory).
 
-    Silicon Graphics:
-      prompt %   config sgi 
-      and then read the extra instructions in README.sgi
+  6) Two superconducting example files, sline1.inp and sline2.inp
+     have been added to the examples directory.
 
-    Linux: 
-      prompt % config default
+  7) Added declarations of static functions in sparse matrix package
+     to avoid annoying compiler warnings.
 
-      prompt % config x64
-      to force compile for x86 64bit machines
+  8) Ported to Microsoft Windows using the mingw (www.mingw.org)
+     version of gcc.  To build under mingw, use "config mingw".  The
+     source code was made sensitive to the following defines, which
+     are all necessary for mingw.
 
-  System V operating systems:
+     a) NO_SBRK            The library lacks the sbrk() function.
+     b) NO_ATANH           Substitute for missing atanh() and asinh()
+                           functions.
+     c) NO_ISNAN           The library lacks isnan() and finite()
+                           functions.
 
-    Sun Solaris:
+** 4-25-2001 Bug Fix:  .default lambda=xxx should work now
 
-      prompt %   config solaris
+** 6-19-2001 Bug Fix:  Error in resistance computation fixed
 
-    Hewlett-Packard  HP-UX, and other System V operating systems:
-      This has not been thoroughly tested.
+** 10-21-2001 Changes:
 
-      prompt %   config sysV
+  1) For segments with no sigma/rho/lambda defined with no explicit
+     defaults, sigma now defaults to copper (5.8e7).  Previously this
+     was a fatal error.
 
-   Notes:
+  2) When files are opened for writing, binary files are now opened
+     in "wb" mode rather than "w" mode.  This is only important under
+     Microsoft Windows, where binary data can be corrupted if file
+     pointers are not explicitly opened in binary mode.
 
-    a. For Versions of solaris before 2.5, The "ranlib" command is obsolete and
-    doesn't exist. 
-    Either remove the ranlib command from src/fasthenry/sparse/Makefile
-    or define a null ranlib command in your path or do "make -k all"
+** 4-27-2004 Changes:
 
-    b. In the linking stage, if you get an error that "gethostname" 
-    is undefined,  then add "-DNO_GETHOSTNAME" to the CFLAGS line in 
-    src/fasthenry/Makefile and src/zbuf/Makefile after doing config.  
-    For instance
+  Added #include "sparse/spMatrix" in Preconfig.c for declaration of
+  spGetElement.  This is critical when ints and pointers are of different
+  widths.
 
-       CFLAGS = -O -DFIVE -DNO_GETHOSTNAME
+  Commented out redundant spGetElement declaration in newPreconfig.c.
 
+  Declaration of umalloc added to mulGlobal.h in zbuf, for int/pointer
+  width difference.
 
-Compiling:
+  All programs compile without warnings on 64-bit sparc gcc-3.x
+  (Solaris 8) using CC = gcc and CFLAGS = -O -m64 -DFOUR.
 
-   prompt %   cd fasthenry-3.0.1
-   prompt %   make all
+** 1-11-2009 Changes:
 
-  produces the executables:  fasthenry-3.0.1/bin/fasthenry
-                             fasthenry-3.0.1/bin/zbuf
-                             fasthenry-3.0.1/bin/ReadOutput
-                             fasthenry-3.0.1/bin/MakeLcircuit
-
-  If you want to save space after "make all",
-
-   prompt %   make clean
-
-  will clean up *.o and *.a files.
-
-Documentation:
-
-  The manuals are in Acrobat Reader pdf format in the directory 'doc'
-
--------------------------------------------------------------
-Major changes in 3.0.1 since version 3.0
-
-- Added various stability bug fixes over original 3.0 distribution
-
-- Added stability improvement under Linux
-
-- Added various includes and other minor updates to avoid warnings
-  with latest versions of GCC
-
-- Updated source code to compile on 64 bit machines
-
-- Added Makefile option for 64 bit machines
-
--------------------------------------------------------------
-Major changes in 3.0 since version 2.5
-
-- Specify a nonuniform discretization of a reference plane to
-  capture small features in fewer elements.
-
-- Two approaches for generating spice equivalent circuits are available:
-
-  1. An equivalent circuit for a single frequency.
-
-  2. A circuit which models the frequency
-    dependent resistances and   inductances through a reduced state-space
-    representation
-
-   Comments:  Method 1 will not model frequency dependent resistance
-   and inductance since it gives and R and L at the single specified
-   frequency.  Method 2 will model the full effects up to some frequency.
-
-- Major Bug fix:
-    For reference planes which form segments with different
-    widths in the x-direction versus the Y direction, the sizes weren't
-    computed correctly in version 2.0 and above.  This has been fixed.
+  Misc. code tweeks to avoid compiler warnings when using newer
+  compilers, e.g., gcc-4.2.
 
 
-- The zbuf program now takes the ``-m'' argument to produce a
-  Matlab file for faster visualization in matlab.  This is very beneficial for
-  large files since producing the postscript file can take $n^2$ time.
-  The matlab file can be viewed within matlab with the
-  fasthenry-3.0/bin/plotfastH.m matlab function.  The file 
-  zbuffile.mat would be produced with ``zbuf -m zbuffile'' which can
-  then be viewed in matlab with ``>> plotfastH('zbuffile.mat')''.
-  Also, you can modify the file src/zbuf/dump_struct.c to output in YOUR own
-  format instead of matlab.
+--------------------- Superconductivity Support -------------------------
 
--  Sparse preconditioner.  Specify  -p shells to use a
-   preconditioner based on Byron Krauter's sparse inductance technique.
+This version of fasthenry has been modified to support superconducting
+segments and ground planes.  The analysis used is based on the London
+equations and the two-fluid model.  Both reactive and lossy components
+of the superconductor complex conductivity are employed in obtaining
+the impedance matrix.
 
--  Regurgitate the input file with -v to see what FastHenry
-   thinks it has read.  Also can translate and reflect geometry before output.
-
--------------------------------------------------------------
-
-Changes since Version 1.0
-
-Version 1.5:
-
- 1.  Better filament mutual inductance approximation for very thin segments.
- 2.  Ability to specify ground plane holes.  See example hole.inp and
-     some of the comments toward the end of the file hole.c  (I have
-     not had a chance to update the manual.)
- 3.  Other command line options.  (Give an erroneous option at the command line
-     to see the added options)
- 4.  Some bug fixes.
-
-
-Version 2.0 - this is a far improvement over the past versions
-
- In summary:
- 1. A better preconditioner which allows efficient analysis of 
-    reference planes.
- 2. Accurate modeling with thin filaments.
- 3. More detailed manual
- 4. Many, many other features
+Theory
+------
+ *
+ *    In normal metal:     (1)  del X del X H = -i*omega*mu*sigma * H
+ *    In superconductor:   (2)  del X del X H = (1/lambda)^2 * H
+ *
+ *    In fasthenry, (1) is solved, so the game is to replace sigma in
+ *    (1) with a complex variable that includes and reduces to (2).
+ *    We choose
+ *
+ *      sigma_prime = sigma + i/(omega*mu*lambda^2)
+ *
+ *    Then, using sigma_prime in (1) rather than sigma, one obtains
+ *    an expression that reduces to (2) as omega -> 0,  yet retains
+ *    properties of (1).  This is the two-fluid model, where the
+ *    sigma in sigma_prime represents the conductivity due to unpaired
+ *    electrons.
+ *
+ *    Since sigma_prime blows up at omega = 0, we work with the
+ *    impedance, which we take as z = r1 + i*omega*r2 = i/sigma_prime.
+ *    The r1 and r2 variables are thus
+ *
+ *           (3) r1 =    sigma*(omega*mu*lambda^2)^2
+ *                    --------------------------------
+ *                    (sigma*omega*mu*lambda^2)^2 + 1
+ *
+ *           (4) r2 =           mu*lambda^2
+ *                    --------------------------------
+ *                    (sigma*omega*mu*lambda^2)^2 + 1
 
 
------------------------------------------------------------------
+Operation
+---------
+
+The input and output formats of fasthenry are unchanged, with the
+exception of a new input parameter "lambda".  The lambda parameter is
+the London penetration depth specified in the units in use, and can
+appear in segment or ground plane specification lines, and .default
+lines.  When lambda is given and nonzero, the element is analyzed as a
+superconductor, and the sigma parameter defaults to zero (not the
+conductivity of copper, as in the normal case).
+
+If, however, a default sigma is specified, or a sigma specification
+appears in the segment or ground plane line, that sigma will be used. 
+The proper value for sigma is the sigma 1 from the two-fluid model,
+which is the normal sigma times the ratio of the quasiparticle and
+total carrier densities, a temperature dependent quantity.  For most
+applications, the loss is small enough to be considered negligible, so
+sigma need not be specified.
+
+To obtain accurate results, a sufficient number of filaments must
+exist in regions of high field gradient.  Although the ground plane
+construct is supported, experience has shown that its use often leads
+to inaccurate results presumably due to insufficient filamentation. 
+Some of the new fasthenry-3.0 features may solve this problem, but
+this has not been tested.  It may prove necessary to implement ground
+planes with segments.
+
+The large filament count consumes much memory.  This program benefits
+from cpu power and memory.  Despite its name, be prepared to wait for
+results.
+
+Compilation is as described in the fasthenry documentation.  If for
+some reason the superconductivity support is to be deleted, the
+mulGlobal.h file should be edited to set "SUPERCON" to "OFF".
+
+
+Interpretation of Results
+-------------------------
+
+Fasthenry computes an impedance matrix, which is written to a file
+named "Zc.mat" when the run is complete.  This gives the inductance
+values indirectly, through the imaginary parts divided by the radian
+frequency (2PI times the value given for ".freq").  In order to
+compute inductance, the specified frequency, i.e., the value provided
+for the ".freq" parameter in the input file, must be nonzero.  For
+superconductors, with sigma equal to zero, the inductances should be
+independent of frequency, so the actual frequency chosen is not
+important.  If the frequency is set to zero, FastHenry will compute
+the resistance of the conductors only, which will be zero for
+superconductors.
 

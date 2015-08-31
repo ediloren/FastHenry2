@@ -956,6 +956,7 @@ printRowCol(mat, rowcol, rownum, colnum, size)
   int i;
   FILE *localfp;
 
+  /* SRW -- this is ascii data */
   localfp = fopen("DUMPS", "w");
   if (localfp == NULL) {
     printf("Couldn't open DUMPS file\n");
