@@ -1,0 +1,341 @@
+**This is the title line. It will always be ignored**.
+* Everything is case INsensitive
+* An asterisk starts a comment line.
+
+* The following line names millimeters as the length units for the rest
+* of the file.
+.Units mm
+
+* Make z=0 the default z coordinate and copper the default conductivity.
+* Note that the conductivity is in units 1/(mm*Ohms), not 1/(m*Ohms)
+* since the default units are millimeters.
+.Default z=0 sigma=5.8e4 
+
+* By default, split each segment into 35 filaments 
+* (five along the height and seven along the width) 
+.Default nhinc=5 nwinc=7
+
+* Horizontal line
+.Default z=0
+N1_b x=0       y=0
+N1_e x=0       y=1000
+N2_b x=-84.54  y=0
+N2_e x=-84.54  y=1000
+N3_b x=-151.81  y=0
+N3_e x=-151.81  y=1000
+N4_b x=-205.4   y=0
+N4_e x=-205.4   y=1000
+N5_b x=84.54  y=0
+N5_e x=84.54  y=1000
+N6_b x=151.81  y=0
+N6_e x=151.81  y=1000
+N7_b x=205.4   y=0
+N7_e x=205.4   y=1000
+
+* The segments connecting the nodes
+.Default h=40
+E1 N1_b N1_e w=72.72 
+E2 N2_b N2_e w=36.36 
+E3 N3_b N3_e w=18.18 
+E4 N4_b N4_e w=9.09  
+E5 N5_b N5_e w=36.36 
+E6 N6_b N6_e w=18.18 
+E7 N7_b N7_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=60
+N11_b x=0       y=0  
+N11_e x=0       y=1000
+N12_b x=-84.54  y=0
+N12_e x=-84.54  y=1000
+N13_b x=-151.81  y=0
+N13_e x=-151.81  y=1000
+N14_b x=-205.4   y=0
+N14_e x=-205.4   y=1000
+N15_b x=84.54  y=0
+N15_e x=84.54  y=1000
+N16_b x=151.81  y=0
+N16_e x=151.81  y=1000
+N17_b x=205.4   y=0
+N17_e x=205.4   y=1000
+
+* The segments connecting the nodes
+.Default h=20
+E11 N11_b N11_e w=72.72 
+E12 N12_b N12_e w=36.36 
+E13 N13_b N13_e w=18.18 
+E14 N14_b N14_e w=9.09  
+E15 N15_b N15_e w=36.36 
+E16 N16_b N16_e w=18.18 
+E17 N17_b N17_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=105
+N21_b x=0       y=0  
+N21_e x=0       y=1000
+N22_b x=-84.54  y=0
+N22_e x=-84.54  y=1000
+N23_b x=-151.81  y=0
+N23_e x=-151.81  y=1000
+N24_b x=-205.4   y=0
+N24_e x=-205.4   y=1000
+N25_b x=84.54  y=0
+N25_e x=84.54  y=1000
+N26_b x=151.81  y=0
+N26_e x=151.81  y=1000
+N27_b x=205.4   y=0
+N27_e x=205.4   y=1000
+
+* The segments connecting the nodes
+.Default h=10
+E21 N21_b N21_e w=72.72 
+E22 N22_b N22_e w=36.36 
+E23 N23_b N23_e w=18.18 
+E24 N24_b N24_e w=9.09  
+E25 N25_b N25_e w=36.36 
+E26 N26_b N26_e w=18.18 
+E27 N27_b N27_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-60
+N31_b x=0       y=0  
+N31_e x=0       y=1000
+N32_b x=-84.54  y=0
+N32_e x=-84.54  y=1000
+N33_b x=-151.81  y=0
+N33_e x=-151.81  y=1000
+N34_b x=-205.4   y=0
+N34_e x=-205.4   y=1000
+N35_b x=84.54  y=0
+N35_e x=84.54  y=1000
+N36_b x=151.81  y=0
+N36_e x=151.81  y=1000
+N37_b x=205.4   y=0
+N37_e x=205.4   y=1000
+
+* The segments connecting the nodes
+.Default h=20
+E31 N31_b N31_e w=72.72 
+E32 N32_b N32_e w=36.36 
+E33 N33_b N33_e w=18.18 
+E34 N34_b N34_e w=9.09  
+E35 N35_b N35_e w=36.36 
+E36 N36_b N36_e w=18.18 
+E37 N37_b N37_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-105
+N41_b x=0       y=0  
+N41_e x=0       y=1000
+N42_b x=-84.54  y=0
+N42_e x=-84.54  y=1000
+N43_b x=-151.81  y=0
+N43_e x=-151.81  y=1000
+N44_b x=-205.4   y=0
+N44_e x=-205.4   y=1000
+N45_b x=84.54  y=0
+N45_e x=84.54  y=1000
+N46_b x=151.81  y=0
+N46_e x=151.81  y=1000
+N47_b x=205.4   y=0
+N47_e x=205.4   y=1000
+
+* The segments connecting the nodes
+.Default h=10
+E41 N41_b N41_e w=72.72 
+E42 N42_b N42_e w=36.36 
+E43 N43_b N43_e w=18.18 
+E44 N44_b N44_e w=9.09  
+E45 N45_b N45_e w=36.36 
+E46 N46_b N46_e w=18.18 
+E47 N47_b N47_e w=9.09  
+
+
+*******************************************
+* Not exploded
+*******************************************
+
+
+
+
+* Horizontal line
+.Default z=-400
+N51_b x=0       y=0
+N51_e x=0       y=1000
+N52_b x=-54.54  y=0
+N52_e x=-54.54  y=1000
+N53_b x=-81.81  y=0
+N53_e x=-81.81  y=1000
+N54_b x=-95.4   y=0
+N54_e x=-95.4   y=1000
+N55_b x=54.54  y=0
+N55_e x=54.54  y=1000
+N56_b x=81.81  y=0
+N56_e x=81.81  y=1000
+N57_b x=95.4   y=0
+N57_e x=95.4   y=1000
+
+* The segments connecting the nodes
+.Default h=-40
+E1 N51_b N51_e w=72.72 
+E2 N52_b N52_e w=36.36 
+E3 N53_b N53_e w=18.18 
+E4 N54_b N54_e w=9.09  
+E5 N55_b N55_e w=36.36 
+E6 N56_b N56_e w=18.18 
+E7 N57_b N57_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-430
+N61_b x=0       y=0  
+N61_e x=0       y=1000
+N62_b x=-54.54  y=0
+N62_e x=-54.54  y=1000
+N63_b x=-81.81  y=0
+N63_e x=-81.81  y=1000
+N64_b x=-95.4   y=0
+N64_e x=-95.4  y=1000
+N65_b x=54.54  y=0
+N65_e x=54.54  y=1000
+N66_b x=81.81  y=0
+N66_e x=81.81  y=1000
+N67_b x=95.4   y=0
+N67_e x=95.4   y=1000
+
+* The segments connecting the nodes
+.Default h=20
+E11 N61_b N61_e w=72.72 
+E12 N62_b N62_e w=36.36 
+E13 N63_b N63_e w=18.18 
+E14 N64_b N64_e w=9.09  
+E15 N65_b N65_e w=36.36 
+E16 N66_b N66_e w=18.18 
+E17 N67_b N67_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-445
+N71_b x=0       y=0  
+N71_e x=0       y=1000
+N72_b x=-54.54  y=0
+N72_e x=-54.54  y=1000
+N73_b x=-81.81  y=0
+N73_e x=-81.81  y=1000
+N74_b x=-95.4   y=0
+N74_e x=-95.4   y=1000
+N75_b x=54.54  y=0
+N75_e x=54.54  y=1000
+N76_b x=81.81  y=0
+N76_e x=81.81  y=1000
+N77_b x=95.4   y=0
+N77_e x=95.4   y=1000
+
+* The segments connecting the nodes
+.Default h=10
+E21 N71_b N71_e w=72.72 
+E22 N72_b N72_e w=36.36 
+E23 N73_b N73_e w=18.18 
+E24 N74_b N74_e w=9.09  
+E25 N75_b N75_e w=36.36 
+E26 N76_b N76_e w=18.18 
+E27 N77_b N77_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-370
+N81_b x=0       y=0  
+N81_e x=0       y=1000
+N82_b x=-54.54  y=0
+N82_e x=-54.54  y=1000
+N83_b x=-81.81  y=0
+N83_e x=-81.81  y=1000
+N84_b x=-95.4   y=0
+N84_e x=-95.4    y=1000
+N85_b x=54.54  y=0
+N85_e x=54.54  y=1000
+N86_b x=81.81  y=0
+N86_e x=81.81  y=1000
+N87_b x=95.4    y=0
+N87_e x=95.4    y=1000
+
+* The segments connecting the nodes
+.Default h=20
+E31 N81_b N81_e w=72.72 
+E32 N82_b N82_e w=36.36 
+E33 N83_b N83_e w=18.18 
+E34 N84_b N84_e w=9.09  
+E35 N85_b N85_e w=36.36 
+E36 N86_b N86_e w=18.18 
+E37 N87_b N87_e w=9.09  
+
+
+
+* Horizontal line
+.Default z=-355
+N91_b x=0       y=0  
+N91_e x=0       y=1000
+N92_b x=-54.54  y=0
+N92_e x=-54.54  y=1000
+N93_b x=-81.81  y=0
+N93_e x=-81.81  y=1000
+N94_b x=-95.4    y=0
+N94_e x=-95.4    y=1000
+N95_b x=54.54  y=0
+N95_e x=54.54  y=1000
+N96_b x=81.81  y=0
+N96_e x=81.81 y=1000
+N97_b x=95.4   y=0
+N97_e x=95.4    y=1000
+
+* The segments connecting the nodes
+.Default h=10
+E41 N91_b N91_e w=72.72 
+E42 N92_b N92_e w=36.36 
+E43 N93_b N93_e w=18.18 
+E44 N94_b N94_e w=9.09  
+E45 N95_b N95_e w=36.36 
+E46 N96_b N96_e w=18.18 
+E47 N97_b N97_e w=9.09  
+
+
+*******************************************
+* Original
+*******************************************
+
+
+
+
+* Horizontal line
+.Default z=-800
+N111_b x=0       y=0
+N111_e x=0       y=1000
+
+E41 N111_b N111_e w=200 h=100 
+
+
+
+* define one 'port' of the network
+.external N1 N5
+
+* Frequency range of interest.
+.freq fmin=1e4 fmax=1e8 ndec=1
+
+* All input files must end with:
+.end
+
+
+
+
+

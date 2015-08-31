@@ -1,0 +1,43 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <title>SetLogCallback Method Reference</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>FastHenry2Object.SetLogCallback</H1>
+
+<div class="evident"><b>boolean </b>FastHenry2Object<b>.SetLogCallback(IDispatch*</b> <i>callback</i><b>, BSTR</b> <i>cbName</i><b>)</b></div>
+
+<H2>Return Value</H2>
+<p>True if a callback function was set. False if the callback function is reset to default (no callback).
+
+<H2>Parameters</H2>
+<p> 
+<i>callback</i>
+<p class="margin">Pointer to the client's automation object exposing the callback function. If NULL is passed as argument, the callback will be removed.</p>
+<p>
+<i>cbName</i>
+<p class="margin">Name of the callback function.</p>
+<p class="margin">The callback function must have the following prototype:</p>
+<p class="margin"><b>void <i>cbName</i>(BSTR</b> <i>logString</i><b>, long </b><i>color</i><b>)</b>
+<p class="margin"><i>logString</i></p>
+<p class="margin2">The string containing the log text passed back to the client.</p>
+<p class="margin"><i>color</i></p>
+<p class="margin2">The color of the string. The color will be black (red 255, green 255, blue 255) for normal messages and red (red 255, green 0, blue 0) for error messages.</p>
+
+<H2>Remarks</H2>
+<p> Call this function to set a callback upon FastHenry2 log output. That is, when FastHenry2 has something to log (everything that would normally be visible in FastHenry2's console window), the <i>cbName</i> function will be called to notify the client and provide him the output string. This function is especially useful if FastHenry2's console window is hidden.
+
+<H2>See Also</H2>
+<p><a href="FastHenryAutomationOverview.htm"> FastHenry2 Automation Overview</a> | <a href="ShowWindowMethod.htm">ShowWindow Method</a> | <a href="SetEndCallbackMethod.htm">SetEndCallback Method</a>
+
+</body>
+</html>

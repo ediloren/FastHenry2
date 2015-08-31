@@ -1,0 +1,58 @@
+**This is the title line. It will always be ignored**.
+* Everything is case INsensitive
+* An asterisk starts a comment line.
+
+* The following line names millimeters as the length units for the rest
+* of the file.
+.Units mm
+
+* Make z=0 the default z coordinate and copper the default conductivity.
+* Note that the conductivity is in units 1/(mm*Ohms), not 1/(m*Ohms)
+* since the default units are millimeters.
+.Default z=0 sigma=5.8e4
+
+* The nodes of a square (z=0 is the default)
+N1 x=0 y=0
+N2 x=1 y=0
+N3 x=0 y=1
+N4 x=1 y=1
+N5 x=0 y=2
+N6 x=1 y=2
+N7 x=0 y=3
+N8 x=1 y=3
+
+N11 x=-1 y=0
+N12 x=2 y=0
+N13 x=-1 y=1
+N14 x=2 y=1
+N15 x=-1 y=2
+N16 x=2 y=2
+N17 x=-1 y=3
+N18 x=2 y=3
+
+
+* The segments connecting the nodes
+E1 N1 N2 w=0.5 h=0.2 wx=0 wy=1 wz=0
+E2 N3 N4 w=0.5 h=0.2 wx=0 wy=0.87 wz=0.5
+E3 N5 N6 w=0.5 h=0.2 wx=0 wy=0.5 wz=0.87
+E4 N7 N8 w=0.5 h=0.2 wx=0 wy=0 wz=1
+*E2 N2 N3 w=0.2 h=0.1
+*E3 N3 N4 w=0.2 h=0.1
+*E4 N4 N5 w=0.2 h=0.1
+* The segments connecting the nodes
+E1 N11 N12 w=0.001 h=0.001 wx=0 wy=1 wz=0
+E2 N13 N14 w=0.001 h=0.001 wx=0 wy=1 wz=0
+E3 N15 N16 w=0.001 h=0.001 wx=0 wy=1 wz=0
+E4 N17 N18 w=0.001 h=0.001 wx=0 wy=1 wz=0
+
+* define one 'port' of the network
+.external N1 N5
+
+* Frequency range of interest.
+.freq fmin=1e4 fmax=1e8 ndec=1
+
+* All input files must end with:
+.end
+
+
+

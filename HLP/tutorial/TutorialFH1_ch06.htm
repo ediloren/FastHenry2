@@ -1,0 +1,78 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <meta name="Version" content="050510">
+  <title>FastHenry2 Tutorial</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>Specify a finer discretization</H1>
+
+<H2>The skin effect</H2>
+
+  <p>You may wonder now why the results you extracted with FastHenry2 do not change with the frequency. As a matter of fact, when the frequency increases, the current tend to flow only on the surface of the conductors. This is the so-called skin effect.
+  <p>So, because of the skin effect, you would expect that, increasing the frequency:
+  <ol>
+    <li>The resistance would rise, because there is less cross section available in the conductor for the current flow
+    <li>The inductance would lower, because the area included in the current loop becomes smaller, not comprising any more the internal of the conductor.
+  </ol>
+  <p>The skin depth at a given frequency can be estimated with the following formula:
+  <p><img src="images/FH2SkinDepth.png">
+  <p>where <i>&sigma;</i> is the conductivity, <i>f</i> is the frequency, <i>&mu;</i> is the absolute magnetic permeability.
+  <p>In our case, at the maximum frequency of 100MHz and considering the copper conductivity of 5.8e+7 S/m, the skin depth is about 6.6 &mu;m, much smaller than the minimum dimension of our segments, which is 100 &mu;m. The skin effect should be visible in the simulation results.
+
+<H2>The filaments</H2>
+
+  <p>The reason why the simulation results do not show any skin effect is that the segment discretization is too coarse. That is, FastHenry2 makes the assumption of constant current along the length of a segment. It's up to the user to specify a finer discretization to capture variation in the current density along the cross section.
+  <p>Therefore, you should split each segment into a bundle of sub-segments with a smaller cross-section; of course, you should have to specify each sub-segment in the input file. However, to ease this task, FastHenry2 provides a directive which directly breaks up a segment into sub-segments or, in FastHenry2 language, into <i>filaments</i>.
+
+  <ol>
+    <li>In the FastHenry2 View in FastModel, add the line
+      <br>
+      <code>
+      <br>.Default nhinc=5 nwinc=7
+      </code>
+      <p>as shown in the following figure.
+      <p><img src="images/FH2SquareText2.png">
+    <li>Launch the FastHenry2 simulation.
+    <li>Examine the results:
+      <br>
+      <code>
+      <br>Computed matrices (R+jL)
+      <br>&nbsp;&nbsp;Row 0:  n1 to n5
+      <br>&nbsp;Freq = 10000
+      <br>&nbsp;&nbsp;Row 0: 0.00343967+1.59607e-009j 
+      <br>&nbsp;Freq = 100000
+      <br>&nbsp;&nbsp;Row 0: 0.00344119+1.59602e-009j 
+      <br>&nbsp;Freq = 1e+006
+      <br>&nbsp;&nbsp;Row 0: 0.00358479+1.59087e-009j 
+      <br>&nbsp;Freq = 1e+007
+      <br>&nbsp;&nbsp;Row 0: 0.0071044+1.50867e-009j 
+      <br>&nbsp;Freq = 1e+008
+      <br>&nbsp;&nbsp;Row 0: 0.0183057+1.44218e-009j 
+      </code>
+      <p>Now the resistance and the inductance have the expected behaviour.
+  </ol>
+   
+  <p>The discretization of a segment into multiple, parallel thin flaments is specifed with the nhinc and nwinc arguments. The keywords <code>nhinc=5</code> and <code>nwinc=7</code> specifiy that the interested segment must be broken up into thirty-five filaments: five along its height (<code>nhinc=5</code>) and seven along its width (<code>nwinc=7</code>).
+  <p>The following figure shows the breaking up of one segment:
+  <ul>
+    <li>The first segment from the above is the original segment. 
+    <li>The second segment is the segment after having been broken up into filaments. 
+    <li>The third segment is the exploded view of the segment and its filaments (only as a visualization aid; the correct view is the second). 
+  </ul>    
+  <p>(Remark: FastModel, to keep a clearer view of the model, does not show the segments broken up into filaments; the figure has been created for explanation purposes.)
+  <p><img src="images/FH2Filaments.png">
+  
+  <p>As you may notice from the figure, the default ratio of adjacent flaments is 2.0. Therefore, you can have an exponentially decreasing cross-section for your outer filaments, according to the current flow density variation inside the conductor.
+  <p>In our example, the thinnest filaments are 9 &mu;m x 10 &mu;m, about the 6 &mu;m skin depth we calculated at the maximum frequency of 100 MHz. So the model is able to correctly capture the skin effect.  
+
+</body>
+</html>

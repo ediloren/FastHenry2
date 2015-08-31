@@ -1,0 +1,64 @@
+* A FastHenry example using a reference plane
+*  This example defines an L shaped trace above a ground plane 
+*  with many holes.  This is nearly the same as simple_gp.inp plus the holes.
+
+*  Set the units for all following dimensions
+.units mils
+*
+* Define ground plane and nodes to reference later
+*
+*  First define 3 corners of the plane, in clockwise or counter-cw order
+g1 x1 = 0     y1 = 0     z1 = 0
++  x2 = 1000  y2 = 0     z2 = 0
++  x3 = 1000  y3 = 1000  z3 = 0
+*     thickness:
++  thick = 1.2
+*     discretization:
++  seg1 = 51 seg2 = 51
+*     nodes to reference later:
++  nin  (900,920,0)
++  nout (0,200,0)
++  hole rect (100,100,0,300,300,0)
++  hole rect (400,100,0,600,300,0)
++  hole rect (700,100,0,900,300,0)
++
++  hole rect (100,400,0,300,600,0)
++  hole circle (500,500,0,110)
++  hole rect (700,400,0,900,600,0)
++
++  hole rect (100,700,0,300,900,0)
++  hole rect (400,700,0,600,900,0)
++  hole rect (700,700,0,900,900,0)
++
+*  rectangular hole that overlaps circular hole
++  hole rect (480,200,0,520,800,0)
+
+* Some defaults to model skin effects
+.default nwinc=8 rw=1
+*
+* L shaped trace over ground plane
+*
+* The nodes
+N1 x=0 y=200 z=1.5
+N2 x=900 y=200 z=1.5
+N3 x=900 y=920 z=1.5
+
+* The elements connecting the nodes
+E1 N1 N2 w=8 h=1
+E2 N2 N3 w=8 h=1
+
+* Short together the end of the L shaped trace (N3) and its corresponding
+*  point on the ground plane directly beneath (nin)
+.equiv nin n3
+
+* compute loop inductance from beginning of L (N1) to its corresponding 
+*   point directly underneath (nout)
+.external N1 nout
+
+* Do it for one very low frequency (essentially DC) and one very high frequency
+.freq fmin=1e-1 fmax=1e19 ndec=0.05
+
+* mark end of file
+.end
+
+

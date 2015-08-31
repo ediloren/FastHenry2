@@ -1,0 +1,108 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <meta name="Version" content="050510">
+  <title>FastHenry2 Tutorial</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>Understand basic FastHenry2 input file syntax</H1>
+
+<H2>Examine the input file</H2>
+
+<ol>
+  <li>If the FastHenry2 View is not visible, bring it in foreground
+      <p><img src="images/FH2SquareText.png">
+  <li>Examine the first line of the view. 
+      <br>
+      <code>
+      <br>**This is the title line. It will always be ignored**.
+      </code>
+      <p>As stated in the line itself, the first line is the title line, and will always be ignored. However, as comments start with a '*' character, it is recommended to start also this line with an asterisk for consistency.
+  <li>Examine the two following lines. 
+      <br>
+      <code>
+      <br>* Everything is case INsensitive
+      <br>* An asterisk starts a comment line.
+      </code>
+      <p>These lines are comments.
+  <li>Examine the .Units directive 
+      <br>
+      <code>
+      <br>* The following line names millimeters as the length units for the rest
+      <br>* of the file.
+      <br>.Units mm
+      </code>
+      <p>The .Units directive specify the length units used in the rest of the file. Allowed values are km, m, cm, mm, um, in, mils. Note that length units must be set to match the real dimensions of your model, since inductance, unlike the capacitance extracted with FastCap2, does NOT scale linearly with the dimension, because of skin and proximity effects.
+  <li>Examine the .Default directive 
+      <br>
+      <code>
+      <br>* Make z=0 the default z coordinate and copper the default conductivity.
+      <br>* Note that the conductivity is in units 1/(mm*Ohms), not 1/(m*Ohms)
+      <br>* since the default units are millimeters.
+      <br>.Default z=0 sigma=5.8e4      
+      </code>
+      <p>The .Default directive specify default settings for the rest of the file. Note how the chosen length units impact the conductivity setting.  
+  <li>Examine the nodes definition 
+      <br>
+      <code>
+      <br>* The nodes of a square (z=0 is the default)
+      <br>N1 x=0 y=0
+      <br>N2 x=1 y=0
+      <br>N3 x=1 y=1
+      <br>N4 x=0 y=1
+      <br>N5 x=0 y=0.01      
+      </code>
+      <p>The nodes are simply points in a 3D space. A node definition always begins with its name. The name of a node must always begin with the 'n' character. Then follow the 3D coordinates of the node. In our case, the z coordinate has not been specified as it was declared as zero in a .Default directive. Note, however, that you can always bypass a default setting specifying explicitly the parameter you need. For example, you can write 
+      <br>
+      <code>
+      <br>N4 x=0 y=1 z=1
+      </code>    
+      <p>if you need that the z coordinate is 1.0 for the node N4 only.
+  <li>Examine the segments definition 
+      <br>
+      <code>
+      <br>* The segments connecting the nodes
+      <br>E1 N1 N2 w=0.2 h=0.1
+      <br>E2 N2 N3 w=0.2 h=0.1
+      <br>E3 N3 N4 w=0.2 h=0.1
+      <br>E4 N4 N5 w=0.2 h=0.1
+      </code>
+      <p>The segments are rectangular parallelepipeds connecting the nodes. For example, E1 connects node N1 and N2, that is, the nodes define the center of the segment end-faces. The name of a node must always begin with the 'e' character. Then follow the names of the two end-face nodes and the segment width (w) and height (h) indication.
+      <p>Segments connected to the same node are considered electrically connected at the node. For example, segments E1 and E2 are connected at node N2.
+      <p>Note that, given the two nodes, there are an infinite number of orientations possible for the rectangular end-faces around the central axis defined by the line through the nodes. You can see four of these orientations in the following figure:
+      <p><img src="images/FH2SegmentOrient.png">
+      <p>By default, the width vector is assumed to lie in x-y plane.
+  <li>Examine the port definition 
+      <br>
+      <code>
+      <br>* define one 'port' of the network
+      <br>.external N1 N5
+      </code>
+      <p>The .external keyword is used to specify the beginning and the end of the paths whose impedance will be calculated by FastHenry2. In this case, we will find the inductance of the whole loop.
+  <li>Examine the .freq directive 
+      <br>
+      <code>
+      <br>* Frequency range of interest.
+      <br>.freq fmin=1e4 fmax=1e8 ndec=1
+      </code>
+      <p>The .freq keyword is used to specify the frequencies of interest. The impedance of the 'ports' will be calculated at these frequencies; <i>fmin</i> and <i>fmax</i> define the minimum and maximum frequency, <i>ndec</i> is the number of desired frequency points per decade. In our example, FastHenry2 will calculate the impedance at the following frequencies: 10kHz, 100kHz, 1MHz, 10MHz, 100MHz. 
+      
+  <li>Examine the .end directive 
+      <br>
+      <code>
+      <br>* All input files must end with:
+      <br>.end
+      </code>
+      <p>The .end keyword signals the end of the file.      
+</ol>
+
+</body>
+</html>

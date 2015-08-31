@@ -1,0 +1,54 @@
+// FastHenry.odl : type library source for FastHenry.exe
+
+// This file will be processed by the MIDL compiler to produce the
+// type library (FastHenry.tlb).
+
+[ uuid(F41B20B2-4CFB-41A9-B9E9-9E929DE011DF), version(1.0) ]
+library FastHenry
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+
+	//  Primary dispatch interface for CFastHenryDoc
+	
+	[ uuid(3BAD3C03-3868-4C3C-B265-BDAE2A4FA4F5) ]
+	dispinterface IFastHenry
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(CFastHenryDoc)
+			//}}AFX_ODL_PROP
+			
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(CFastHenryDoc)
+			[id(1)] boolean IsRunning();
+			[id(2)] void ShowWindow();
+			[id(3)] boolean Quit();
+			[id(4)] VARIANT GetResistance();
+			[id(5)] VARIANT GetInductance();
+			[id(6)] VARIANT GetRowPortNames();
+			[id(7)] VARIANT GetColPortNames();
+			[id(8)] VARIANT GetFrequencies();
+			[id(9)] void Stop();
+			[id(10)] boolean SetEndCallback(IDispatch* callback, BSTR cbName);
+			[id(11)] boolean SetLogCallback(IDispatch* callback, BSTR cbName);
+			[id(12)] boolean Run(BSTR commandLine);
+			//}}AFX_ODL_METHOD
+
+	};
+
+	//  Class information for CFastHenryDoc
+	
+	[ uuid(511D52AD-9892-4DF2-B190-BD7DFD8E7322) ]
+	coclass Document
+	{
+		[default] dispinterface IFastHenry;
+	};
+
+	//{{AFX_APPEND_ODL}}
+	//}}AFX_APPEND_ODL}}
+};

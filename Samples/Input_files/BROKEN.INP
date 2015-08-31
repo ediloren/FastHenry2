@@ -1,0 +1,61 @@
+*Broken plane with two traces above it
+*  This is the example presented at DAC '93 
+*
+.units mils
+.default nwinc=1 nhinc=1 h=1 w=8
+*****.default sigma=1.49e3
+.default z=8
+*
+*ground plane definition
+*
+g_one x1=-1000 y1=-500 z1=0.0
++  x2=-50 y2=-500 z2=0
++  x3=-50 y3=500 z3=0
++  thick=1 seg1=10 seg2=10
++  nhinc=1
++ nAin (-500,16,0)
++ nBin (-500,-16,0)
++ n1bridge (-50,400,0)
++ n2bridge (-50,-400,0)
+*
+
+g_two x1=1000 y1=-500 z1=0.0
++  x2=50 y2=-500 z2=0
++  x3=50 y3=500 z3=0
++  thick=1 seg1=10 seg2=10
++  nhinc=1
++ nAout (500,16,0)
++ nBout (500,-16,0)
++ n3bridge (50,400,0)
++ n4bridge (50,-400,0)
+*
+
+nA1 x=-500 y=16
+nA2 x=500 y=16
+EA1 nA1 nA2
+
+nB1 x=-500 y=-16
+nB2 x=500 y=-16
+EB1 nB1 nB2
+
+n1br x=-50 y=400 z=0
+n2br x=-50 y=-400 z=0
+n3br x=50 y=400 z=0
+n4br x=50 y=-400 z=0
+
+.equiv n1br n1bridge
+.equiv n2br n2bridge
+.equiv n3br n3bridge
+.equiv n4br n4bridge
+
+E1bridge n1br n3br
+E2bridge n2br n4br
+
+*  3 loops
+.external nA1 nAin trace1
+.equiv nA2 nAout
+.external nB1 nBin trace2
+.equiv nB2 nBout
+
+.freq fmin=1e-1 fmax=1e19 ndec=0.05
+.end

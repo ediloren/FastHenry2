@@ -1,0 +1,38 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <title>GetResistance Method Reference</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>FastHenry2Object.GetResistance</H1>
+
+<div class="evident"><b>VARIANT </b>FastHenry2Object<b>.GetResistance()</b></div>
+
+<H2>Return Value</H2>
+<p>The method returns a 3-dimensional safe-array encapsulated in a variant data. 
+<p>The first dimension identifies the matrix solved for a particular frequency. To know the frequency, you must query the frequency array via the <a href="GetFrequenciesMethod.htm">GetFrequencies Method</a>. The index of both arrays is the same, e.g. the second matrix in the resistance array is calculated at the frequency in the second position of the frequency array.
+<p>The second and third dimensions correspond to the row and column index respectively.
+<p>If the number of columns equals the number of rows of the array, the array contains the resistance matrix as calculated by FastHenry2, in Ohms.
+<p>If the number of columns of the array is not equal to the number of rows, the array contains the real part of the rectangular admittance matrix (this case happens when option '-x' is used running FastHenry2, see FastHenry user's manual).
+<H3>Notes:</H3>
+The array dimensions can be queried from the safe array itself, see the 'safe array' topic in the MS Automation documentation.
+
+<H2>Parameters</H2>
+<p> None
+
+<H2>Remarks</H2>
+<p> Gets the resistance or the real part of the admittance values calculated by FastHenry2, result of the simulation.
+
+<H2>See Also</H2>
+<p><a href="FastHenryAutomationOverview.htm"> FastHenry2 Automation Overview</a> | <a href="GetColPortNamesMethod.htm">GetColPortNames Method</a> | <a href="GetRowPortNamesMethod.htm">GetRowPortNames Method</a> | <a href="GetInductanceMethod.htm">GetInductance Method</a> | <a href="GetFrequenciesMethod.htm">GetFrequencies Method</a> 
+
+</body>
+</html>

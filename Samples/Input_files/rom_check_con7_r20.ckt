@@ -1,0 +1,31 @@
+Simple ROM example.  Two inductors with mutual inductance connected in series.
+
+* ports are p0 m0 p1 m1...
+.include equiv_circuitROM_pin_con7_r20.spice
+
+* and instance of the state space mode
+Xstate p0 m0 p1 m1 p2 m2 p3 m3 p4 m4 p5 m5 p6 m6 ROMequiv_pin_con7_r20
+
+* connect m0 to ground
+vgnd0 m0 0
+vgnd1 m1 0
+vgnd2 m2 0
+vgnd3 m3 0
+vgnd4 m4 0
+vgnd5 m5 0
+vgnd6 m6 0
+
+isrc0 0 p0  ac 1
+isrc1 0 p1  ac 0
+isrc2 0 p2  ac 0
+isrc3 0 p3  ac 0
+isrc4 0 p4  ac 0
+isrc5 0 p5  ac 0
+isrc6 0 p6  ac 0
+
+*.tran 1ns 2us UIC 
+.ac dec 5 1 1e12
+.options method=gear
+.print ac v(p0) v(p1) v(p2) v(p3) v(p4) v(p5) v(p6) 
+
+

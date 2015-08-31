@@ -1,0 +1,15 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=FastHenry2.chm
+Contents file=FastHenry2.hhc
+Default Window=mainwin
+Display compile progress=Yes
+Language=0x409 English (United States)
+Title=FastHenry Help
+
+[WINDOWS]
+mainwin="FastHenry Help","FastHenry2.hhc",,"WelcometoFastHenry.htm","WelcometoFastHenry.htm",,,,,0x2020,,0x3806,[0,0,640,450],0x30000,,,,,,0
+
+
+[INFOTYPES]
+

@@ -1,0 +1,51 @@
+* A FastHenry example using a reference plane
+*  This example defines an L shaped trace above a ground plane which 
+*  has a return path through the plane
+
+*  Set the units for all following dimensions
+.units mils
+*
+* Define ground plane and nodes to reference later
+*
+*  First define 3 corners of the plane, in clockwise or counter-cw order
+g1 x1 = 0     y1 = 0     z1 = 0
++  x2 = 1000  y2 = 0     z2 = 0
++  x3 = 1000  y3 = 1000  z3 = 0
+*     thickness:
++  thick = 1.2
+*     discretization:
++  seg1 = 20 seg2 = 20
+*     nodes to reference later:
++  nin  (800,800,0)
++  nout (0,200,0)
+
+* Some defaults to model skin effects
+.default nwinc=8 nhinc=1
+*
+* L shaped trace over ground plane
+*
+* The nodes
+N1 x=0 y=200 z=1.5
+N2 x=800 y=200 z=1.5
+N3 x=800 y=800 z=1.5
+
+* The elements connecting the nodes
+E1 N1 N2 w=8 h=1
+E2 N2 N3 w=8 h=1
+
+* Short together the end of the L shaped trace (N3) and its corresponding
+*  point on the ground plane directly beneath (nin)
+.equiv nin n3
+
+* compute loop inductance from beginning of L (N1) to its corresponding 
+*   point directly underneath (nout)
+.external N1 nout
+
+* Compute impedance matrix for one very low frequency (essentially DC) 
+*   and one very high frequency
+.freq fmin=1e-1 fmax=1e19 ndec=0.05
+
+* mark end of file
+.end
+
+

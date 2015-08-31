@@ -1,0 +1,99 @@
+* a line (5um wide) over a plane 100um below
+* line length=4000um
+*
+* Since the line is so long, and the discretization doesn't vary along
+*  the line, this is almost a 2D problem by discretization.  But to
+*  make it truly 2D, the nodes on the ends of the plane must be
+*  shorted together so no current flows perpendicular to the 
+*  trace direction.  That is the purpose of all the "np" node definitions.
+*  Actually, the line is long enough that we match 2D without shorting them
+*  together, but if you really wanted to test against 2D, follow the
+*  instructions at the .equiv lines below.
+*
+*  R/cm = 15 ohm / 0.4 cm = 37.5 Ohm/cm
+*  L/cm = 14.8 / (2*pi*6e8) / 0.4 cm = 9.81 nH/cm
+*
+*
+.units uM
+*
+* Define ground plane, sigma=3.15e7 1/(m*ohm)= 31.5 1/(um*ohm)
+g1 x1 = -500 y1 = 0     z1 = 0
++  x2 = 500  y2 = 0     z2 = 0
++  x3 = 500  y3 = 4000  z3 = 0
++  thick = 11 sigma= 31.5
+*+  seg1 = 20 seg2 = 1
++  nhinc = 3 rh=2
+*     nodes to reference later:
++  np1 (0,0,0)
++  np2 (0,4000,0)
++  np25 (50,4000,0)
++  np3 (100,4000,0)
++  np35 (150,4000,0)
++  np4 (200,4000,0)
++  np45 (250,4000,0)
++  np5 (300,4000,0)
++  np55 (350,4000,0)
++  np56 (400,4000,0)
++  np57 (450,4000,0)
++  np58 (500,4000,0)
++  np51 (-50,4000,0)
++  np6 (-100,4000,0)
++  np65 (-150,4000,0)
++  np7 (-200,4000,0)
++  np75 (-250,4000,0)
++  np8 (-300,4000,0)
++  np85 (-350,4000,0)
++  np86 (-400,4000,0)
++  np87 (-450,4000,0)
++  np88 (-500,4000,0)
++  np05 (50,0,0)
++  np10 (100,0,0)
++  np105 (150,0,0)
++  np11 (200,0,0)
++  np115 (250,0,0)
++  np12 (300,0,0)
++  np121 (350,0,0)
++  np122 (400,0,0)
++  np123 (450,0,0)
++  np124 (500,0,0)
++  np125 (-50,0,0)
++  np13 (-100,0,0)
++  np135 (-150,0,0)
++  np14 (-200,0,0)
++  np145 (-250,0,0)
++  np15 (-300,0,0)
++  np151 (-350,0,0)
++  np152 (-400,0,0)
++  np153 (-450,0,0)
++  np154 (-500,0,0)
++file=NONE
++ contact line (-1,0,0,0,4000,-1,2.5,500)
++ contact line (1,0,0,0,4000,1,2.5,500)
+*
+* line width=5um
+* thick h=1.7um sigma=3.15e7 1/(m*ohm)=31.5 1/(um*ohm)
+*
+NS1 x=0 y=0 z=106.35 
+NS2 x=0 y=4000 z=106.35
+ES NS1 NS2 w=5 h=1.7 sigma=31.5 
++nwinc=3 nhinc=1
+
+.equiv NS2 np2
+*
+* To make this truly 2D, comment out the above line and uncomment the 
+*  following lines up to (but not including) the .external below.
+*
+*.equiv NS2 np2 np25 np3 np35 np4 np45 np5 np55 np56 np57 np58 np51 np6 np65 np7 np75 np8 np85 np86 np87 np88
+*.equiv 
+*+np1 np05 
+*+np10 
+*+np105 np11 np115 np12 
+*+np121 np122 np123 np124 
+*+np125 
+*+np13 np135 np14 np145 np15 np151 np152 np153 np154
+
+.external NS1 np1
+*
+.freq fmin=6e8 fmax=6e8 ndec=1
+.end
+

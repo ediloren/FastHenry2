@@ -1,0 +1,1012 @@
+**30 pin, right angle connector** 
+*
+.units mm
+
+*
+*
+* Connector 0   Bar 0
+*
+Npin0_0_1 x=0 y=0 z=0
+Npin0_0_2 x=0 y=2 z=0
+Npin0_0_3 x=0 y=4.8 z=0
+E0_0_0 Npin0_0_1 Npin0_0_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_0_1 Npin0_0_2 Npin0_0_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_0_1 x=-0.25 y=4.8 z=0
+Nconleft0_0_2 x=-0.575 y=7.8 z=0
+Nconright0_0_1 x=0.25 y=4.8 z=0
+Nconright0_0_2 x=0.575 y=7.8 z=0
+E0_0_2 Nconleft0_0_1 Nconleft0_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_0_3 Nconright0_0_1 Nconright0_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_0_3 Nconleft0_0_1
+.equiv Npin0_0_3 Nconright0_0_1
+Nub0_0_2 x=-0.45 y=8.65 z=-0.325
+Nut0_0_1 x=-0.575 y=9.5 z=0
+Nut0_0_2 x=0.45 y=8.65 z=-0.325
+Nut0_0_3 x=0.575 y=9.5 z=0
+E0_0_4 Nconleft0_0_2 Nut0_0_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_0_6 Nconright0_0_2 Nut0_0_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_0_5 Nub0_0_2 Nut0_0_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_0_1 Nub0_0_2
+.equiv Nut0_0_3 Nut0_0_2
+Nlong0_0_2 x=-0.575 y=16.5 z=0
+E0_0_7 Nut0_0_1 Nlong0_0_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle0_0_2 x=5.425 y=22.5 z=0
+E0_0_8 Nlong0_0_2 Nangle0_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast0_0_1 x=5.425 y=22.5 z=0
+Nlast0_0_2 x=11 y=22.5 z=0
+E0_0_9 Nlast0_0_1 Nlast0_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle0_0_2 Nlast0_0_1
+*
+* Connector 0   Bar 1
+*
+Npin0_1_1 x=2 y=0 z=0
+Npin0_1_2 x=2 y=2 z=0
+Npin0_1_3 x=2 y=4.8 z=0
+E0_1_0 Npin0_1_1 Npin0_1_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_1_1 Npin0_1_2 Npin0_1_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_1_1 x=1.75 y=4.8 z=0
+Nconleft0_1_2 x=1.425 y=7.8 z=0
+Nconright0_1_1 x=2.25 y=4.8 z=0
+Nconright0_1_2 x=2.575 y=7.8 z=0
+E0_1_2 Nconleft0_1_1 Nconleft0_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_1_3 Nconright0_1_1 Nconright0_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_1_3 Nconleft0_1_1
+.equiv Npin0_1_3 Nconright0_1_1
+Nub0_1_2 x=1.55 y=8.65 z=-0.325
+Nut0_1_1 x=1.425 y=9.5 z=0
+Nut0_1_2 x=2.45 y=8.65 z=-0.325
+Nut0_1_3 x=2.575 y=9.5 z=0
+E0_1_4 Nconleft0_1_2 Nut0_1_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_1_6 Nconright0_1_2 Nut0_1_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_1_5 Nub0_1_2 Nut0_1_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_1_1 Nub0_1_2
+.equiv Nut0_1_3 Nut0_1_2
+Nlong0_1_2 x=1.425 y=16.5 z=0
+E0_1_7 Nut0_1_1 Nlong0_1_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle0_1_2 x=5.925 y=21 z=0
+E0_1_8 Nlong0_1_2 Nangle0_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast0_1_1 x=5.925 y=21 z=0
+Nlast0_1_2 x=11 y=21 z=0
+E0_1_9 Nlast0_1_1 Nlast0_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle0_1_2 Nlast0_1_1
+*
+* Connector 0   Bar 2
+*
+Npin0_2_1 x=4 y=0 z=0
+Npin0_2_2 x=4 y=2 z=0
+Npin0_2_3 x=4 y=4.8 z=0
+E0_2_0 Npin0_2_1 Npin0_2_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_2_1 Npin0_2_2 Npin0_2_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_2_1 x=3.75 y=4.8 z=0
+Nconleft0_2_2 x=3.425 y=7.8 z=0
+Nconright0_2_1 x=4.25 y=4.8 z=0
+Nconright0_2_2 x=4.575 y=7.8 z=0
+E0_2_2 Nconleft0_2_1 Nconleft0_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_2_3 Nconright0_2_1 Nconright0_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_2_3 Nconleft0_2_1
+.equiv Npin0_2_3 Nconright0_2_1
+Nub0_2_2 x=3.55 y=8.65 z=-0.325
+Nut0_2_1 x=3.425 y=9.5 z=0
+Nut0_2_2 x=4.45 y=8.65 z=-0.325
+Nut0_2_3 x=4.575 y=9.5 z=0
+E0_2_4 Nconleft0_2_2 Nut0_2_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_2_6 Nconright0_2_2 Nut0_2_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_2_5 Nub0_2_2 Nut0_2_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_2_1 Nub0_2_2
+.equiv Nut0_2_3 Nut0_2_2
+Nlong0_2_2 x=3.425 y=16.5 z=0
+E0_2_7 Nut0_2_1 Nlong0_2_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle0_2_2 x=6.425 y=19.5 z=0
+E0_2_8 Nlong0_2_2 Nangle0_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast0_2_1 x=6.425 y=19.5 z=0
+Nlast0_2_2 x=11 y=19.5 z=0
+E0_2_9 Nlast0_2_1 Nlast0_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle0_2_2 Nlast0_2_1
+*
+* Connector 0   Bar 3
+*
+Npin0_3_1 x=6 y=0 z=0
+Npin0_3_2 x=6 y=2 z=0
+Npin0_3_3 x=6 y=4.8 z=0
+E0_3_0 Npin0_3_1 Npin0_3_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_3_1 Npin0_3_2 Npin0_3_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_3_1 x=5.75 y=4.8 z=0
+Nconleft0_3_2 x=5.425 y=7.8 z=0
+Nconright0_3_1 x=6.25 y=4.8 z=0
+Nconright0_3_2 x=6.575 y=7.8 z=0
+E0_3_2 Nconleft0_3_1 Nconleft0_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_3_3 Nconright0_3_1 Nconright0_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_3_3 Nconleft0_3_1
+.equiv Npin0_3_3 Nconright0_3_1
+Nub0_3_2 x=5.55 y=8.65 z=-0.325
+Nut0_3_1 x=5.425 y=9.5 z=0
+Nut0_3_2 x=6.45 y=8.65 z=-0.325
+Nut0_3_3 x=6.575 y=9.5 z=0
+E0_3_4 Nconleft0_3_2 Nut0_3_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_3_6 Nconright0_3_2 Nut0_3_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_3_5 Nub0_3_2 Nut0_3_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_3_1 Nub0_3_2
+.equiv Nut0_3_3 Nut0_3_2
+Nlong0_3_2 x=5.425 y=16.5 z=0
+E0_3_7 Nut0_3_1 Nlong0_3_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle0_3_2 x=6.925 y=18 z=0
+E0_3_8 Nlong0_3_2 Nangle0_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast0_3_1 x=6.925 y=18 z=0
+Nlast0_3_2 x=11 y=18 z=0
+E0_3_9 Nlast0_3_1 Nlast0_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle0_3_2 Nlast0_3_1
+*
+* Connector 0   Bar 4
+*
+Npin0_4_1 x=8 y=0 z=0
+Npin0_4_2 x=8 y=2 z=0
+Npin0_4_3 x=8 y=4.8 z=0
+E0_4_0 Npin0_4_1 Npin0_4_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_4_1 Npin0_4_2 Npin0_4_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_4_1 x=7.75 y=4.8 z=0
+Nconleft0_4_2 x=7.425 y=7.8 z=0
+Nconright0_4_1 x=8.25 y=4.8 z=0
+Nconright0_4_2 x=8.575 y=7.8 z=0
+E0_4_2 Nconleft0_4_1 Nconleft0_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_4_3 Nconright0_4_1 Nconright0_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_4_3 Nconleft0_4_1
+.equiv Npin0_4_3 Nconright0_4_1
+Nub0_4_2 x=7.55 y=8.65 z=-0.325
+Nut0_4_1 x=7.425 y=9.5 z=0
+Nut0_4_2 x=8.45 y=8.65 z=-0.325
+Nut0_4_3 x=8.575 y=9.5 z=0
+E0_4_4 Nconleft0_4_2 Nut0_4_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_4_6 Nconright0_4_2 Nut0_4_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_4_5 Nub0_4_2 Nut0_4_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_4_1 Nub0_4_2
+.equiv Nut0_4_3 Nut0_4_2
+Nlong0_4_2 x=7.425 y=16.5 z=0
+E0_4_7 Nut0_4_1 Nlong0_4_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast0_4_1 x=7.425 y=16.5 z=0
+Nlast0_4_2 x=11 y=16.5 z=0
+E0_4_8 Nlast0_4_1 Nlast0_4_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong0_4_2 Nlast0_4_1
+*
+* Connector 0   Bar 5
+*
+Npin0_5_1 x=10 y=0 z=0
+Npin0_5_2 x=10 y=2 z=0
+Npin0_5_3 x=10 y=4.8 z=0
+E0_5_0 Npin0_5_1 Npin0_5_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E0_5_1 Npin0_5_2 Npin0_5_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft0_5_1 x=9.75 y=4.8 z=0
+Nconleft0_5_2 x=9.425 y=7.8 z=0
+Nconright0_5_1 x=10.25 y=4.8 z=0
+Nconright0_5_2 x=10.575 y=7.8 z=0
+E0_5_2 Nconleft0_5_1 Nconleft0_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E0_5_3 Nconright0_5_1 Nconright0_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin0_5_3 Nconleft0_5_1
+.equiv Npin0_5_3 Nconright0_5_1
+Nub0_5_2 x=9.55 y=8.65 z=-0.325
+Nut0_5_1 x=9.425 y=9.5 z=0
+Nut0_5_2 x=10.45 y=8.65 z=-0.325
+Nut0_5_3 x=10.575 y=9.5 z=0
+E0_5_4 Nconleft0_5_2 Nut0_5_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_5_6 Nconright0_5_2 Nut0_5_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E0_5_5 Nub0_5_2 Nut0_5_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut0_5_1 Nub0_5_2
+.equiv Nut0_5_3 Nut0_5_2
+Nlong0_5_2 x=9.425 y=15 z=0
+E0_5_7 Nut0_5_1 Nlong0_5_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast0_5_1 x=9.425 y=15 z=0
+Nlast0_5_2 x=11 y=15 z=0
+E0_5_8 Nlast0_5_1 Nlast0_5_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong0_5_2 Nlast0_5_1
+*
+* Connector 1   Bar 0
+*
+Npin1_0_1 x=0 y=0 z=2
+Npin1_0_2 x=0 y=2 z=2
+Npin1_0_3 x=0 y=4.8 z=2
+E1_0_0 Npin1_0_1 Npin1_0_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_0_1 Npin1_0_2 Npin1_0_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_0_1 x=-0.25 y=4.8 z=2
+Nconleft1_0_2 x=-0.575 y=7.8 z=2
+Nconright1_0_1 x=0.25 y=4.8 z=2
+Nconright1_0_2 x=0.575 y=7.8 z=2
+E1_0_2 Nconleft1_0_1 Nconleft1_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_0_3 Nconright1_0_1 Nconright1_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_0_3 Nconleft1_0_1
+.equiv Npin1_0_3 Nconright1_0_1
+Nub1_0_2 x=-0.45 y=8.65 z=1.675
+Nut1_0_1 x=-0.575 y=9.5 z=2
+Nut1_0_2 x=0.45 y=8.65 z=1.675
+Nut1_0_3 x=0.575 y=9.5 z=2
+E1_0_4 Nconleft1_0_2 Nut1_0_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_0_6 Nconright1_0_2 Nut1_0_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_0_5 Nub1_0_2 Nut1_0_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_0_1 Nub1_0_2
+.equiv Nut1_0_3 Nut1_0_2
+Nlong1_0_2 x=-0.575 y=16.5 z=2
+E1_0_7 Nut1_0_1 Nlong1_0_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle1_0_2 x=5.425 y=22.5 z=2
+E1_0_8 Nlong1_0_2 Nangle1_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast1_0_1 x=5.425 y=22.5 z=2
+Nlast1_0_2 x=11 y=22.5 z=2
+E1_0_9 Nlast1_0_1 Nlast1_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle1_0_2 Nlast1_0_1
+*
+* Connector 1   Bar 1
+*
+Npin1_1_1 x=2 y=0 z=2
+Npin1_1_2 x=2 y=2 z=2
+Npin1_1_3 x=2 y=4.8 z=2
+E1_1_0 Npin1_1_1 Npin1_1_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_1_1 Npin1_1_2 Npin1_1_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_1_1 x=1.75 y=4.8 z=2
+Nconleft1_1_2 x=1.425 y=7.8 z=2
+Nconright1_1_1 x=2.25 y=4.8 z=2
+Nconright1_1_2 x=2.575 y=7.8 z=2
+E1_1_2 Nconleft1_1_1 Nconleft1_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_1_3 Nconright1_1_1 Nconright1_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_1_3 Nconleft1_1_1
+.equiv Npin1_1_3 Nconright1_1_1
+Nub1_1_2 x=1.55 y=8.65 z=1.675
+Nut1_1_1 x=1.425 y=9.5 z=2
+Nut1_1_2 x=2.45 y=8.65 z=1.675
+Nut1_1_3 x=2.575 y=9.5 z=2
+E1_1_4 Nconleft1_1_2 Nut1_1_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_1_6 Nconright1_1_2 Nut1_1_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_1_5 Nub1_1_2 Nut1_1_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_1_1 Nub1_1_2
+.equiv Nut1_1_3 Nut1_1_2
+Nlong1_1_2 x=1.425 y=16.5 z=2
+E1_1_7 Nut1_1_1 Nlong1_1_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle1_1_2 x=5.925 y=21 z=2
+E1_1_8 Nlong1_1_2 Nangle1_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast1_1_1 x=5.925 y=21 z=2
+Nlast1_1_2 x=11 y=21 z=2
+E1_1_9 Nlast1_1_1 Nlast1_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle1_1_2 Nlast1_1_1
+*
+* Connector 1   Bar 2
+*
+Npin1_2_1 x=4 y=0 z=2
+Npin1_2_2 x=4 y=2 z=2
+Npin1_2_3 x=4 y=4.8 z=2
+E1_2_0 Npin1_2_1 Npin1_2_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_2_1 Npin1_2_2 Npin1_2_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_2_1 x=3.75 y=4.8 z=2
+Nconleft1_2_2 x=3.425 y=7.8 z=2
+Nconright1_2_1 x=4.25 y=4.8 z=2
+Nconright1_2_2 x=4.575 y=7.8 z=2
+E1_2_2 Nconleft1_2_1 Nconleft1_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_2_3 Nconright1_2_1 Nconright1_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_2_3 Nconleft1_2_1
+.equiv Npin1_2_3 Nconright1_2_1
+Nub1_2_2 x=3.55 y=8.65 z=1.675
+Nut1_2_1 x=3.425 y=9.5 z=2
+Nut1_2_2 x=4.45 y=8.65 z=1.675
+Nut1_2_3 x=4.575 y=9.5 z=2
+E1_2_4 Nconleft1_2_2 Nut1_2_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_2_6 Nconright1_2_2 Nut1_2_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_2_5 Nub1_2_2 Nut1_2_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_2_1 Nub1_2_2
+.equiv Nut1_2_3 Nut1_2_2
+Nlong1_2_2 x=3.425 y=16.5 z=2
+E1_2_7 Nut1_2_1 Nlong1_2_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle1_2_2 x=6.425 y=19.5 z=2
+E1_2_8 Nlong1_2_2 Nangle1_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast1_2_1 x=6.425 y=19.5 z=2
+Nlast1_2_2 x=11 y=19.5 z=2
+E1_2_9 Nlast1_2_1 Nlast1_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle1_2_2 Nlast1_2_1
+*
+* Connector 1   Bar 3
+*
+Npin1_3_1 x=6 y=0 z=2
+Npin1_3_2 x=6 y=2 z=2
+Npin1_3_3 x=6 y=4.8 z=2
+E1_3_0 Npin1_3_1 Npin1_3_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_3_1 Npin1_3_2 Npin1_3_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_3_1 x=5.75 y=4.8 z=2
+Nconleft1_3_2 x=5.425 y=7.8 z=2
+Nconright1_3_1 x=6.25 y=4.8 z=2
+Nconright1_3_2 x=6.575 y=7.8 z=2
+E1_3_2 Nconleft1_3_1 Nconleft1_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_3_3 Nconright1_3_1 Nconright1_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_3_3 Nconleft1_3_1
+.equiv Npin1_3_3 Nconright1_3_1
+Nub1_3_2 x=5.55 y=8.65 z=1.675
+Nut1_3_1 x=5.425 y=9.5 z=2
+Nut1_3_2 x=6.45 y=8.65 z=1.675
+Nut1_3_3 x=6.575 y=9.5 z=2
+E1_3_4 Nconleft1_3_2 Nut1_3_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_3_6 Nconright1_3_2 Nut1_3_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_3_5 Nub1_3_2 Nut1_3_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_3_1 Nub1_3_2
+.equiv Nut1_3_3 Nut1_3_2
+Nlong1_3_2 x=5.425 y=16.5 z=2
+E1_3_7 Nut1_3_1 Nlong1_3_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle1_3_2 x=6.925 y=18 z=2
+E1_3_8 Nlong1_3_2 Nangle1_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast1_3_1 x=6.925 y=18 z=2
+Nlast1_3_2 x=11 y=18 z=2
+E1_3_9 Nlast1_3_1 Nlast1_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle1_3_2 Nlast1_3_1
+*
+* Connector 1   Bar 4
+*
+Npin1_4_1 x=8 y=0 z=2
+Npin1_4_2 x=8 y=2 z=2
+Npin1_4_3 x=8 y=4.8 z=2
+E1_4_0 Npin1_4_1 Npin1_4_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_4_1 Npin1_4_2 Npin1_4_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_4_1 x=7.75 y=4.8 z=2
+Nconleft1_4_2 x=7.425 y=7.8 z=2
+Nconright1_4_1 x=8.25 y=4.8 z=2
+Nconright1_4_2 x=8.575 y=7.8 z=2
+E1_4_2 Nconleft1_4_1 Nconleft1_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_4_3 Nconright1_4_1 Nconright1_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_4_3 Nconleft1_4_1
+.equiv Npin1_4_3 Nconright1_4_1
+Nub1_4_2 x=7.55 y=8.65 z=1.675
+Nut1_4_1 x=7.425 y=9.5 z=2
+Nut1_4_2 x=8.45 y=8.65 z=1.675
+Nut1_4_3 x=8.575 y=9.5 z=2
+E1_4_4 Nconleft1_4_2 Nut1_4_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_4_6 Nconright1_4_2 Nut1_4_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_4_5 Nub1_4_2 Nut1_4_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_4_1 Nub1_4_2
+.equiv Nut1_4_3 Nut1_4_2
+Nlong1_4_2 x=7.425 y=16.5 z=2
+E1_4_7 Nut1_4_1 Nlong1_4_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast1_4_1 x=7.425 y=16.5 z=2
+Nlast1_4_2 x=11 y=16.5 z=2
+E1_4_8 Nlast1_4_1 Nlast1_4_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong1_4_2 Nlast1_4_1
+*
+* Connector 1   Bar 5
+*
+Npin1_5_1 x=10 y=0 z=2
+Npin1_5_2 x=10 y=2 z=2
+Npin1_5_3 x=10 y=4.8 z=2
+E1_5_0 Npin1_5_1 Npin1_5_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E1_5_1 Npin1_5_2 Npin1_5_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft1_5_1 x=9.75 y=4.8 z=2
+Nconleft1_5_2 x=9.425 y=7.8 z=2
+Nconright1_5_1 x=10.25 y=4.8 z=2
+Nconright1_5_2 x=10.575 y=7.8 z=2
+E1_5_2 Nconleft1_5_1 Nconleft1_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E1_5_3 Nconright1_5_1 Nconright1_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin1_5_3 Nconleft1_5_1
+.equiv Npin1_5_3 Nconright1_5_1
+Nub1_5_2 x=9.55 y=8.65 z=1.675
+Nut1_5_1 x=9.425 y=9.5 z=2
+Nut1_5_2 x=10.45 y=8.65 z=1.675
+Nut1_5_3 x=10.575 y=9.5 z=2
+E1_5_4 Nconleft1_5_2 Nut1_5_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_5_6 Nconright1_5_2 Nut1_5_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E1_5_5 Nub1_5_2 Nut1_5_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut1_5_1 Nub1_5_2
+.equiv Nut1_5_3 Nut1_5_2
+Nlong1_5_2 x=9.425 y=15 z=2
+E1_5_7 Nut1_5_1 Nlong1_5_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast1_5_1 x=9.425 y=15 z=2
+Nlast1_5_2 x=11 y=15 z=2
+E1_5_8 Nlast1_5_1 Nlast1_5_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong1_5_2 Nlast1_5_1
+*
+* Connector 2   Bar 0
+*
+Npin2_0_1 x=0 y=0 z=4
+Npin2_0_2 x=0 y=2 z=4
+Npin2_0_3 x=0 y=4.8 z=4
+E2_0_0 Npin2_0_1 Npin2_0_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_0_1 Npin2_0_2 Npin2_0_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_0_1 x=-0.25 y=4.8 z=4
+Nconleft2_0_2 x=-0.575 y=7.8 z=4
+Nconright2_0_1 x=0.25 y=4.8 z=4
+Nconright2_0_2 x=0.575 y=7.8 z=4
+E2_0_2 Nconleft2_0_1 Nconleft2_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_0_3 Nconright2_0_1 Nconright2_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_0_3 Nconleft2_0_1
+.equiv Npin2_0_3 Nconright2_0_1
+Nub2_0_2 x=-0.45 y=8.65 z=3.675
+Nut2_0_1 x=-0.575 y=9.5 z=4
+Nut2_0_2 x=0.45 y=8.65 z=3.675
+Nut2_0_3 x=0.575 y=9.5 z=4
+E2_0_4 Nconleft2_0_2 Nut2_0_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_0_6 Nconright2_0_2 Nut2_0_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_0_5 Nub2_0_2 Nut2_0_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_0_1 Nub2_0_2
+.equiv Nut2_0_3 Nut2_0_2
+Nlong2_0_2 x=-0.575 y=16.5 z=4
+E2_0_7 Nut2_0_1 Nlong2_0_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle2_0_2 x=5.425 y=22.5 z=4
+E2_0_8 Nlong2_0_2 Nangle2_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast2_0_1 x=5.425 y=22.5 z=4
+Nlast2_0_2 x=11 y=22.5 z=4
+E2_0_9 Nlast2_0_1 Nlast2_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle2_0_2 Nlast2_0_1
+*
+* Connector 2   Bar 1
+*
+Npin2_1_1 x=2 y=0 z=4
+Npin2_1_2 x=2 y=2 z=4
+Npin2_1_3 x=2 y=4.8 z=4
+E2_1_0 Npin2_1_1 Npin2_1_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_1_1 Npin2_1_2 Npin2_1_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_1_1 x=1.75 y=4.8 z=4
+Nconleft2_1_2 x=1.425 y=7.8 z=4
+Nconright2_1_1 x=2.25 y=4.8 z=4
+Nconright2_1_2 x=2.575 y=7.8 z=4
+E2_1_2 Nconleft2_1_1 Nconleft2_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_1_3 Nconright2_1_1 Nconright2_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_1_3 Nconleft2_1_1
+.equiv Npin2_1_3 Nconright2_1_1
+Nub2_1_2 x=1.55 y=8.65 z=3.675
+Nut2_1_1 x=1.425 y=9.5 z=4
+Nut2_1_2 x=2.45 y=8.65 z=3.675
+Nut2_1_3 x=2.575 y=9.5 z=4
+E2_1_4 Nconleft2_1_2 Nut2_1_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_1_6 Nconright2_1_2 Nut2_1_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_1_5 Nub2_1_2 Nut2_1_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_1_1 Nub2_1_2
+.equiv Nut2_1_3 Nut2_1_2
+Nlong2_1_2 x=1.425 y=16.5 z=4
+E2_1_7 Nut2_1_1 Nlong2_1_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle2_1_2 x=5.925 y=21 z=4
+E2_1_8 Nlong2_1_2 Nangle2_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast2_1_1 x=5.925 y=21 z=4
+Nlast2_1_2 x=11 y=21 z=4
+E2_1_9 Nlast2_1_1 Nlast2_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle2_1_2 Nlast2_1_1
+*
+* Connector 2   Bar 2
+*
+Npin2_2_1 x=4 y=0 z=4
+Npin2_2_2 x=4 y=2 z=4
+Npin2_2_3 x=4 y=4.8 z=4
+E2_2_0 Npin2_2_1 Npin2_2_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_2_1 Npin2_2_2 Npin2_2_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_2_1 x=3.75 y=4.8 z=4
+Nconleft2_2_2 x=3.425 y=7.8 z=4
+Nconright2_2_1 x=4.25 y=4.8 z=4
+Nconright2_2_2 x=4.575 y=7.8 z=4
+E2_2_2 Nconleft2_2_1 Nconleft2_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_2_3 Nconright2_2_1 Nconright2_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_2_3 Nconleft2_2_1
+.equiv Npin2_2_3 Nconright2_2_1
+Nub2_2_2 x=3.55 y=8.65 z=3.675
+Nut2_2_1 x=3.425 y=9.5 z=4
+Nut2_2_2 x=4.45 y=8.65 z=3.675
+Nut2_2_3 x=4.575 y=9.5 z=4
+E2_2_4 Nconleft2_2_2 Nut2_2_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_2_6 Nconright2_2_2 Nut2_2_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_2_5 Nub2_2_2 Nut2_2_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_2_1 Nub2_2_2
+.equiv Nut2_2_3 Nut2_2_2
+Nlong2_2_2 x=3.425 y=16.5 z=4
+E2_2_7 Nut2_2_1 Nlong2_2_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle2_2_2 x=6.425 y=19.5 z=4
+E2_2_8 Nlong2_2_2 Nangle2_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast2_2_1 x=6.425 y=19.5 z=4
+Nlast2_2_2 x=11 y=19.5 z=4
+E2_2_9 Nlast2_2_1 Nlast2_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle2_2_2 Nlast2_2_1
+*
+* Connector 2   Bar 3
+*
+Npin2_3_1 x=6 y=0 z=4
+Npin2_3_2 x=6 y=2 z=4
+Npin2_3_3 x=6 y=4.8 z=4
+E2_3_0 Npin2_3_1 Npin2_3_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_3_1 Npin2_3_2 Npin2_3_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_3_1 x=5.75 y=4.8 z=4
+Nconleft2_3_2 x=5.425 y=7.8 z=4
+Nconright2_3_1 x=6.25 y=4.8 z=4
+Nconright2_3_2 x=6.575 y=7.8 z=4
+E2_3_2 Nconleft2_3_1 Nconleft2_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_3_3 Nconright2_3_1 Nconright2_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_3_3 Nconleft2_3_1
+.equiv Npin2_3_3 Nconright2_3_1
+Nub2_3_2 x=5.55 y=8.65 z=3.675
+Nut2_3_1 x=5.425 y=9.5 z=4
+Nut2_3_2 x=6.45 y=8.65 z=3.675
+Nut2_3_3 x=6.575 y=9.5 z=4
+E2_3_4 Nconleft2_3_2 Nut2_3_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_3_6 Nconright2_3_2 Nut2_3_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_3_5 Nub2_3_2 Nut2_3_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_3_1 Nub2_3_2
+.equiv Nut2_3_3 Nut2_3_2
+Nlong2_3_2 x=5.425 y=16.5 z=4
+E2_3_7 Nut2_3_1 Nlong2_3_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle2_3_2 x=6.925 y=18 z=4
+E2_3_8 Nlong2_3_2 Nangle2_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast2_3_1 x=6.925 y=18 z=4
+Nlast2_3_2 x=11 y=18 z=4
+E2_3_9 Nlast2_3_1 Nlast2_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle2_3_2 Nlast2_3_1
+*
+* Connector 2   Bar 4
+*
+Npin2_4_1 x=8 y=0 z=4
+Npin2_4_2 x=8 y=2 z=4
+Npin2_4_3 x=8 y=4.8 z=4
+E2_4_0 Npin2_4_1 Npin2_4_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_4_1 Npin2_4_2 Npin2_4_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_4_1 x=7.75 y=4.8 z=4
+Nconleft2_4_2 x=7.425 y=7.8 z=4
+Nconright2_4_1 x=8.25 y=4.8 z=4
+Nconright2_4_2 x=8.575 y=7.8 z=4
+E2_4_2 Nconleft2_4_1 Nconleft2_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_4_3 Nconright2_4_1 Nconright2_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_4_3 Nconleft2_4_1
+.equiv Npin2_4_3 Nconright2_4_1
+Nub2_4_2 x=7.55 y=8.65 z=3.675
+Nut2_4_1 x=7.425 y=9.5 z=4
+Nut2_4_2 x=8.45 y=8.65 z=3.675
+Nut2_4_3 x=8.575 y=9.5 z=4
+E2_4_4 Nconleft2_4_2 Nut2_4_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_4_6 Nconright2_4_2 Nut2_4_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_4_5 Nub2_4_2 Nut2_4_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_4_1 Nub2_4_2
+.equiv Nut2_4_3 Nut2_4_2
+Nlong2_4_2 x=7.425 y=16.5 z=4
+E2_4_7 Nut2_4_1 Nlong2_4_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast2_4_1 x=7.425 y=16.5 z=4
+Nlast2_4_2 x=11 y=16.5 z=4
+E2_4_8 Nlast2_4_1 Nlast2_4_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong2_4_2 Nlast2_4_1
+*
+* Connector 2   Bar 5
+*
+Npin2_5_1 x=10 y=0 z=4
+Npin2_5_2 x=10 y=2 z=4
+Npin2_5_3 x=10 y=4.8 z=4
+E2_5_0 Npin2_5_1 Npin2_5_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E2_5_1 Npin2_5_2 Npin2_5_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft2_5_1 x=9.75 y=4.8 z=4
+Nconleft2_5_2 x=9.425 y=7.8 z=4
+Nconright2_5_1 x=10.25 y=4.8 z=4
+Nconright2_5_2 x=10.575 y=7.8 z=4
+E2_5_2 Nconleft2_5_1 Nconleft2_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E2_5_3 Nconright2_5_1 Nconright2_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin2_5_3 Nconleft2_5_1
+.equiv Npin2_5_3 Nconright2_5_1
+Nub2_5_2 x=9.55 y=8.65 z=3.675
+Nut2_5_1 x=9.425 y=9.5 z=4
+Nut2_5_2 x=10.45 y=8.65 z=3.675
+Nut2_5_3 x=10.575 y=9.5 z=4
+E2_5_4 Nconleft2_5_2 Nut2_5_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_5_6 Nconright2_5_2 Nut2_5_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E2_5_5 Nub2_5_2 Nut2_5_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut2_5_1 Nub2_5_2
+.equiv Nut2_5_3 Nut2_5_2
+Nlong2_5_2 x=9.425 y=15 z=4
+E2_5_7 Nut2_5_1 Nlong2_5_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast2_5_1 x=9.425 y=15 z=4
+Nlast2_5_2 x=11 y=15 z=4
+E2_5_8 Nlast2_5_1 Nlast2_5_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong2_5_2 Nlast2_5_1
+*
+* Connector 3   Bar 0
+*
+Npin3_0_1 x=0 y=0 z=6
+Npin3_0_2 x=0 y=2 z=6
+Npin3_0_3 x=0 y=4.8 z=6
+E3_0_0 Npin3_0_1 Npin3_0_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_0_1 Npin3_0_2 Npin3_0_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_0_1 x=-0.25 y=4.8 z=6
+Nconleft3_0_2 x=-0.575 y=7.8 z=6
+Nconright3_0_1 x=0.25 y=4.8 z=6
+Nconright3_0_2 x=0.575 y=7.8 z=6
+E3_0_2 Nconleft3_0_1 Nconleft3_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_0_3 Nconright3_0_1 Nconright3_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_0_3 Nconleft3_0_1
+.equiv Npin3_0_3 Nconright3_0_1
+Nub3_0_2 x=-0.45 y=8.65 z=5.675
+Nut3_0_1 x=-0.575 y=9.5 z=6
+Nut3_0_2 x=0.45 y=8.65 z=5.675
+Nut3_0_3 x=0.575 y=9.5 z=6
+E3_0_4 Nconleft3_0_2 Nut3_0_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_0_6 Nconright3_0_2 Nut3_0_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_0_5 Nub3_0_2 Nut3_0_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_0_1 Nub3_0_2
+.equiv Nut3_0_3 Nut3_0_2
+Nlong3_0_2 x=-0.575 y=16.5 z=6
+E3_0_7 Nut3_0_1 Nlong3_0_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle3_0_2 x=5.425 y=22.5 z=6
+E3_0_8 Nlong3_0_2 Nangle3_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast3_0_1 x=5.425 y=22.5 z=6
+Nlast3_0_2 x=11 y=22.5 z=6
+E3_0_9 Nlast3_0_1 Nlast3_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle3_0_2 Nlast3_0_1
+*
+* Connector 3   Bar 1
+*
+Npin3_1_1 x=2 y=0 z=6
+Npin3_1_2 x=2 y=2 z=6
+Npin3_1_3 x=2 y=4.8 z=6
+E3_1_0 Npin3_1_1 Npin3_1_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_1_1 Npin3_1_2 Npin3_1_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_1_1 x=1.75 y=4.8 z=6
+Nconleft3_1_2 x=1.425 y=7.8 z=6
+Nconright3_1_1 x=2.25 y=4.8 z=6
+Nconright3_1_2 x=2.575 y=7.8 z=6
+E3_1_2 Nconleft3_1_1 Nconleft3_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_1_3 Nconright3_1_1 Nconright3_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_1_3 Nconleft3_1_1
+.equiv Npin3_1_3 Nconright3_1_1
+Nub3_1_2 x=1.55 y=8.65 z=5.675
+Nut3_1_1 x=1.425 y=9.5 z=6
+Nut3_1_2 x=2.45 y=8.65 z=5.675
+Nut3_1_3 x=2.575 y=9.5 z=6
+E3_1_4 Nconleft3_1_2 Nut3_1_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_1_6 Nconright3_1_2 Nut3_1_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_1_5 Nub3_1_2 Nut3_1_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_1_1 Nub3_1_2
+.equiv Nut3_1_3 Nut3_1_2
+Nlong3_1_2 x=1.425 y=16.5 z=6
+E3_1_7 Nut3_1_1 Nlong3_1_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle3_1_2 x=5.925 y=21 z=6
+E3_1_8 Nlong3_1_2 Nangle3_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast3_1_1 x=5.925 y=21 z=6
+Nlast3_1_2 x=11 y=21 z=6
+E3_1_9 Nlast3_1_1 Nlast3_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle3_1_2 Nlast3_1_1
+*
+* Connector 3   Bar 2
+*
+Npin3_2_1 x=4 y=0 z=6
+Npin3_2_2 x=4 y=2 z=6
+Npin3_2_3 x=4 y=4.8 z=6
+E3_2_0 Npin3_2_1 Npin3_2_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_2_1 Npin3_2_2 Npin3_2_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_2_1 x=3.75 y=4.8 z=6
+Nconleft3_2_2 x=3.425 y=7.8 z=6
+Nconright3_2_1 x=4.25 y=4.8 z=6
+Nconright3_2_2 x=4.575 y=7.8 z=6
+E3_2_2 Nconleft3_2_1 Nconleft3_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_2_3 Nconright3_2_1 Nconright3_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_2_3 Nconleft3_2_1
+.equiv Npin3_2_3 Nconright3_2_1
+Nub3_2_2 x=3.55 y=8.65 z=5.675
+Nut3_2_1 x=3.425 y=9.5 z=6
+Nut3_2_2 x=4.45 y=8.65 z=5.675
+Nut3_2_3 x=4.575 y=9.5 z=6
+E3_2_4 Nconleft3_2_2 Nut3_2_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_2_6 Nconright3_2_2 Nut3_2_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_2_5 Nub3_2_2 Nut3_2_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_2_1 Nub3_2_2
+.equiv Nut3_2_3 Nut3_2_2
+Nlong3_2_2 x=3.425 y=16.5 z=6
+E3_2_7 Nut3_2_1 Nlong3_2_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle3_2_2 x=6.425 y=19.5 z=6
+E3_2_8 Nlong3_2_2 Nangle3_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast3_2_1 x=6.425 y=19.5 z=6
+Nlast3_2_2 x=11 y=19.5 z=6
+E3_2_9 Nlast3_2_1 Nlast3_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle3_2_2 Nlast3_2_1
+*
+* Connector 3   Bar 3
+*
+Npin3_3_1 x=6 y=0 z=6
+Npin3_3_2 x=6 y=2 z=6
+Npin3_3_3 x=6 y=4.8 z=6
+E3_3_0 Npin3_3_1 Npin3_3_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_3_1 Npin3_3_2 Npin3_3_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_3_1 x=5.75 y=4.8 z=6
+Nconleft3_3_2 x=5.425 y=7.8 z=6
+Nconright3_3_1 x=6.25 y=4.8 z=6
+Nconright3_3_2 x=6.575 y=7.8 z=6
+E3_3_2 Nconleft3_3_1 Nconleft3_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_3_3 Nconright3_3_1 Nconright3_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_3_3 Nconleft3_3_1
+.equiv Npin3_3_3 Nconright3_3_1
+Nub3_3_2 x=5.55 y=8.65 z=5.675
+Nut3_3_1 x=5.425 y=9.5 z=6
+Nut3_3_2 x=6.45 y=8.65 z=5.675
+Nut3_3_3 x=6.575 y=9.5 z=6
+E3_3_4 Nconleft3_3_2 Nut3_3_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_3_6 Nconright3_3_2 Nut3_3_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_3_5 Nub3_3_2 Nut3_3_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_3_1 Nub3_3_2
+.equiv Nut3_3_3 Nut3_3_2
+Nlong3_3_2 x=5.425 y=16.5 z=6
+E3_3_7 Nut3_3_1 Nlong3_3_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle3_3_2 x=6.925 y=18 z=6
+E3_3_8 Nlong3_3_2 Nangle3_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast3_3_1 x=6.925 y=18 z=6
+Nlast3_3_2 x=11 y=18 z=6
+E3_3_9 Nlast3_3_1 Nlast3_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle3_3_2 Nlast3_3_1
+*
+* Connector 3   Bar 4
+*
+Npin3_4_1 x=8 y=0 z=6
+Npin3_4_2 x=8 y=2 z=6
+Npin3_4_3 x=8 y=4.8 z=6
+E3_4_0 Npin3_4_1 Npin3_4_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_4_1 Npin3_4_2 Npin3_4_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_4_1 x=7.75 y=4.8 z=6
+Nconleft3_4_2 x=7.425 y=7.8 z=6
+Nconright3_4_1 x=8.25 y=4.8 z=6
+Nconright3_4_2 x=8.575 y=7.8 z=6
+E3_4_2 Nconleft3_4_1 Nconleft3_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_4_3 Nconright3_4_1 Nconright3_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_4_3 Nconleft3_4_1
+.equiv Npin3_4_3 Nconright3_4_1
+Nub3_4_2 x=7.55 y=8.65 z=5.675
+Nut3_4_1 x=7.425 y=9.5 z=6
+Nut3_4_2 x=8.45 y=8.65 z=5.675
+Nut3_4_3 x=8.575 y=9.5 z=6
+E3_4_4 Nconleft3_4_2 Nut3_4_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_4_6 Nconright3_4_2 Nut3_4_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_4_5 Nub3_4_2 Nut3_4_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_4_1 Nub3_4_2
+.equiv Nut3_4_3 Nut3_4_2
+Nlong3_4_2 x=7.425 y=16.5 z=6
+E3_4_7 Nut3_4_1 Nlong3_4_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast3_4_1 x=7.425 y=16.5 z=6
+Nlast3_4_2 x=11 y=16.5 z=6
+E3_4_8 Nlast3_4_1 Nlast3_4_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong3_4_2 Nlast3_4_1
+*
+* Connector 3   Bar 5
+*
+Npin3_5_1 x=10 y=0 z=6
+Npin3_5_2 x=10 y=2 z=6
+Npin3_5_3 x=10 y=4.8 z=6
+E3_5_0 Npin3_5_1 Npin3_5_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E3_5_1 Npin3_5_2 Npin3_5_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft3_5_1 x=9.75 y=4.8 z=6
+Nconleft3_5_2 x=9.425 y=7.8 z=6
+Nconright3_5_1 x=10.25 y=4.8 z=6
+Nconright3_5_2 x=10.575 y=7.8 z=6
+E3_5_2 Nconleft3_5_1 Nconleft3_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E3_5_3 Nconright3_5_1 Nconright3_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin3_5_3 Nconleft3_5_1
+.equiv Npin3_5_3 Nconright3_5_1
+Nub3_5_2 x=9.55 y=8.65 z=5.675
+Nut3_5_1 x=9.425 y=9.5 z=6
+Nut3_5_2 x=10.45 y=8.65 z=5.675
+Nut3_5_3 x=10.575 y=9.5 z=6
+E3_5_4 Nconleft3_5_2 Nut3_5_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_5_6 Nconright3_5_2 Nut3_5_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E3_5_5 Nub3_5_2 Nut3_5_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut3_5_1 Nub3_5_2
+.equiv Nut3_5_3 Nut3_5_2
+Nlong3_5_2 x=9.425 y=15 z=6
+E3_5_7 Nut3_5_1 Nlong3_5_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast3_5_1 x=9.425 y=15 z=6
+Nlast3_5_2 x=11 y=15 z=6
+E3_5_8 Nlast3_5_1 Nlast3_5_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong3_5_2 Nlast3_5_1
+*
+* Connector 4   Bar 0
+*
+Npin4_0_1 x=0 y=0 z=8
+Npin4_0_2 x=0 y=2 z=8
+Npin4_0_3 x=0 y=4.8 z=8
+E4_0_0 Npin4_0_1 Npin4_0_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_0_1 Npin4_0_2 Npin4_0_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_0_1 x=-0.25 y=4.8 z=8
+Nconleft4_0_2 x=-0.575 y=7.8 z=8
+Nconright4_0_1 x=0.25 y=4.8 z=8
+Nconright4_0_2 x=0.575 y=7.8 z=8
+E4_0_2 Nconleft4_0_1 Nconleft4_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_0_3 Nconright4_0_1 Nconright4_0_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_0_3 Nconleft4_0_1
+.equiv Npin4_0_3 Nconright4_0_1
+Nub4_0_2 x=-0.45 y=8.65 z=7.675
+Nut4_0_1 x=-0.575 y=9.5 z=8
+Nut4_0_2 x=0.45 y=8.65 z=7.675
+Nut4_0_3 x=0.575 y=9.5 z=8
+E4_0_4 Nconleft4_0_2 Nut4_0_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_0_6 Nconright4_0_2 Nut4_0_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_0_5 Nub4_0_2 Nut4_0_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_0_1 Nub4_0_2
+.equiv Nut4_0_3 Nut4_0_2
+Nlong4_0_2 x=-0.575 y=16.5 z=8
+E4_0_7 Nut4_0_1 Nlong4_0_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle4_0_2 x=5.425 y=22.5 z=8
+E4_0_8 Nlong4_0_2 Nangle4_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast4_0_1 x=5.425 y=22.5 z=8
+Nlast4_0_2 x=11 y=22.5 z=8
+E4_0_9 Nlast4_0_1 Nlast4_0_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle4_0_2 Nlast4_0_1
+*
+* Connector 4   Bar 1
+*
+Npin4_1_1 x=2 y=0 z=8
+Npin4_1_2 x=2 y=2 z=8
+Npin4_1_3 x=2 y=4.8 z=8
+E4_1_0 Npin4_1_1 Npin4_1_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_1_1 Npin4_1_2 Npin4_1_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_1_1 x=1.75 y=4.8 z=8
+Nconleft4_1_2 x=1.425 y=7.8 z=8
+Nconright4_1_1 x=2.25 y=4.8 z=8
+Nconright4_1_2 x=2.575 y=7.8 z=8
+E4_1_2 Nconleft4_1_1 Nconleft4_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_1_3 Nconright4_1_1 Nconright4_1_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_1_3 Nconleft4_1_1
+.equiv Npin4_1_3 Nconright4_1_1
+Nub4_1_2 x=1.55 y=8.65 z=7.675
+Nut4_1_1 x=1.425 y=9.5 z=8
+Nut4_1_2 x=2.45 y=8.65 z=7.675
+Nut4_1_3 x=2.575 y=9.5 z=8
+E4_1_4 Nconleft4_1_2 Nut4_1_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_1_6 Nconright4_1_2 Nut4_1_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_1_5 Nub4_1_2 Nut4_1_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_1_1 Nub4_1_2
+.equiv Nut4_1_3 Nut4_1_2
+Nlong4_1_2 x=1.425 y=16.5 z=8
+E4_1_7 Nut4_1_1 Nlong4_1_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle4_1_2 x=5.925 y=21 z=8
+E4_1_8 Nlong4_1_2 Nangle4_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast4_1_1 x=5.925 y=21 z=8
+Nlast4_1_2 x=11 y=21 z=8
+E4_1_9 Nlast4_1_1 Nlast4_1_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle4_1_2 Nlast4_1_1
+*
+* Connector 4   Bar 2
+*
+Npin4_2_1 x=4 y=0 z=8
+Npin4_2_2 x=4 y=2 z=8
+Npin4_2_3 x=4 y=4.8 z=8
+E4_2_0 Npin4_2_1 Npin4_2_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_2_1 Npin4_2_2 Npin4_2_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_2_1 x=3.75 y=4.8 z=8
+Nconleft4_2_2 x=3.425 y=7.8 z=8
+Nconright4_2_1 x=4.25 y=4.8 z=8
+Nconright4_2_2 x=4.575 y=7.8 z=8
+E4_2_2 Nconleft4_2_1 Nconleft4_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_2_3 Nconright4_2_1 Nconright4_2_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_2_3 Nconleft4_2_1
+.equiv Npin4_2_3 Nconright4_2_1
+Nub4_2_2 x=3.55 y=8.65 z=7.675
+Nut4_2_1 x=3.425 y=9.5 z=8
+Nut4_2_2 x=4.45 y=8.65 z=7.675
+Nut4_2_3 x=4.575 y=9.5 z=8
+E4_2_4 Nconleft4_2_2 Nut4_2_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_2_6 Nconright4_2_2 Nut4_2_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_2_5 Nub4_2_2 Nut4_2_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_2_1 Nub4_2_2
+.equiv Nut4_2_3 Nut4_2_2
+Nlong4_2_2 x=3.425 y=16.5 z=8
+E4_2_7 Nut4_2_1 Nlong4_2_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle4_2_2 x=6.425 y=19.5 z=8
+E4_2_8 Nlong4_2_2 Nangle4_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast4_2_1 x=6.425 y=19.5 z=8
+Nlast4_2_2 x=11 y=19.5 z=8
+E4_2_9 Nlast4_2_1 Nlast4_2_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle4_2_2 Nlast4_2_1
+*
+* Connector 4   Bar 3
+*
+Npin4_3_1 x=6 y=0 z=8
+Npin4_3_2 x=6 y=2 z=8
+Npin4_3_3 x=6 y=4.8 z=8
+E4_3_0 Npin4_3_1 Npin4_3_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_3_1 Npin4_3_2 Npin4_3_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_3_1 x=5.75 y=4.8 z=8
+Nconleft4_3_2 x=5.425 y=7.8 z=8
+Nconright4_3_1 x=6.25 y=4.8 z=8
+Nconright4_3_2 x=6.575 y=7.8 z=8
+E4_3_2 Nconleft4_3_1 Nconleft4_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_3_3 Nconright4_3_1 Nconright4_3_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_3_3 Nconleft4_3_1
+.equiv Npin4_3_3 Nconright4_3_1
+Nub4_3_2 x=5.55 y=8.65 z=7.675
+Nut4_3_1 x=5.425 y=9.5 z=8
+Nut4_3_2 x=6.45 y=8.65 z=7.675
+Nut4_3_3 x=6.575 y=9.5 z=8
+E4_3_4 Nconleft4_3_2 Nut4_3_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_3_6 Nconright4_3_2 Nut4_3_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_3_5 Nub4_3_2 Nut4_3_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_3_1 Nub4_3_2
+.equiv Nut4_3_3 Nut4_3_2
+Nlong4_3_2 x=5.425 y=16.5 z=8
+E4_3_7 Nut4_3_1 Nlong4_3_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nangle4_3_2 x=6.925 y=18 z=8
+E4_3_8 Nlong4_3_2 Nangle4_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+Nlast4_3_1 x=6.925 y=18 z=8
+Nlast4_3_2 x=11 y=18 z=8
+E4_3_9 Nlast4_3_1 Nlast4_3_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nangle4_3_2 Nlast4_3_1
+*
+* Connector 4   Bar 4
+*
+Npin4_4_1 x=8 y=0 z=8
+Npin4_4_2 x=8 y=2 z=8
+Npin4_4_3 x=8 y=4.8 z=8
+E4_4_0 Npin4_4_1 Npin4_4_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_4_1 Npin4_4_2 Npin4_4_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_4_1 x=7.75 y=4.8 z=8
+Nconleft4_4_2 x=7.425 y=7.8 z=8
+Nconright4_4_1 x=8.25 y=4.8 z=8
+Nconright4_4_2 x=8.575 y=7.8 z=8
+E4_4_2 Nconleft4_4_1 Nconleft4_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_4_3 Nconright4_4_1 Nconright4_4_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_4_3 Nconleft4_4_1
+.equiv Npin4_4_3 Nconright4_4_1
+Nub4_4_2 x=7.55 y=8.65 z=7.675
+Nut4_4_1 x=7.425 y=9.5 z=8
+Nut4_4_2 x=8.45 y=8.65 z=7.675
+Nut4_4_3 x=8.575 y=9.5 z=8
+E4_4_4 Nconleft4_4_2 Nut4_4_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_4_6 Nconright4_4_2 Nut4_4_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_4_5 Nub4_4_2 Nut4_4_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_4_1 Nub4_4_2
+.equiv Nut4_4_3 Nut4_4_2
+Nlong4_4_2 x=7.425 y=16.5 z=8
+E4_4_7 Nut4_4_1 Nlong4_4_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast4_4_1 x=7.425 y=16.5 z=8
+Nlast4_4_2 x=11 y=16.5 z=8
+E4_4_8 Nlast4_4_1 Nlast4_4_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong4_4_2 Nlast4_4_1
+*
+* Connector 4   Bar 5
+*
+Npin4_5_1 x=10 y=0 z=8
+Npin4_5_2 x=10 y=2 z=8
+Npin4_5_3 x=10 y=4.8 z=8
+E4_5_0 Npin4_5_1 Npin4_5_2 w=0.4 h=1.3 nhinc=1 nwinc=1
+E4_5_1 Npin4_5_2 Npin4_5_3 w=0.4 h=0.4 nhinc=1 nwinc=1
+Nconleft4_5_1 x=9.75 y=4.8 z=8
+Nconleft4_5_2 x=9.425 y=7.8 z=8
+Nconright4_5_1 x=10.25 y=4.8 z=8
+Nconright4_5_2 x=10.575 y=7.8 z=8
+E4_5_2 Nconleft4_5_1 Nconleft4_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+E4_5_3 Nconright4_5_1 Nconright4_5_2 w=0.25 h=0.6 nhinc=1 nwinc=1
+.equiv Npin4_5_3 Nconleft4_5_1
+.equiv Npin4_5_3 Nconright4_5_1
+Nub4_5_2 x=9.55 y=8.65 z=7.675
+Nut4_5_1 x=9.425 y=9.5 z=8
+Nut4_5_2 x=10.45 y=8.65 z=7.675
+Nut4_5_3 x=10.575 y=9.5 z=8
+E4_5_4 Nconleft4_5_2 Nut4_5_1 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_5_6 Nconright4_5_2 Nut4_5_3 w=0.25 h=0.9 nhinc=1 nwinc=1
+E4_5_5 Nub4_5_2 Nut4_5_2 w=1.7 h=0.25 nhinc=1 nwinc=1
+.equiv Nut4_5_1 Nub4_5_2
+.equiv Nut4_5_3 Nut4_5_2
+Nlong4_5_2 x=9.425 y=15 z=8
+E4_5_7 Nut4_5_1 Nlong4_5_2 w=0.25 h=0.7 nhinc=1 nwinc=1
+Nlast4_5_1 x=9.425 y=15 z=8
+Nlast4_5_2 x=11 y=15 z=8
+E4_5_8 Nlast4_5_1 Nlast4_5_2 w=0.25 h=0.4 nhinc=1 nwinc=1
+.equiv Nlong4_5_2 Nlast4_5_1
+*
+* Externals 
+*
+.external Npin0_0_1 Nlast0_0_2
+.external Npin0_1_1 Nlast0_1_2
+.external Npin0_2_1 Nlast0_2_2
+.external Npin0_3_1 Nlast0_3_2
+.external Npin0_4_1 Nlast0_4_2
+.external Npin0_5_1 Nlast0_5_2
+.external Npin1_0_1 Nlast1_0_2
+.external Npin1_1_1 Nlast1_1_2
+.external Npin1_2_1 Nlast1_2_2
+.external Npin1_3_1 Nlast1_3_2
+.external Npin1_4_1 Nlast1_4_2
+.external Npin1_5_1 Nlast1_5_2
+.external Npin2_0_1 Nlast2_0_2
+.external Npin2_1_1 Nlast2_1_2
+.external Npin2_2_1 Nlast2_2_2
+.external Npin2_3_1 Nlast2_3_2
+.external Npin2_4_1 Nlast2_4_2
+.external Npin2_5_1 Nlast2_5_2
+.external Npin3_0_1 Nlast3_0_2
+.external Npin3_1_1 Nlast3_1_2
+.external Npin3_2_1 Nlast3_2_2
+.external Npin3_3_1 Nlast3_3_2
+.external Npin3_4_1 Nlast3_4_2
+.external Npin3_5_1 Nlast3_5_2
+.external Npin4_0_1 Nlast4_0_2
+.external Npin4_1_1 Nlast4_1_2
+.external Npin4_2_1 Nlast4_2_2
+.external Npin4_3_1 Nlast4_3_2
+.external Npin4_4_1 Nlast4_4_2
+.external Npin4_5_1 Nlast4_5_2
+*
+.freq fmin = 1e+04 fmax = 1e+04 ndec = 1
+*
+.end

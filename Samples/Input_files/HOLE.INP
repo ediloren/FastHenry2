@@ -1,0 +1,28 @@
+*This is the input deck to calculate effective inductance
+*This plane has a dimension of 0.025 X 0.025
+*There is 1 injection point and 1 sink point
+* There is a hole in the center of radius 0.0051m
+* Also included (but commented out) are rectangular holes
+*
+.units meters
+*
+*ground plane definition
+*
+g1 x1=0 y1=0 z1=0.0
++  x2=0.025 y2=0 z2=0
++  x3=0.025 y3=0.025 z3=0
++  thick=0.001 seg1=20 seg2=20
++  sigma=5.8e+07 nhinc=1
++ nin1 (0.0025,0.01)
++ nout1 (0.0225,0.0150)
++ hole circle (0.0125,0.0125,0,0.0051)
+*+ hole rect (0.01,0.005,0,0.015,0.02,0)
+*+ hole rect (0.0075,0.02,0,0.015,0.02,0)
+*
+.equiv ninput nin1
+.equiv noutput nout1
+.external ninput noutput
+*
+*
+.freq fmin=2e6 fmax=2e6 ndec=0.2
+.end

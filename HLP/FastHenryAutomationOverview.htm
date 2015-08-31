@@ -1,0 +1,42 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <title>FastHenry2 Automation Overview</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>FastHenry2 Automation Overview</H1>
+
+FastHenry2 provides a Windows Automation interface which allows a remote application to fully control FastHenry2. 
+
+<p>For example, a Visual Basic script inside an MS Windows Excel sheet can launch FastHenry2 in background, make it perform some simulation, then retrieve the results and show them in some cells - and all without even showing up the FastHenry2 window!
+
+<H2>The Automation Object</H2>
+
+FastHenry2 can be controlled by any Automation-capable application. The automation object which must be created to control FastHenry2 is named <b>FastHenry2.Document</b>. This name is defined in the Windows Registry at installation time or, if removed from the Registry, any time FastHenry2 is run.
+
+<H2>Automation References</H2>
+
+Automation is quite a complex topic in itself and will not be described here. We suggest to the unexperienced User to read Microsoft documentation on Automation. In particular, the following sources could be useful and can be found, for instance, on Microsoft web site:
+
+<ul>
+  <li>"Locating resources to study automation", Microsoft Knowledge Base Article KB152023
+
+  <li>"Building OLE Automation Service Components in Visual Basic and Visual C++", David George, Microsoft Corporation, October 2, 1995
+
+  <li>"Inside OLE 2nd Edition", Kraig Brockschmidt, Microsoft Press, 1995
+</ul>
+
+<H2>Example programs</H2>
+
+Some <a href="AutomationExamples.htm">example programs</a> are provided to help understand and implement FastHenry2 remote control. 
+
+</body>
+</html>

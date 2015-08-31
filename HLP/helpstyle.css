@@ -1,0 +1,323 @@
+/* Cascading Style Sheet for HTML Help Workshop */
+/* Enrico Di Lorenzo 2004/06/08 */
+
+
+/* display definitions */
+
+ADDRESS,
+BLOCKQUOTE,
+BODY, DD, DIV,
+DL, DT,
+FIELDSET, FORM,
+FRAME, FRAMESET,
+H1, H2, H3, H4,
+H5, H6, IFRAME,
+NOFRAMES,
+OBJECT, OL, P,
+UL, APPLET,
+CENTER, DIR,
+HR, MENU, PRE   { display: block }
+LI              { display: list-item }
+HEAD            { display: none }
+TABLE           { display: table }
+TR              { display: table-row }
+THEAD           { display: table-header-group }
+TBODY           { display: table-row-group }
+TFOOT           { display: table-footer-group }
+COL             { display: table-column }
+COLGROUP        { display: table-column-group }
+TD, TH          { display: table-cell }
+CAPTION         { display: table-caption }
+
+
+/* specifier definitions */
+
+BODY
+    {
+    font-size: 70%; font-weight: normal;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    }
+
+A:link      { color: #794827; } 
+A:active    { color: #794827; }
+A:visited   { color: #794827; }
+A:hover     { color: #794827; font-weight: bold; }
+A:sidebar   { color: #794827; }
+
+H1   
+    {
+    font-size: 165%; margin-bottom: 1em;
+    line-height: 125%; font-weight: bold; 
+    color: #794827;
+    }
+    
+H2
+    { font-size: 115%; margin-top: 1em;
+      margin-bottom: 1em; font-weight: bold;
+      background-color: #fbf1ee;
+    }
+    
+H3
+    { font-size: 100%; margin-top: 1em;
+      margin-bottom: 1em; font-weight: bold;
+    }
+    
+H4
+    { font-size: 100%; margin-top: 1em;
+      margin-bottom: 1em; font-weight: bold;
+    }
+H5
+    { font-size: .83em; line-height: 1em;
+      margin: 1em 0; font-weight: bold;
+    }
+    
+H6
+    { font-size: .67em; margin: 2.33em;
+      font-weight: bold;
+    }
+
+P          { margin-top:1em; margin-bottom: 1em; }
+P.margin   { margin-left: 1em; }
+P.margin2  { margin-left: 2em; } 
+
+LI         { margin-top: .6em; margin-bottom: 0em;  }
+
+BIG        { font-size: 120%;  }
+
+OL         { margin-top: .5em; margin-bottom: 0em }	
+
+UL         { margin-top: .6em; margin-bottom: 0em; }	
+
+OL UL      {list-style: disc; margin-top: 2em;  }
+
+LI         {padding-bottom: .3em; margin-left: -1.25em;  }
+
+DL UL      { margin-top: 2em; margin-bottom: 0em;  } /* list item inside a definition list */
+
+DL         { margin-top: -1em;  }
+
+OL DL      { margin-top: -1.5em; margin-left: 0em;  } /* definition list inside a numbered list */
+
+OL DL DL   {  margin-top: 0em; margin-left: .2em;  } /* definition list inside a definition list*/
+	
+DD         { margin-bottom: 0em;margin-left: 1.5em;  }
+
+DT         {  padding-top: 2em; font-weight: bold; margin-left: 1.5em;  }
+
+PRE        { margin-top: 0em; margin-bottom: 1.5em; font-family: monospace; }
+
+TABLE { font-size: 100%; text-align: left; margin-top: 1em; }
+TR    { margin: .50em; vertical-align: top; }
+TH    { text-align: left; margin: .50em; vertical-align: top; background: #dddddd; }
+TD    { margin: .50em; vertical-align: top; }
+
+CAPTION  { text-align: center }
+
+BLOCKQUOTE, 
+FIELDSET, FORM, DIR,
+MENU
+    { 
+      margin: 1.33em 0 
+    }
+
+B, STRONG
+    { 
+      font-weight: bolder 
+    }
+
+BLOCKQUOTE
+    { 
+      margin-left: 40px; margin-right: 40px 
+    }
+
+I, CITE, EM,
+VAR, ADDRESS
+    { 
+      font-style: italic 
+    }
+
+TT, CODE,
+KBD, SAMP
+    {
+      font-size: 120%;font-family: monospace 
+    }
+
+SMALL, SUB, SUP { font-size: .83em }
+
+SUB             { vertical-align: sub }
+
+SUP             { vertical-align: super }
+
+S, STRIKE, DEL  { text-decoration: line-through }
+
+HR              { border: 1px inset }
+
+DIR,
+MENU            { margin-left: 40px }
+
+U, INS          { text-decoration: underline }
+
+CENTER          { text-align: center }
+
+BR:before       { content: "\A" }
+
+
+
+
+/* custom styles */
+
+.x-small 
+    {
+      font-size: x-small
+    }
+
+.large
+    {
+      font-size: large
+    }
+
+.evident    
+    { 
+      font-size: 120%; margin-top: 1em;
+      margin-bottom: 1em; 
+    }
+.heading 
+    { 
+	font-size: 200%;
+	font-weight: bold;
+        background-color: #d9c6c0;
+	color: #794827;
+    }
+.lineColour
+    {
+      background: #fbf1ee;
+    }
+    
+/* html workshop definitions */
+
+/* Only use this for sidebars that ARE in a list */
+DIV.sidebartext {
+	position: relative;
+	left: -22px;
+	height: 72px;
+	width: 300px;
+	margin-top: .6em;
+	margin-right: 3em;
+	margin-left: 0;
+	margin-bottom: .6em;
+	padding-top: .75em;
+	padding-right: 6px;
+	padding-left: .75em;
+	padding-bottom: .75em;
+	cursor: hand;
+	border-left: 4pt solid #339900;
+	background-color: #F0F0F0; }
+
+/* Only use this for sidebars that are NOT in a list */
+DIV.sidebartbl {
+	height: 72px;
+	width: 300px;
+	margin-top: .6em;
+	margin-right: 3em;
+	margin-left: 0;
+	margin-bottom: .6em;
+	padding-top: .75em;
+	padding-right: 8em;
+	padding-left: .75em;
+	padding-bottom: .75em;
+	cursor: hand;
+	border-left: 4pt solid #339900;
+	background-color: #F0F0F0; }
+	
+A:visited.sidebar: {
+	color: #339900;
+	text-decoration: none; }
+	
+A:hover.sidebar: {
+	text-decoration: underline; }
+
+.endlink {
+	line-height: 6pt;
+	position: relative;
+	top: 1pt;
+	background-color: transparent;
+	font-weight: bold;
+	font-size: 7pt;
+	font-style: italic;
+	color: black;
+	text-decoration: none;
+	cursor: hand;
+	width: 20px;
+	height: 8pt;
+	padding-top: -2pt;
+	padding-bottom: 1pt;
+	margin: 0pt;
+	border-bottom: 1pt solid #cc0033;
+	border-top: 1pt solid #cc0033; }
+
+
+
+
+/* An example of style for HTML 4.0's ABBR/ACRONYM elements */
+
+ABBR, ACRONYM  { font-variant: small-caps; letter-spacing: 0.1em }
+A[href]        { text-decoration: underline }
+:focus         { outline: thin dotted invert }
+
+/* Begin bidirectionality settings (do not change) 
+BDO[DIR="ltr"]  { direction: ltr; unicode-bidi: bidi-override }
+BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
+
+*[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
+*[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
+*/
+
+/* Elements that are block-level in HTML4 
+ADDRESS, BLOCKQUOTE, BODY, DD, DIV, DL, DT, FIELDSET,
+FORM, FRAME, FRAMESET, H1, H2, H3, H4, H5, H6, IFRAME,
+NOSCRIPT, NOFRAMES, OBJECT, OL, P, UL, APPLET, CENTER,
+DIR, HR, MENU, PRE, LI, TABLE, TR, THEAD, TBODY, TFOOT,
+COL, COLGROUP, TD, TH, CAPTION
+    { 
+      unicode-bidi: normal 
+    }
+ End bidi settings */
+
+
+
+
+
+@media print {
+	@page 	{ margin: 10% }
+	H1, H2, H3,
+	H4, H5, H6 	{ page-break-after: avoid; page-break-inside: avoid }
+	BLOCKQUOTE,
+	PRE 		{ page-break-inside: avoid }
+	UL, OL, DL 	{ page-break-before: avoid }
+}
+
+@media speech {
+	H1, H2, H3,
+	H4, H5, H6 	{ voice-family: paul, male; stress: 20; richness: 90 }
+	H1 		{ pitch: x-low; pitch-range: 90 }
+	H2 		{ pitch: x-low; pitch-range: 80 }
+	H3 		{ pitch: low; pitch-range: 70 }
+	H4 		{ pitch: medium; pitch-range: 60 }
+	H5 		{ pitch: medium; pitch-range: 50 }
+	H6 		{ pitch: medium; pitch-range: 40 }
+	LI, DT, DD 	{ pitch: medium; richness: 60 }
+	DT { stress: 80 }
+	PRE, CODE, TT { pitch: medium; pitch-range: 0; stress: 0; richness: 80 }
+	EM { pitch: medium; pitch-range: 60; stress: 60; richness: 50 }
+	STRONG { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
+	DFN { pitch: high; pitch-range: 60; stress: 60 }
+	S, STRIKE { richness: 0 }
+	I { pitch: medium; pitch-range: 60; stress: 60; richness: 50 }
+	B { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
+	U { richness: 0 }
+	A:link { voice-family: harry, male }
+	A:visited { voice-family: betty, female }
+	A:active { voice-family: betty, female; pitch-range: 80; pitch: x-high }
+}
+
+

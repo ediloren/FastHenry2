@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="ImageType" value="Folder">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Introduction">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Welcome to FastHenry">
+			<param name="Local" value="WelcometoFastHenry.htm">
+			</OBJECT>
+	</UL>
+	
+	
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Getting started with FastHenry2">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Tutorial Contents">
+			<param name="Local" value="tutorial\TutorialFH1_ch01.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Load a FastHenry2 input file into FastModel">
+			<param name="Local" value="tutorial\TutorialFH1_ch02.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Understand basic FastHenry2 input file syntax">
+			<param name="Local" value="tutorial\TutorialFH1_ch03.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Launch FastHenry2 from FastModel">
+			<param name="Local" value="tutorial\TutorialFH1_ch04.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Understand FastHenry2 output">
+			<param name="Local" value="tutorial\TutorialFH1_ch05.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Specify a finer discretization">
+			<param name="Local" value="tutorial\TutorialFH1_ch06.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Define uniform ground planes">
+			<param name="Local" value="tutorial\TutorialFH1_ch07.htm">
+			</OBJECT>
+	</UL>
+
+
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Automation">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FastHenry Automation Overview">
+			<param name="Local" value="FastHenryAutomationOverview.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FastHenry Automation Examples">
+			<param name="Local" value="AutomationExamples.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Reference">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Methods">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Run">
+					<param name="Local" value="RunMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Stop">
+					<param name="Local" value="StopMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="Quit">
+					<param name="Local" value="QuitMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="ShowWindow">
+					<param name="Local" value="ShowWindowMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetInductance">
+					<param name="Local" value="GetInductanceMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetResistance">
+					<param name="Local" value="GetResistanceMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetFrequencies">
+					<param name="Local" value="GetFrequenciesMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetRowPortNames">
+					<param name="Local" value="GetRowPortNamesMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="GetColPortNames">
+					<param name="Local" value="GetColPortNamesMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetEndCallback">
+					<param name="Local" value="SetEndCallbackMethod.htm">
+					</OBJECT>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="SetLogCallback">
+					<param name="Local" value="SetLogCallbackMethod.htm">
+					</OBJECT>
+			</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Properties">
+				</OBJECT>
+			<UL>
+				<LI> <OBJECT type="text/sitemap">
+					<param name="Name" value="IsRunning">
+					<param name="Local" value="IsRunningProperty.htm">
+					</OBJECT>
+			</UL>
+		</UL>
+	</UL>
+</UL>
+</BODY></HTML>

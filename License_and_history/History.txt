@@ -1,0 +1,60 @@
+FastHenry2 History
+=================
+
+Porting Version 3.32, 2011/03/25
+- Minor modification for version information
+- Defined the default samples directory as the shared documents directory
+
+Porting Version 3.31, 2010/06/10
+- Updated help to be able to open .pdf guides from the browser  
+
+Porting Version 3.3, 2010/04/30
+- Modified to allow running as unpriviledged user  
+
+Porting Version 3.21, 2007/12/30
+- Fixed bug MS KB254957 BUG: Registry update code may fail
+  when an unprivileged user runs an MFC OLE server on Windows 2000
+
+Porting Version 3.2, 2005/12/22
+- Added 'getting started' tutorials in the Help files
+
+Porting Version 3.1, 2005/01/26
+- Support for file names containing spaces when called through 
+  Automation (provided names are enclosed in quotas)
+
+Porting Version 3.0, 2004/12/10
+- Fixed a numerical bug affecting also the original Unix distribution
+- Added Automation support
+- Removed the possibility to pass arguments to FastHenry when
+  launching from the command line (must use Automation)
+- Added option '-O' to print computed matrices on the screen
+  (and not only to file Zc.mat) 
+
+Porting Version 2.6, 2003/09/09
+- Corrected color of some warning messages
+- Added capability to output different Jreal.mat, Jimag.mat and Jmag.mat
+  matrices for each port and frequency
+
+Porting Version 2.5, 2003/06/06
+- Fixed 'partially overlapping segments' bug
+
+Porting Version 2.2, 2003/01/12
+- Solved 'scrambling' bug in matlab files output
+- Solved problems with non-uniform gnd planes
+- Enabled 'load' button on toolbar 
+- Corrected bug on working directories when launched from FastModel
+
+Porting Version 2.1, 2002/01/02
+- Optimized compilation, runs much faster 
+- Bug fix: run options don't reset after browsing for input file
+- Bug fix: all open files now close upon break or error event
+
+Porting Version 2.01, 2001/11/17
+- Corrected bug in matlab files output 
+
+Porting Version 2.0, 2001/07/01
+- Full porting under Windows with fixing of some bugs
+  affecting the original distribution
+
+Porting Version 1.2, 2001/03/29
+- Last porting under MSDOS

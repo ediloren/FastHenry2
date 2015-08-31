@@ -1,0 +1,309 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <meta name="Version" content="050510">
+  <title>FastHenry2 Tutorial</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>Understand FastHenry2 output</H1>
+
+<p>FastHenry2 has produced a detailed output about the simulation you ran. Let's examine it.
+
+<H2>The preamble</H2>
+
+<code>
+<br>FastHenry, (c) by M.I.T.
+<br>Windows porting and modifications, version 3.1
+<br>&nbsp;&nbsp;&nbsp;&nbsp;(c) 1998, 2003 by Enrico Di Lorenzo, www.fastfieldsolvers.com
+<br>&nbsp;
+<br>Running FastHenry 3.0 (29Sep96)
+<br>&nbsp;&nbsp;Date: Wed Jul 13 16:30:53 2005
+<br>Solution technique: ITERATIVE
+<br>Matrix vector product method: MULTIPOLE
+<br>&nbsp;&nbsp;Order of expansion: 2
+<br>Preconditioner: ON
+<br>Error tolerance: 0.001
+<br>Reading from file: C:\Program Files\FastFieldSolvers\FastHenry2\Samples\Input_files\square.inp
+<br>Title:
+<br>**This is the title line. It will always be ignored**.
+<br>&nbsp;
+<br>all lengths multiplied by 0.001 to convert to meters
+<br>Total number of filaments before multipole refine: 4
+<br>Total number of filaments after multipole refine: 32
+</code>
+
+<p>The preamble summarizes the input file information. In particular, 
+after the copyright notice, you find:
+
+<ul>
+  <li>The date and time information
+    <br>
+    <code>
+    <br>&nbsp;&nbsp;Date: Wed Jul 13 16:30:53 2005
+    </code>
+  <li>The solution technique
+    <br>
+    <code>
+    <br>Solution technique: ITERATIVE
+    </code>
+    <p>This is the method by which the admittance matrix is inverted to get the impedance matrix. The solution can be found either directly or through an iterative algorithm. The direct way is to use a technique known as gaussian LU decomposition, which gives exact results (within machine precision) but is lengty for big matrices. The iterative solution, on the other hand, provides results accurate only within a certain arbitrary value (1% by default) but it's much faster.
+  <li>The matrix-vector product method
+    <br>
+    <code>
+    <br>Matrix vector product method: MULTIPOLE
+    </code>
+    <p>Every step of the iterative algorithm used to invert the admittance matrix requires a matrix-vector multiplication. The multipole method speeds up this multiplication considering the physical meaning of the problem and grouping the effect of far-away magnetic couplings.
+   <li>The expansion order
+    <br>
+    <code>
+    <br>&nbsp;&nbsp;Order of expansion: 2
+    </code>
+    <p>This is the multipole expansion order selected in the <b>Run Menu</b> dialog. For normal geometries, you don't need to modify this parameter; in some cases, you can select 3 as expansion order to improve the precision of the results, but usually you get better results by further refining the input geometry. 
+   <li>The use of a preconditioner
+    <br>
+    <code>
+    <br>Preconditioner: ON
+    </code>
+    <p>The iterative algorithm used to invert the admittance matrix can be further improved by the use of a preconditioner, which conditions the matrix to achieve convergence in a smaller number of steps. The use of the preconditioner is always recommended.
+   <li>The error tolerance
+    <br>
+    <code>
+    <br>Error tolerance: 0.001
+    </code>
+    <p>This is the error treshold at which the iterative algorithm stops. By default it is set to 0.001, that is, 1%, but you can use a tighter or looser precision. Of course, a very small tolerance would void the speed benefits of the iterative algorithm vs. the LU decomposition. 
+  <li>The input file name
+    <br>
+    <code>
+    <br>Reading from file: C:\Program Files\FastFieldSolvers\FastHenry2\Samples\Input_files\square.inp
+    </code>
+  <li>The title line
+    <br>
+    <code>
+    <br>Title:
+    <br>**This is the title line. It will always be ignored**.
+    </code>
+    <p>This is simply the first line of the input file.
+  <li>The scaling factor
+    <br>
+    <code>
+    <br>all lengths multiplied by 0.001 to convert to meters
+    </code>
+    <p>You may remember that the default units for the file were millimeters. This message informs you of this scaling factor.
+  <li>The refine algorithm
+    <br>
+    <code>
+    <br>Total number of filaments before multipole refine: 4
+    <br>Total number of filaments after multipole refine: 32
+    </code>
+    <p>In FastHenry2 language, filaments are parts of a segment, which subdivide the segment along its cross-section. We will deal with filaments in the <a href="TutorialFH1_ch06.htm">Specify a finer discretization</a> chapter. For the moment, you can consider segments and filaments as equivalent.
+    <p>FastHenry2 implements an automatic refinement algorithm which breaks up segments that are too long. While this algorithm does not cover all cases, as you'll see later for the skin effect, it usually manages all other aspects, so you don't have to worry about the discretization of long segments in shorter ones. 
+</ul>
+
+<H2>The simulation and the result</H2>
+
+<code>
+<br>Multipole Summary
+<br>&nbsp;&nbsp;Expansion order: 2
+<br>&nbsp;&nbsp;Number of partitioning levels: 3
+<br>&nbsp;&nbsp;Total number of filaments: 32
+<br>No expansions at level 3 (lowest)
+<br>No expansions at level 2
+<br>Percentage of multiplies done by multipole: 100%
+<br>Scanning graph to find fundamental circuits...
+<br>Number of Groundplanes : 0 
+<br>Number of filaments:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32
+<br>Number of segments:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32
+<br>Number of nodes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;33
+<br>Number of meshes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----from tree:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----from planes: (before holes)&nbsp;&nbsp;0 
+<br>Number of conductors:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;(rows of matrix in Zc.mat) 
+<br>Number of columns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(columns of matrix in Zc.mat) 
+<br>Number of real nodes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;33
+<br>filling M...
+<br>filling R and L...
+<br>Total Memory allocated: 70 kilobytes
+<br>Frequency = 10000
+<br>Forming sparse matrix preconditioner..
+<br>conductor 0 from node n1
+<br>Calling gmres...
+<br>1 
+<br>Frequency = 100000
+<br>Forming sparse matrix preconditioner..
+<br>conductor 0 from node n1
+<br>Calling gmres...
+<br>1 
+<br>Frequency = 1e+006
+<br>Forming sparse matrix preconditioner..
+<br>conductor 0 from node n1
+<br>Calling gmres...
+<br>1 
+<br>Frequency = 1e+007
+<br>Forming sparse matrix preconditioner..
+<br>conductor 0 from node n1
+<br>Calling gmres...
+<br>1 
+<br>Frequency = 1e+008
+<br>Forming sparse matrix preconditioner..
+<br>conductor 0 from node n1
+<br>Calling gmres...
+<br>1 
+<br>&nbsp;
+<br>Computed matrices (R+jL)
+<br>&nbsp;Row 0:  n1 to n5
+<br>&nbsp;Freq = 10000
+<br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+<br>&nbsp;Freq = 100000
+<br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+<br>&nbsp;Freq = 1e+006
+<br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+<br>&nbsp;Freq = 1e+007
+<br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+<br>&nbsp;Freq = 1e+008
+<br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+<br>&nbsp;
+<br>All impedance matrices dumped to file Zc.mat
+<br>&nbsp;
+<br>Times:&nbsp;&nbsp;Read geometry&nbsp;&nbsp;&nbsp;0.016
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Multipole setup 0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scanning graph&nbsp;&nbsp;0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Form A M and Z&nbsp;&nbsp;0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;form M'ZM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Form precond&nbsp;&nbsp;&nbsp;&nbsp;0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GMRES time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.016
+<br>&nbsp;&nbsp;&nbsp;Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.0320001
+</code>
+
+  <p>The last part of the output provides information about the state of the simulation and the results. In particular:
+  
+  <ul>
+    <li>The expansion order
+      <br>
+      <code>
+      <br>&nbsp;&nbsp;Expansion order: 2
+      </code>
+      <p>This information is redundant and states again the multipole expansion order.
+    <li>The expansion order
+      <br>
+      <code>
+      <br>&nbsp;&nbsp;Number of partitioning levels: 3
+      </code>
+      <p>This is an internal parameter, automatically calculated by FastHenry2. It is an indicator of the depth of the spatial subdivision of the input geometry volume. The greater is the overall geometry dimension / minimum segment volume, the larger is the number of partitioning levels required to subdivide the space for simulation needs.     
+    <li>The total number of filaments
+      <br>
+      <code>
+      <br>&nbsp;&nbsp;Total number of filaments: 32
+      </code>
+      <p>This information is redundant and states again the total number of filaments used in the simulation.     
+    <li>The expansion order
+      <br>
+      <code>
+      <br>No expansions at level 3 (lowest)
+      <br>No expansions at level 2
+      <br>Percentage of multiplies done by multipole: 100%
+      </code>
+      <p>This information regards the internal multipole algorithm used by FastHenry2 to speed up the matrix-vector multiplication.
+    <li>The elements used in the simulation
+      <br>
+      <code>
+      <br>Scanning graph to find fundamental circuits...
+      <br>Number of Groundplanes : 0 
+      <br>Number of filaments:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32
+      <br>Number of segments:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;32
+      <br>Number of nodes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;33
+      <br>Number of meshes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----from tree:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----from planes: (before holes)&nbsp;&nbsp;0 
+      <br>Number of conductors:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;(rows of matrix in Zc.mat) 
+      <br>Number of columns:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;(columns of matrix in Zc.mat) 
+      <br>Number of real nodes:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;33
+      </code>
+      <p>This information summarizes all the elements which will be used in the simulation.  
+    <li>The allocated memory
+      <br>
+      <code>
+        <br>filling M...
+        <br>filling R and L...
+        <br>Total Memory allocated: 70 kilobytes
+      </code>
+      <p>This is the memory allocated to store all internal matrices. 
+    <li>The iteration data
+      <br>
+      <code>
+      <br>Frequency = 10000
+      <br>Forming sparse matrix preconditioner..
+      <br>conductor 0 from node n1
+      <br>Calling gmres...
+      <br>1 
+      <br>Frequency = 100000
+      <br>Forming sparse matrix preconditioner..
+      <br>conductor 0 from node n1
+      <br>Calling gmres...
+      <br>1 
+      <br>Frequency = 1e+006
+      <br>Forming sparse matrix preconditioner..
+      <br>conductor 0 from node n1
+      <br>Calling gmres...
+      <br>1 
+      <br>Frequency = 1e+007
+      <br>Forming sparse matrix preconditioner..
+      <br>conductor 0 from node n1
+      <br>Calling gmres...
+      <br>1 
+      <br>Frequency = 1e+008
+      <br>Forming sparse matrix preconditioner..
+      <br>conductor 0 from node n1
+      <br>Calling gmres...
+      <br>1 
+      </code>
+      <p>This is the number of iterations required to reach convergence inverting the admittance matrix to get the impedance matrix. You can consider the number of iterations as an rough indicator of how well behaved the matrix is and so, indirectly, of how correctly discretized the input geometry is. You'll have a series of iterations for each port (conductor) defined in your problem. In this case, having only one conductor, there is only one row. You can see also how the computation is repeated for each frequency of interest.
+    <li>The result
+      <br>
+      <code>
+      <br>Computed matrices (R+jL)
+      <br>&nbsp;Row 0:  n1 to n5
+      <br>&nbsp;Freq = 10000
+      <br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+      <br>&nbsp;Freq = 100000
+      <br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+      <br>&nbsp;Freq = 1e+006
+      <br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+      <br>&nbsp;Freq = 1e+007
+      <br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+      <br>&nbsp;Freq = 1e+008
+      <br>&nbsp;&nbsp;Row 0: 0.00343966+1.59836e-009j 
+      <br>&nbsp;
+      <br>All impedance matrices dumped to file Zc.mat
+      </code>
+      <p>This is the actual impedance of the square loop, for each frequency. You can see that the result is in the <i>R+jL</i> form, that is, the real part is the resistance and the imaginary part is the inductance.
+      <p>The results are also dumped to the file Zc.mat. Note however that in this file the results are in the <i>R+j&omega;L</i> form, where <i>&omega;</i> is the angular frequency, that is, <i>2&pi;f</i> and <i>f</i> is the frequency.
+    <li>The time summary
+      <br>
+      <code>
+      <br>Times:&nbsp;&nbsp;Read geometry&nbsp;&nbsp;&nbsp;0.016
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Multipole setup 0
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scanning graph&nbsp;&nbsp;0
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Form A M and Z&nbsp;&nbsp;0
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;form M'ZM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Form precond&nbsp;&nbsp;&nbsp;&nbsp;0
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GMRES time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.016
+      <br>&nbsp;&nbsp;&nbsp;Total:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.0320001
+      </code>
+      <p>The last part of the output reports a detailed summary about the simulation times.
+  </ul>
+
+<p><big><b>Congratulations! You have just completed your first impedance extraction with FastHenry2.
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,52 @@
+FastHenry2 Detailed History
+===========================
+
+Porting Version 3.32, 2011/03/25
+- Minor modification aligning all naming to 'FastHenry2'
+- Defined the default samples directory as the shared documents directory
+- Minor comments additon in the source files
+- Cleaned up for Sources distribution
+
+Porting Version 3.31, 2010/06/10
+- Updated help to be able to open .pdf guides from the browser  
+
+Porting Version 3.3, 2010/04/30
+- Modified code to work also for unprivileged users:
+  KB254957 bug (registry update code) and retrieving the path
+  from HKLM, while storing user info in HKCU
+
+Porting Version 3.21, 2007/12/30
+- Fixed bug MS KB254957 BUG: Registry update code may fail
+  when an unprivileged user runs an MFC OLE server on Windows 2000
+  in FastHenry2.cpp
+
+Porting Version 3.1, 2005/01/26
+- Support for file names containing spaces when called through 
+  Automation (provided names are enclosed in quotas),
+  modifying parseCmdLine() in FastHenry2.cpp/h
+
+Porting Version 3.0, 2004/12/10
+- Modified joelself.c exact_mutual() amd breakupseg.c BreakupSeg()
+  to fix the 'od_bonds' "Huh?  filament not expected length" 
+  numerical bug affecting also the original Unix distribution,
+  see source for details
+- Added Automation support by copying from a 'scratch' FastHenry class
+- Removed the possibility to pass arguments to FastHenry when
+  launching from the command line (must use Automation)
+- Added passing of results from FastHenry thread to main thread to 
+  return through automation
+- Modified all MessageBox() calls to direct writes on the FastHenry view
+- Added a Wrapper function to access Automation objects as a client,
+  for callback functions
+- Added a list of messages sent by viewprintf() to implement log
+  callback in AUtomation, since Automation calls are not allowed
+  during input synchronous calls (::SendMessage())
+- Added capability to store in memory computed matrices, to be
+  able to retrieve them via Automation
+- Added option '-O' to print computed matrices on the screen
+  (and not only to file Zc.mat); therefore, modified the 'Run'
+  dialog
+
+
+ 
+

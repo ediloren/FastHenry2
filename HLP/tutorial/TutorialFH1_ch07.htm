@@ -1,0 +1,63 @@
+<!doctype html public "-//w3c//dtd html 4.0 frameset//en">
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Enrico Di Lorenzo">
+  <meta name="Generator" content="Enrico Di Lorenzo">
+  <meta name="Description" content="Help File">
+  <meta name="Version" content="050510">
+  <title>FastHenry2 Tutorial</title>
+  <link href="helpstyle.css" rel="stylesheet" type="text/css">
+</head>
+
+<BODY>
+
+<H1>Define uniform ground planes</H1>
+
+<H2>Load a new FastHenry2 input file</H2>
+
+<ol>
+  <li>Select the FastHenry2 View (the view should be in foreground with the caption highlighted).
+  <li>From the <b>File</b> menu select <b>File->Close FastHenry2 File</b>.
+  <li>From the <b>File</b> menu select <b>File->Open FastHenry2 File</b> or click on the <img src="images/openicon.png"> icon on the toolbar.
+  <li>Browse to the software installation directory (e.g. <i>C:\Program Files\FastFieldSolvers</i>) and under <i>FastHenry2\Samples\Input_files</i> select the file <i>simple_gp.inp</i>, then click <b>Open</b>.
+<p>A model of a plane with a L-shaped line above it will appear in the FastModel View.
+<p><img src="images/FH2Plane.png">
+</ol>
+
+<H2>Examine the input file</H2>
+
+<p>We will now focus on the new aspects of this file.
+<ol>
+  <li>Examine the ground plane definition. 
+      <br>
+      <code>
+      <br>*&nbsp;&nbsp;First define 3 corners of the plane, in clockwise or counter-cw order
+      <br>g1 x1 = 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y1 = 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;z1 = 0
+      <br>+&nbsp;&nbsp;x2 = 1000&nbsp;&nbsp;y2 = 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;z2 = 0
+      <br>+&nbsp;&nbsp;x3 = 1000&nbsp;&nbsp;y3 = 1000&nbsp;&nbsp;z3 = 0
+      <br>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;thickness:
+      <br>+&nbsp;&nbsp;thick = 1.2
+      <br>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;discretization:
+      <br>+&nbsp;&nbsp;seg1 = 20 seg2 = 20
+      <br>*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nodes to reference later:
+      <br>+&nbsp;&nbsp;nin&nbsp;&nbsp;(800,800,0)
+      <br>+&nbsp;&nbsp;nout (0,200,0)
+      </code>
+      <p>First of all note that a line beginning with the '+' character is a continuation of the previous line.
+      <p>The ground plane is defined by three of its four corners, in our case (0,0,0), (1000,0,0) and (1000,1000,0). The default units (see the .Units directive at the beginning of the file) are mils, so these corners specify a 1000 mil x 1000 mil plane. The plane is also 1.2 mil thick.
+      <p>To finely represent the current flow and distribution on this plane, the plane is discretized into 20 x 20 segments. This means that the ground plane definition is in fact only a way to instruct FastHenry2 on how to lay out nodes and segments to build a discretized plane. You can see the effect of this discretization directly in FastModel; you can also change the discretization and  see how this reflects on the plane in the FastModel View.  
+      <p>So FastHenry2 has laid out a mesh of nodes for you to construct the ground plane. You must have a way to reference any of these nodes to be able to preform electrial connections. You can therefore specify explicitly any number of nodes (in our example only two, named <code>nin</code> and <code>nout</code>) and they will refer to the internal nodes of the plane which are closest to the supplied coordinates.
+    <li>Examine the .equiv statement 
+      <br>
+      <code>
+      <br>.equiv nin n3
+       </code>
+      <p>The .equiv keyword shorts two nodes together. In this case, the .equiv is used to connect the L-shaped conductor with the ground plane. 
+      <p>Note that <b>segments geometrically touching are NOT considered electrically connected. Segments are electrically connected only if they share a node.</b>
+    <li>Launch a FastHenry2 simulation. You get the loop inductance of the trace.
+</ol>
+
+</body>
+</html>

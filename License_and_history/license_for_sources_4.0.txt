@@ -1,0 +1,189 @@
+FastFieldSolvers(tm) Source Code License - Version 4.0 - 2013/01/02
+===================================
+Copyright (c) 2013 FastFieldSolvers S.r.l.
+http://www.fastfieldsolvers.com
+
+LICENSE AGREEMENT
+
+PREAMBLE
+Please find in the following the SOFTWARE legal notice. However, for your convenience this preamble contains a short summary of the LICENSE's main points. Reading only this incomplete preamble does not excuse you from complying with the detailed LICENSE terms.
+The LICENSOR retains every right about this SOFTWARE. License to use, copy, modify, and distribute the SOFTWARE and its documentation for any legal purpose is hereby granted without royalty, subject to the terms and conditions of this LICENSE. You may not however sell the SOFTWARE.
+This SOFTWARE utilizes and includes third part software, as per and according to the conditions detailed at clause 2.1 of this license. The third party software licenses are reported further on in this file.
+The LICENSEE must acknowledge the LICENSOR in every work (articles, reports, studies, etc.) based on the use of the SOFTWARE, in a clear and intelligible way. The LICENSEE must also indicate where, at the moment of publication of the work, the SOFTWARE can be obtained from.
+This SOFTWARE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+END OF PREAMBLE
+
+TERMS AND CONDITIONS
+
+This LICENSE Agreement is an agreement between the LICENSEE (either an individual or a legal entity who act for purposes which are inside his/her trade, business or profession) and the LICENSOR for the SOFTWARE product, which includes computer software and may include associated media, printed materials, and "online" or electronic documentation. The use of this SOFTWARE (or any work based on the SOFTWARE) implies the acceptance of the terms and conditions set out below: by installing, copying, or otherwise using the SOFTWARE, the LICENSEE agrees to be bound by the terms of this LICENSE.
+If the LICENSEE does not agree to the terms of this LICENSE, the LICENSEE must not install or use the SOFTWARE.
+The unauthorised use, reproduction, decompilation, reverse engineering, or unauthorised sale of this SOFTWARE or parts thereof is liable to prosecution. Such conduct can be prosecuted under criminal or civil law and result in penalties and/or claims for damages.
+
+1) DEFINITIONS
+
+Capitalized terms shall have the meaning ascribed to them in this LICENSE and set forth below:
+1. "LICENSOR" means Fastfieldsolvers S.r.l., a company incorporated under Italian law with legal seat in Via de Castillia, 7 - 20871 Vimercate (MB) Italy - Numero REA / REA Number: MB - 1885192 - P.IVA/VAT No. IT 07931440965.
+2. "LICENSEE" means the individual or legal entity who acquired from the LICENSOR the right to use the SOFTWARE under the terms of this LICENSE. The LICENSOR hereby declare to act for purposes which are inside his/her trade, business or profession.
+3. "SOFTWARE" means the LICENSOR Software, which means computer software and may include associated media, printed materials, "online" or electronic documentation and all UPDATES supplied by LICENSOR under this LICENSE.
+4. "UPDATES" means any correction, update, upgrade, patch or other modification or addition to the SOFTWARE, but excludes releases and software products designated by LICENSOR as new products.
+5. "CUSTOMIZED VERSION" means the SOFTWARE interfaced with the LICENSEE Content, and with the LICENSEE equipment, as well as with the translation of the whole SOFTWARE.
+6. "FORCE MAJEURE" shall mean causes that are beyond the reasonable control of the party claiming FORCE MAJEURE and that could not have been avoided or prevented by reasonable foresight, planning or implementation of the party claiming FORCE MAJEURE. Such causes shall include, but not be limited to the acts of God, war (declare or undeclared), insurrections, hostilities, strikes or lockouts, riots, fire storm, fright embargoes, or transportation delays, shortage of labour, inability to secure fuel, material, supplies equipment or power on account of shortage thereof, and interference or hindrance by any governing authority, power failures, or damage or destruction of any network facilities or servers, discontinuation of electricity, attacks by unknown viruses, power supply failure, disturbance or interruption in telecommunication services, failure or malfunction of communication media.
+7. "INTELLECTUAL PROPERTY RIGHTS" shall mean, with respect to any data, device, and object code, source code or other asset of any kind, any and all (by whatever name or term known or designated) tangible and intangible and now known or hereinafter existing 
+(a) right associated with works of authorship throughout the universe, including but not limited to copyrights, moral rights and maskworks
+(b) trade-or-service mark or logo, relating to any aspect of the SOFTWARE, service, SUPPORT and trade name rights and similar rights
+(c) trade secret rights
+(d) patents, designs, algorithms and other industrial property rights,
+(e) all other intellectual and industrial property rights ad every kind and nature relating to any such data, device, object code, source code or other asset and however designated including, without limitation, logos, "rental" rights to remuneration, and all rights necessary for the world-wide development, manufacture, modification, enhancement, sale, licensing, use, reproduction, publishing and display of such data, device, object code, source code or other asset, whether arising by operation of law, contract, license or otherwise, and
+(f) all registration, initial applications, renewals, extensions, continuations, divisions or reissues hereof or hereafter in force (including any rights in the foregoing).
+
+2) LICENSE GRANTS.
+
+Subject to the terms and conditions of this LICENSE, the LICENSOR hereby grants to the LICENSEE authorization to use this SOFTWARE subject to the following restrictions.
+This SOFTWARE is protected by copyright laws, in particular, among others, Italian Act L. 22 April 1941, n. 633.
+The LICENSOR owns all rights, title and interest in and to all software and other technology, including, without limitation, source codes, object codes, operating instructions, writings, interfaces, information, data, formulas, algorithms, models, drawings, photographs, design concepts, standard templates for the system, features, service, and in all other documentation developed for or relating to the SOFTWARE, system, features, service, SUPPORT and in all data and other information of any kind, together with all modifications, revisions, changes, copies, partial copies, compilations, partial copies and derivative works, all of which together shall constitute the "LICENSOR Property".
+All INTELLECTUAL PROPERTY RIGHTS and all other property rights of any nature in the LICENSOR Property are, shall be and shall remain in LICENSOR.
+During the terms of the LICENSE, the LICENSOR hereby grants to LICENSEE a non exclusive, worldwide, right to use the SOFTWARE. Without limiting the foregoing, this LICENSE does not give to the LICENSEE or to any any other third party the right to resell the SOFTWARE to any third party. 
+The term of this LICENSE to the LICENSEE shall expire upon termination of this LICENSE.
+The LICENSOR retains all rights not expressly granted herein to the LICENSEE.
+Any attempt otherwise to use, copy, modify, sublicense or distribute the SOFTWARE is void, and will automatically terminate the LICENSEE's rights under this LICENSE.
+The LICENSEE is not required to accept this LICENSE, since the LICENSEE have not signed it. However, nothing else grants LICENSEE permission to use the SOFTWARE PRODUCT. These actions are prohibited by law if the LICENSEE does not accept this LICENSE. Therefore, by using the SOFTWARE, the LICENSEE indicates the acceptance of this LICENSE to do so, and of all the terms and conditions of this LICENSE.
+
+If LICENSEE does not agree with the terms of this LICENSE, the LICENSEE is not authorized to install or use the SOFTWARE and all of its component parts.
+
+The SOFTWARE is distributed without any warranty, either express or implied, including, but not limited to, implied warranties of merchantability and fitness for particular purpose. The LICENSOR is not liable for any direct, indirect or consequential damages, lost profits, business interruption, loss of business information and the claims of third parties arising out or related to any use of the SOFTWARE.
+
+The LICENSOR's failure to perform any term or condition of this LICENSE Agreement as a result of conditions beyond its control such as, but not limited to FORCE MAJEURE, shall not be deemed a breach of this LICENSE Agreement.
+
+The LICENSOR grants and warrants that the SOFTWARE was free of viruses when it was developed, anyhow the LICENSOR makes no warranties and shall not be liable respecting any harm that may be caused by the transmission of a computer virus, worm, trojan, time bomb, logic bomb or other such computer program. The LICENSOR further expressly disclaims any warranty or representation to LICENSEE or to any third party.
+
+The LICENSEE must acknowledge the LICENSOR in every work (articles, reports, studies, etc.) based on the use of the SOFTWARE, in a clear and intelligible way. The LICENSEE must also indicate where, at the moment of publication of the work, the SOFTWARE can be obtained from.
+
+2.1) THIRD PARTY SOFTWARE.
+
+The SOFTWARE may utilize or include third party software, Opensource of Freesoftware or other files. The contents of these software, files and programs are subject to the use, license, restriction and limitation set forth the terms of use of the third party providing such content.
+The LICENSOR is not liable for any direct, indirect or consequential damages, lost profits, business interruption, loss of business information and the claims of third parties arising out or related to any use of the third party softwares, files and programs.
+
+3) TRAINING, INSTALLATION, SUPPORT AND MAINTENANCE.
+
+Training
+Subject to payment of all applicable fees, the LICENSOR shall provide to the LICENSEE service for technical training sessions. Each session will last (number of days/weeks), at a time mutually agreed to by the parties.
+
+Maintenance
+Subject to payment of all applicable fees, the LICENSOR shall provide the LICENSEE with UPDATES to the SOFTWARE.
+
+CUSTOMIZED VERSION
+Subject to payment of all applicable fees, the LICENSOR shall provide the LICENSEE with a CUSTOMIZED VERSION of the SOFTWARE. The CUSTOMIZED VERSION shall be considered part of the SOFTWARE and subject to the terms and conditions of this LICENSE. The CUSTOMIZED VERSION does not preclude or limit FastFieldSolvers S.r.l. from providing software, material or services to itself or other clients.
+
+Support 
+Subject to payment of all applicable fees, the LICENSOR shall provide the LICENSEE with the totality of the FastFieldSolvers(tm) SOFTWARE, System and Features made available to LICENSEE through the installation of the SOFTWARE, including all the installation and development of the agreed technical, aesthetic and functional requirements.
+
+4) TERM AND TERMINATION.
+
+Term. This LICENSE will commence from the Download or Date of receipt of the SOFTWARE and/or of the CUSTOMIZED VERSION.
+
+Default. If the LICENSEE, even in case of FORCE MAJEURE defaults in the performance of any of its obligations of this LICENSE, the LICENSOR may immediately terminate this LICENSE without written notice.
+In case of term or termination the LICENSEE agrees to cease any and all use of the SOFTWARE and is liable to fully delete the SOFTWARE, in particular the original copy, any backup copies and any pertinent SOFTWARE files installed on his/her computer. The LICENSEE shall also return all pertinent documentation.
+
+5) GENERAL.
+
+Severability.
+If individual provisions of the foregoing LICENSE should be or become partially or entirely void should they prove to contain a gap, this shall not affect the validity of the remaining provisions. The void provision shall be replaced or the gap shall be filled by an appropriate provision that comes closest to the intent of the users of this LICENSE or of the Contracting parties.
+
+Informative note on rights to privacy in accordance with Italian privacy law (Legislative Decree 196/2003).
+Personal data, collected in full compliance with the principles of the Leg. Decree 196/2003, are treated only for the performance of the software and services required, including fulfiling the administrative and accounting obligations, providing information about LICENSOR services, products and activities, sending out commercial information or promotional material, direct marketing campaigns, market research and other direct or indirect marketing initiatives.
+Data processing is carried out with or without the help of electronic or automated means and computer systems able to protect and preserve the confidentiality of data and minimize the danger of hacking, theft or tampering of data in accordance with the provisions of Articles. 31 ss Leg. 196/2003.
+The failure to provide required personal data will make it impossible to provide service.
+The LICENSOR is Data Controller for the processing of data.
+The LICENSEE shall have the right to obtain confirmation as to whether or not personal data concerning him exist, regardless of their being already recorded, and communication of such data in intelligible form, as provided by Legislative Decree 196/2003 - Section 7 (Right to Access Personal Data and Other Rights)
+"1. A data subject shall have the right to obtain confirmation as to whether or not personal data
+concerning him exist, regardless of their being already recorded, and communication of such data in intelligible form.
+2. A data subject shall have the right to be informed
+a) of the source of the personal data;
+b) of the purposes and methods of the processing;
+c) of the logic applied to the processing, if the latter is carried out with the help of electronic means;
+d) of the identification data concerning data controller, data processors and the representative designated as per Section 5(2);
+e) of the entities or categories of entity to whom or which the personal data may be communicated and who or which may get to know said data in their capacity as designated representative(s) in the State's territory, data processor(s) or person(s) in charge of the processing.
+3. A data subject shall have the right to obtain
+a) updating, rectification or, where interested therein, integration of the data;
+b) erasure, anonymization or blocking of data that have been processed unlawfully, including data whose retention is unnecessary for the purposes for which they have been collected or subsequently processed;
+c) certification to the effect that the operations as per letters a) and b) have been notified, as also related to their contents, to the entities to whom or which the data were communicated or disseminated, unless this requirement proves impossible or involves a manifestly disproportionate effort compared with the right that is to be protected.
+4. A data subject shall have the right to object, in whole or in part,
+a) on legitimate grounds, to the processing of personal data concerning him/her, even though they are relevant to the purpose of the collection;
+b) to the processing of personal data concerning him/her, where it is carried out for the purpose of sending advertising materials or direct selling or else for the performance of market or commercial communication surveys."
+The rights referred above may be exercised by making a request to the data controller or processor without formalities by e-mail to info@fastfieldsolvers.com.
+
+Governing Law and Jurisdiction
+The parties agree that this LICENSE shall be deemed to have been executed and shall be subject to, enforceable, construed and governed by the Italian laws.
+
+Forum Selection
+All disputes arising out of this LICENSE are subject to the exclusive jurisdiction of the courts located in Monza, Italy, and the parties hereby submit to the personal jurisdiction and venue of these courts.
+
+
+
+----- License agreement for the M.I.T. copyrighted material
+
+
+Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
+Technology, hereafter designated as the Copyright Owners.
+ 
+License to use, copy, modify, sell and/or distribute this software and
+its documentation for any purpose is hereby granted without royalty,
+subject to the following terms and conditions:
+ 
+1.  The above copyright notice and this permission notice must
+appear in all copies of the software and related documentation.
+ 
+2.  The names of the Copyright Owners may not be used in advertising or
+publicity pertaining to distribution of the software without the specific,
+prior written permission of the Copyright Owners.
+ 
+3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
+REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
+LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
+SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
+RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
+WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
+ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
+SERVICE OR SUPPORT.
+ 
+LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
+their trustees, officers, employees, students and agents against any and all
+claims arising out of the exercise of any rights under this Agreement,
+including, without limiting the generality of the foregoing, against any
+damages, losses or liabilities whatsoever with respect to death or injury to
+person or damage to property arising from or out of the possession, use, or
+operation of Software or Licensed Program(s) by LICENSEE or its customers.
+
+----- end of License agreement for the M.I.T. copyrighted material
+
+
+
+We would really like to thank Professor White, Matt Kamon, Keith Nabors and all the people who were involved on these project for their great work, their support and their interest in the Windows version of these field solvers. 
+
+
+
+----- License agreement for the Kenneth S. Kundert and 
+      the University of California copyrighted material
+
+
+Revision and copyright information.
+
+Copyright (c) 1985,86,87,88
+by Kenneth S. Kundert and the University of California.
+
+Permission to use, copy, modify, and distribute this software and
+its documentation for any purpose and without fee is hereby granted,
+provided that the copyright notices appear in all copies and
+supporting documentation and that the authors and the University of
+California are properly credited.  The authors and the University of
+California make no representations as to the suitability of this
+software for any purpose.  It is provided `as is', without express
+or implied warranty.
+
+----- end of License agreement for the Kenneth S. Kundert and 
+      the University of California copyrighted material
+
+
+
+

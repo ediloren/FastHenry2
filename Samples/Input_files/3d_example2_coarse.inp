@@ -1,0 +1,34 @@
+* a M5 line (26um wide, 1um thick) over Si substrate 8um below, sigma=2.6e7
+* 430um thick substrate, sigma=1.5e4 1/(ohm*m)
+* line length=1000um
+.units uM
+*
+* Define substrate, sigma=1.5e4 1/(m*ohm)= 0.015 1/(um*ohm)
+g1 x1 = -1500 y1 = -1500 z1 = 0
++  x2 = 1500  y2 = -1500 z2 = 0
++  x3 = 1500  y3 = 1500  z3 = 0
++  thick = 430  sigma= 0.015
+*+  seg1 = 100 seg2 = 100
++ file=NONE 
+*  under the trace
++ contact decay_rect (0,0,0,50,2000,30,3000,500,3000)
+*  the contacts
++ contact decay_rect (0,-1000,0,30,30,20,20,3000,3000)
++ contact decay_rect (0, 1000,0,30,30,20,20,3000,3000)
++
++  nhinc = 3 rh=2
+*     nodes to reference later:
++  np1 (0,-1000,0)
++  np2 (0,1000,0)
+*
+* line width=26um
+* thick h=1um sigma=2.6e7 1/(m*ohm)=26 1/(um*ohm)
+*
+NS1 x=0 y=-1000 z=223.5
+NS2 x=0 y=1000 z=223.5
+EM5 NS1 NS2 w=26 h=1 sigma=26 nwinc=4 nhinc=1
+.equiv NS2 np2 
+.external NS1 np1
+*
+.freq fmin=0 fmax=3.3e8 ndec=1
+.end
