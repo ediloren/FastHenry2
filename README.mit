@@ -1,0 +1,161 @@
+FastHenry 3.0.1 information.
+ 
+Updated May 28th 2012 by FastFieldSolvers, www.fastfieldsolvers.com
+
+FastHenry is a program for the efficient extraction of inductances and 
+resistances of complex 3-D geometries of conductors.  
+
+Configuring for your machine:
+
+  1.  Change to the fasthenry-3.0 directory
+
+     prompt %   cd fasthenry-3.0
+
+  2.  Configure for your machine  (sets the compilation flags)
+
+    SunOS 4.x, IBM RS 6000's, and other 4.2/3 BSD systems(?):
+      prompt %   config default
+
+    DEC 5000s:
+      prompt %   config dec
+
+    DEC Alphas:
+      prompt %   config alpha
+
+    Silicon Graphics:
+      prompt %   config sgi 
+      and then read the extra instructions in README.sgi
+
+    Linux: 
+      prompt % config default
+
+      prompt % config x64
+      to force compile for x86 64bit machines
+
+  System V operating systems:
+
+    Sun Solaris:
+
+      prompt %   config solaris
+
+    Hewlett-Packard  HP-UX, and other System V operating systems:
+      This has not been thoroughly tested.
+
+      prompt %   config sysV
+
+   Notes:
+
+    a. For Versions of solaris before 2.5, The "ranlib" command is obsolete and
+    doesn't exist. 
+    Either remove the ranlib command from src/fasthenry/sparse/Makefile
+    or define a null ranlib command in your path or do "make -k all"
+
+    b. In the linking stage, if you get an error that "gethostname" 
+    is undefined,  then add "-DNO_GETHOSTNAME" to the CFLAGS line in 
+    src/fasthenry/Makefile and src/zbuf/Makefile after doing config.  
+    For instance
+
+       CFLAGS = -O -DFIVE -DNO_GETHOSTNAME
+
+
+Compiling:
+
+   prompt %   cd fasthenry-3.0.1
+   prompt %   make all
+
+  produces the executables:  fasthenry-3.0.1/bin/fasthenry
+                             fasthenry-3.0.1/bin/zbuf
+                             fasthenry-3.0.1/bin/ReadOutput
+                             fasthenry-3.0.1/bin/MakeLcircuit
+
+  If you want to save space after "make all",
+
+   prompt %   make clean
+
+  will clean up *.o and *.a files.
+
+Documentation:
+
+  The manuals are in Acrobat Reader pdf format in the directory 'doc'
+
+-------------------------------------------------------------
+Major changes in 3.0.1 since version 3.0
+
+- Added various stability bug fixes over original 3.0 distribution
+
+- Added stability improvement under Linux
+
+- Added various includes and other minor updates to avoid warnings
+  with latest versions of GCC
+
+- Updated source code to compile on 64 bit machines
+
+- Added Makefile option for 64 bit machines
+
+-------------------------------------------------------------
+Major changes in 3.0 since version 2.5
+
+- Specify a nonuniform discretization of a reference plane to
+  capture small features in fewer elements.
+
+- Two approaches for generating spice equivalent circuits are available:
+
+  1. An equivalent circuit for a single frequency.
+
+  2. A circuit which models the frequency
+    dependent resistances and   inductances through a reduced state-space
+    representation
+
+   Comments:  Method 1 will not model frequency dependent resistance
+   and inductance since it gives and R and L at the single specified
+   frequency.  Method 2 will model the full effects up to some frequency.
+
+- Major Bug fix:
+    For reference planes which form segments with different
+    widths in the x-direction versus the Y direction, the sizes weren't
+    computed correctly in version 2.0 and above.  This has been fixed.
+
+
+- The zbuf program now takes the ``-m'' argument to produce a
+  Matlab file for faster visualization in matlab.  This is very beneficial for
+  large files since producing the postscript file can take $n^2$ time.
+  The matlab file can be viewed within matlab with the
+  fasthenry-3.0/bin/plotfastH.m matlab function.  The file 
+  zbuffile.mat would be produced with ``zbuf -m zbuffile'' which can
+  then be viewed in matlab with ``>> plotfastH('zbuffile.mat')''.
+  Also, you can modify the file src/zbuf/dump_struct.c to output in YOUR own
+  format instead of matlab.
+
+-  Sparse preconditioner.  Specify  -p shells to use a
+   preconditioner based on Byron Krauter's sparse inductance technique.
+
+-  Regurgitate the input file with -v to see what FastHenry
+   thinks it has read.  Also can translate and reflect geometry before output.
+
+-------------------------------------------------------------
+
+Changes since Version 1.0
+
+Version 1.5:
+
+ 1.  Better filament mutual inductance approximation for very thin segments.
+ 2.  Ability to specify ground plane holes.  See example hole.inp and
+     some of the comments toward the end of the file hole.c  (I have
+     not had a chance to update the manual.)
+ 3.  Other command line options.  (Give an erroneous option at the command line
+     to see the added options)
+ 4.  Some bug fixes.
+
+
+Version 2.0 - this is a far improvement over the past versions
+
+ In summary:
+ 1. A better preconditioner which allows efficient analysis of 
+    reference planes.
+ 2. Accurate modeling with thin filaments.
+ 3. More detailed manual
+ 4. Many, many other features
+
+
+-----------------------------------------------------------------
+
