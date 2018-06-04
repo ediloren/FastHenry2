@@ -5,11 +5,11 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Aug 28 14:36:24 2015
+ /* File created by MIDL compiler version 7.00.0555 */
+/* at Mon Jun 04 16:19:29 2018
  */
 /* Compiler settings for FastHenry2.odl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 

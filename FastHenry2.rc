@@ -27,7 +27,9 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\FastHenry2.ico"
+
 IDR_FASTHTYPE           ICON                    "res\\FastHenryDoc.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -35,6 +37,7 @@ IDR_FASTHTYPE           ICON                    "res\\FastHenryDoc.ico"
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -164,12 +167,12 @@ CAPTION "About FastHenry"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,13,13,20,20
-    LTEXT           "FastHenry2, Porting Version 3.6",IDC_STATIC,39,10,119,8,SS_NOPREFIX
+    LTEXT           "FastHenry2, Porting Version 3.6.1",IDC_STATIC,39,10,119,8,SS_NOPREFIX
     LTEXT           "FastHenry 3.0 original code, Copyright (C) 1998 M.I.T.",IDC_STATIC,40,60,175,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,32,14,WS_GROUP
     LTEXT           "Window porting and modifications ",IDC_STATIC,40,25,119,8
-    LTEXT           "Copyright (C) 1998, 2015 Enrico Di Lorenzo",IDC_STATIC,40,34,157,8
-    LTEXT           "www.fastfieldsolvers.com",IDC_STATIC,40,43,157,8
+    LTEXT           "Copyright (C) 1998, 2018 FastFieldSolvers S.R.L.",IDC_STATIC,40,34,157,8
+    LTEXT           "https://www.fastfieldsolvers.com",IDC_STATIC,40,43,157,8
 END
 
 IDD_DIALOG_RUN DIALOG 0, 0, 377, 218
@@ -234,8 +237,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 3,5,0,0
- PRODUCTVERSION 3,5,0,0
+ FILEVERSION 3,6,1,0
+ PRODUCTVERSION 3,6,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -251,12 +254,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "FastHenry2"
-            VALUE "FileVersion", "3.6.0.0"
+            VALUE "FileVersion", "3.6.1.0"
             VALUE "InternalName", "FastHenry2"
             VALUE "LegalCopyright", "Copyright (C) FastFieldSolvers, 2011"
             VALUE "OriginalFilename", "FastHenry2.EXE"
             VALUE "ProductName", "FastHenry2"
-            VALUE "ProductVersion", "3.6.0.0"
+            VALUE "ProductVersion", "3.6.1.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -374,6 +377,17 @@ BEGIN
 0x6574, 0x7478, "\000" 
     IDC_DUMP_FILE_TYPE, 0x403, 5, 0
 0x6f62, 0x6874, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
     0
 END
 

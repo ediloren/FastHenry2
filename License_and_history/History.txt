@@ -1,6 +1,9 @@
 FastHenry2 History
 =================
 
+Porting Version 3.6.1, 2018/06/04
+- Minor fixes
+
 Porting Version 3.6, 2015/08/05
 - Ported to Win 64bit, to remove 32 bit memory limitations when
   x64 bit version is used

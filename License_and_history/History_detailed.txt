@@ -1,9 +1,12 @@
 FastHenry2 Detailed History
 ===========================
 
+Porting Version 3.6.1, 2018/06/04
+- Minor fixes for "uh oh segs does not seem parallel"
+
 Porting Version 3.6, 2015/08/05
 - Ported under Visual Studio Community edition 2013 (supports MFC)
-- Ported to x64, while keeping also x32 support
+- Ported to x64, while keeping also x86 support
 
 Porting Version 3.32, 2011/03/25
 - Minor modification aligning all naming to 'FastHenry2'

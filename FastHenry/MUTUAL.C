@@ -377,17 +377,36 @@ by a distance 1e10 times their length\n");
     vz =  (fil2->z[1] - ( fil1->z[0] + dz));
     x2_1 = vx*ux + vy*uy + vz*uz;
 
-    if ( fabs( (sqrt(vx*vx + vy*vy + vz*vz) - fabs(x2_1))
-	      /(MAX(fabs(x2_0)+d,fabs(x2_1)+d))) 
-	> EPS) {
-      viewprintf(stderr,"uh oh, segs don't seem parallel %lg\n",(sqrt(vx*vx + vy*vy * vz*vz) - fabs(x2_1)));
-    }
+	/* As per Matt Kamon's original FAQ, this test has been commented out.
+	   FAQ text follow:
 
-    if ( fabs( (vtemp - fabs(x2_0))/(MAX(fabs(x2_0)+d,fabs(x2_1)+d))) 
-	> EPS) {
+	   >This warning is an internal warning that doesn't matter in
+	   >this case (and rarely appears).
+	   >It results from two filaments being almost parallel.
+	   >One point of the code considers them parallel, but later, a different
+	   >'back up test' thinks they are not.  I probably should have taken
+	   >this message out, but never did.  The value can be thought of as (1 - cos(e))
+	   >where e is the angle between the filaments.  The routine that calls
+	   >this is for computing the mutual inductance between filaments
+	   >which are NOT close together, so treating them as non-parallel is
+	   >even less important."
+
+	   Actually from the code below cleary there exist conditions where numerical precision roundups
+	   will trigger the warning. In fact, a slight perturbation of the input coordinates always clears
+	   out the warning, but first you may get even a very long list of warnings, taking a lot of time
+	   and unnecessarily alarming the user.
+	
+    if ( fabs( (sqrt(vx*vx + vy*vy + vz*vz) - fabs(x2_1))
+	      /(MAX(fabs(x2_0)+d,fabs(x2_1)+d))) > EPS) {
+      viewprintf(stderr,"uh oh, segs don't seem parallel %lg\n", (sqrt(vx*vx + vy*vy * vz*vz) - fabs(x2_1)));
+	  viewprintf(stderr, "  fil1 x[0]=%g, y[0]=%g, z[0]=%g x[1]=%g, y[1]=%g, z[1]=%g \n", fil1->x[0], fil1->y[0], fil1->z[0], fil1->x[1], fil1->y[1], fil1->z[1]);
+	  viewprintf(stderr, "  fil2 x[0]=%g, y[0]=%g, z[0]=%g x[1]=%g, y[1]=%g, z[1]=%g \n", fil2->x[0], fil2->y[0], fil2->z[0], fil2->x[1], fil2->y[1], fil2->z[1]);
+	}
+
+    if ( fabs( (vtemp - fabs(x2_0))/(MAX(fabs(x2_0)+d,fabs(x2_1)+d))) > EPS) {
       viewprintf(stderr,"uh oh, segs don't seem parallel\n");
     }
-
+	*/
 
 /*
     if (x2_1 < x2_0) {

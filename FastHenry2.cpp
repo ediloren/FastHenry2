@@ -332,7 +332,7 @@ int CFastHenryApp::getSubstring(const char *buffer, char *substr, size_t *skip)
 	substr[0] = '\0';
 
 	// read a piece of string
-	res = sscanf(buffer, "%s%n", tmpStr, skip);
+	res = sscanf(buffer, "%s%zn", tmpStr, skip);
 	// if not finished
 	if( res != EOF ) {
 		// find if it does contain any '"'
