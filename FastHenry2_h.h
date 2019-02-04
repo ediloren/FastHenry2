@@ -3,11 +3,11 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0555 */
-/* at Mon Jun 04 16:19:29 2018
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Mon Apr 08 17:59:19 2019
  */
 /* Compiler settings for FastHenry2.odl:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -44,6 +44,7 @@
 #ifndef __IFastHenry_FWD_DEFINED__
 #define __IFastHenry_FWD_DEFINED__
 typedef interface IFastHenry IFastHenry;
+
 #endif 	/* __IFastHenry_FWD_DEFINED__ */
 
 
@@ -100,7 +101,7 @@ DEFINE_GUID(DIID_IFastHenry,0x3BAD3C03,0x3868,0x4C3C,0xB2,0x65,0xBD,0xAE,0x2A,0x
             IFastHenry * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IFastHenry * This);
@@ -128,14 +129,22 @@ DEFINE_GUID(DIID_IFastHenry,0x3BAD3C03,0x3868,0x4C3C,0xB2,0x65,0xBD,0xAE,0x2A,0x
         
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IFastHenry * This,
-            /* [in] */ DISPID dispIdMember,
-            /* [in] */ REFIID riid,
-            /* [in] */ LCID lcid,
-            /* [in] */ WORD wFlags,
-            /* [out][in] */ DISPPARAMS *pDispParams,
-            /* [out] */ VARIANT *pVarResult,
-            /* [out] */ EXCEPINFO *pExcepInfo,
-            /* [out] */ UINT *puArgErr);
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
         
         END_INTERFACE
     } IFastHenryVtbl;

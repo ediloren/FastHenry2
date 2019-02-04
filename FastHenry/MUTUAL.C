@@ -11,6 +11,7 @@
 //extern double atanh();
 
 int realcos_error = 0;
+int d_neg_large_error = 0;
 
 // function prototypes
 void print_infinity_warning(FILAMENT *fil1, FILAMENT *fil2);
@@ -233,17 +234,23 @@ FILAMENT *fil;
 
 /* calculates the mutual inductance between two filaments */
 /* from Grover, Chapter 7 */
+//
+// The formulas are taken from F. W. Grover, "Inductance Calculations Working
+// Formulas and Tables", second edition, D. Van Nostrand Company Inc., New York 1946,
+// and nomenclature is the same as in the book
+
 double mutualfil(fil1, fil2)
 FILAMENT *fil1, *fil2;
 {
   double R, R1, R2, R3, R4, l, m;
-  double cose, sine, u,v,d;
+  double cose, sine, u, v, d;
   double alpha, tmp1, tmp2, tmp3, tmp4, tmp5;
-  double maxR, maxlength, sinsq, blah, minR;
+  double maxR, maxlength, sinsq, minR;
+  // double blah;
   double scaleEPS, realcos;
   double vtemp;
 
-  double omega,M;
+  double omega, M;
   int signofM;
 
   /* for parallel filaments */
@@ -254,6 +261,49 @@ FILAMENT *fil1, *fil2;
   // Enrico, bug fix, for touching filaments 
   double Mln, Mun;
 
+  // As per Grover, the general case is as per pp. 55-57, mutual inductance of two 
+  // straigth filaments placed in any desired position. If analyzing the filaments
+  // we discover that they are parallel and collinear, or parallel, or toucing at
+  // a point, or perpendicular, we use the formulae for these special cases, 
+  // taken again from Grover. Here below the explanation of the general case
+  // of two segments in arbitrary positions.
+  // The two filaments are AB, i.e. 'fil1', with length l
+  // and ab i.e. 'fil2', with length m
+  // They are placed in an arbitrary position in space.
+  //         u            l
+  //   P----------A---------------B
+  //   |\ eps
+  // d | \
+  //   |  \  
+  //   |   \
+  //   p    \
+  //    \    \
+  //     \    \
+  //   v  \    \
+  //       a    \
+  //        \    \
+  //         \    \
+  //        m \    C
+  //           \
+  //            \
+  //             b
+  //
+  //  PC is the line of intersection of the two planes containing respectively AB and ab 
+  //  that intersect at a right angle. The above picture is intended therefore as 3D,
+  //  as AB and ab in general are not lying on the same plane.
+  //  P is identified as the point at the crossing of the extension of AB with the line of
+  //  intersection of the two planes (C is not important, can be any point along the line).
+  //  The line Pp, with length d, is the common perpendicular to both the filaments AB and ab,
+  //  and d is therefore the distance between the plane BPC and the plane parallel to BPC
+  //  that contains ab. The angle BPC is called epsilon or 'e' in the code here below,
+  //  PA has length u and Pa has length v.
+
+  // R1 is the length of segment Bb
+  // R2 is the length of segment Ba
+  // R3 is the length of segment Aa
+  // R4 is the length of segment Ab
+  //
+  // Here below 'Rxsq' is the square of Rx
   R1sq = magdiff2(fil1,1,fil2,1);
   R2sq = magdiff2(fil1,1,fil2,0);
   R3sq = magdiff2(fil1,0,fil2,0);
@@ -280,6 +330,7 @@ FILAMENT *fil1, *fil2;
   if (scaleEPS < 1) scaleEPS = 1;
   if (scaleEPS > 100) scaleEPS = 100;
 
+  // 'alpha' is actually alphasquared in Grover, see (46) at page 52
   alpha = R4sq - R3sq + R2sq - R1sq;
   signofM = 1;
 
@@ -296,7 +347,7 @@ FILAMENT *fil1, *fil2;
    }
 */
 
-  /* segments touching */
+  // segments touching at the end points, see above the meaning of 'Rx'
   if ( (fabs(R1) < EPS)||(fabs(R2) < EPS)||(fabs(R3) < EPS)||(fabs(R4) < EPS) )
     {
       if (fabs(R1) < EPS)  R = R3;
@@ -311,18 +362,29 @@ FILAMENT *fil1, *fil2;
       return M;
     }
 
+  // 'cose' is the cosine of the angle epsilon between the filaments.
+  // It is calculated from 'alpha', 'l' and 'm' using the cosine rule for the triangles,
+  // see Grover (46) at page 52. 
+  // However the cosine of epsilon is also calculated as 'realcos', and compared with 'cose';
+  // a warning is triggered if there's more than 10% difference. 
+  // In any case, the code then assigns to 'cose' the value of 'realcos'.  
   cose = alpha/(2*l*m);
   if (fabs(cose) > 1) cose = (cose < 0 ? -1.0 : 1.0);
-  blah = 1.0 - fabs(cose);
+  // this was unneeded, left over from debug?
+  //blah = 1.0 - fabs(cose);
 
   /* let's use the real cosine */
   realcos = dotprod(fil1, fil2)/(l*m);
   /*realcos = dotprod(fil1, fil2)/(fil1->length*fil2->length);*/
 
-  /* Segments are perpendicular! */
+  /* Segments are perpendicular! Mutual inductance is zero */
   if (fabs(realcos) < EPS)
     return 0.0;
 
+  // check if 'realcos' differs from 'cose' more than 10%
+  // this may happen if the segments are far, far away so Rxsq are all similar
+  // and the formula for 'alpha' is therefore numerically inaccurate,
+  // as it contains the differences of the Rxsq's 
   if (fabs((realcos - cose)/cose) > 0.1) 
     if (realcos_error == 0) {
       viewprintf(stderr, "Internal Warning: realcos = %lg,  cose = %lg\n",realcos, cose);
@@ -333,9 +395,18 @@ by a distance 1e10 times their length\n");
 
   cose = realcos;
 
+
   /* filaments parallel */
-  tmp1 = fabs( fabs(cose) - 1);
+  // In this case, use the mutual inductance of unequal parallel filaments
+  // as per Grover, page 45-46
+  //
+  // unneeded, for old debug?
+  // tmp1 = fabs( fabs(cose) - 1);
 /*  if ( fabs( fabs(cose) - 1) < scaleEPS*EPS*10.0) { */
+  //
+  // the test corresponds to an angle of less than 2.6e-5 degrees
+  // to consider the segments parallel. Possibly we should relax the test,
+  // actually we see that in the original code EPS was scaled up.
   if ( fabs( fabs(cose) - 1) < EPS) {
     /* determine a vector in the direction of d with length d */
     /* (d is the distance between the lines made by the filament */
@@ -391,7 +462,7 @@ by a distance 1e10 times their length\n");
 	   >which are NOT close together, so treating them as non-parallel is
 	   >even less important."
 
-	   Actually from the code below cleary there exist conditions where numerical precision roundups
+	   Actually from the code below clearly there exist conditions where numerical precision roundups
 	   will trigger the warning. In fact, a slight perturbation of the input coordinates always clears
 	   out the warning, but first you may get even a very long list of warnings, taking a lot of time
 	   and unnecessarily alarming the user.
@@ -503,10 +574,12 @@ by a distance 1e10 times their length\n");
 
  /* the rest if for arbitrary filaments */
 
+  // remember that 'l' and 'm' are the 'fil1' and 'fil2' filament lengths
   l2 = l*l;
   m2 = m*m;
   alpha2 = alpha*alpha;
 
+  // formulae for 'u' and 'v' are as per Grover page 56, (54)
   u = l*(2*m2*(R2sq -R3sq - l2) + alpha*(R4sq - R3sq - m2))
         / (4*l2*m2 - alpha2);
   v = m* (2*l2*(R4sq - R3sq - m2) + alpha*(R2sq - R3sq - l2))
@@ -515,14 +588,31 @@ by a distance 1e10 times their length\n");
   u2 = u*u;
   v2 = v*v;
 
+  // 'd' is calculated again with the cosine law for triangles, see Grover page 56, (54)
+  // however here 'd' is actually d^2, shoudld be called d2 for consistency
   d = (R3sq - u2 - v2 + 2*u*v*cose);
+
+  // if 'd' is small enough, let's force it to zero. This means that AB and ab are coplanar
   if (fabs(d/(R3sq + u2 + v2 + 1)*(maxlength*maxlength/(maxR*maxR))) < EPS)
     d = 0.0;
 
+  // Now, 'd' should never be negative, as it actually is d^2
   if (d < 0.0) {  /* Enrico, Matt patch bug fix*/
+	  // now, is 'd' is only "slightly" negative, this is a numerical roundup error, and can be safely ignored,
+	  // as 'd' should be zero. But if 'd' is "large", then this may flag an issue. "slightly" and "large" have
+	  // meaning only in comparison, and the comparison should be done with R3sq, see the picture in the comments
+	  // at the top, or look at Grover's figure 21, remembering that R1 is the length of Aa.
+	  // However, if 'cose' is close to 1, i.e. the segments are almost parallel, they are of course coplanar,
+	  // but 'u' and 'v' will have large numerical errors, so 'd' may be negative and large.
+	  // The parallel condition should already have been catched, but anyway, even if not, zeroing 'd'
+	  // actually means coplanar segments, even if we will then use the formula for unequal segments at an angle
+	  // instead of the formula for parallel segments
 	  if( fabs(d)/R3sq > 1e-06  ) { /* verify that d is small compared to R3sq */
-		  viewprintf(stderr,"Internal warning: distance d between filaments is negative and large\n");
-		  viewprintf(stderr,"compared to R3sq (d=%f, R3sq=%f)\n", d, R3sq);
+		  if (d_neg_large_error == 0) {
+			  viewprintf(stderr, "Internal warning: square of distance d^2 between filaments is negative and large\n");
+			  viewprintf(stderr, "compared to R3sq (d^2=%g, R3sq=%g)\n", d, R3sq);
+			  d_neg_large_error = 1;
+		  }
 	  }
 	  d = 0.0;
   }
@@ -536,6 +626,8 @@ by a distance 1e10 times their length\n");
   tmp2 = d*sine;
   tmp3 = sine*sine;
 
+  // if the distance 'd' is zero or close to zero, the segments are coplanar, so
+  // we can use a simplified formula
   if (fabs(d) < EPS) 
     omega = 0.0;   /* d is zero, so it doesn't matter */
   else
@@ -675,4 +767,5 @@ double dist;
 void InitMutualVars(void)
 {
 	realcos_error = 0;
+	d_neg_large_error = 0;
 }

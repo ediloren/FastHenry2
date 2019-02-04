@@ -1,8 +1,9 @@
-Processing .\FastHenry2.odl
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\oaidl.idl
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\objidl.idl
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\unknwn.idl
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\wtypes.idl
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\basetsd.h
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\guiddef.h
-Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\include\oaidl.acf
+64 bit Processing .\FastHenry2.odl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\um\oaidl.idl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\um\objidl.idl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\um\unknwn.idl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\shared\wtypes.idl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\shared\wtypesbase.idl
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\shared\basetsd.h
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\shared\guiddef.h
+64 bit Processing C:\Program Files (x86)\Windows Kits\8.1\Include\um\oaidl.acf

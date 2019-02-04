@@ -1,6 +1,10 @@
 FastHenry2 Detailed History
 ===========================
 
+Starting from Version 3.6.2, see Git log for detailed history
+
+---------------------------
+
 Porting Version 3.6.1, 2018/06/04
 - Minor fixes for "uh oh segs does not seem parallel"
 

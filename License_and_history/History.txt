@@ -1,8 +1,13 @@
 FastHenry2 History
 =================
 
+Porting Version 3.6.2, 2019/04/08
+- Minor fixes in warnings (issue ""verify that d is small
+  compared to R3sq" warning only once)
+
 Porting Version 3.6.1, 2018/06/04
-- Minor fixes
+- Minor fixes in warnings (avoid unneeded "uh oh segs
+  does not seem parallel" messages)
 
 Porting Version 3.6, 2015/08/05
 - Ported to Win 64bit, to remove 32 bit memory limitations when
