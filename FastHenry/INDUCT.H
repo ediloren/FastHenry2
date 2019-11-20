@@ -777,7 +777,7 @@ int checkarg(int index, int argc, char **argv);
 // prototypes of functions defined in calcp.c
 void dumpnums(int flag, int size);
 // prototypes of functions defined in uglieralloc.c
-void uallocEfcy(long memcount);
+void uallocEfcy(long long memcount);
 
 
 #endif

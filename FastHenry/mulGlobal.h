@@ -139,21 +139,21 @@ void mulMatEval(ssystem *sys);
 extern char *ualloc();
 
 /* counts of memory usage by multipole matrix type */
-extern long memcount;
-extern long memQ2M;
-extern long memQ2L;
-extern long memQ2P;
-extern long memL2L;
-extern long memM2M;
-extern long memM2L;
-extern long memM2P;
-extern long memL2P;
-extern long memQ2PD;
-extern long memMSC;
-extern long memIND;
+extern long long memcount;
+extern long long memQ2M;
+extern long long memQ2L;
+extern long long memQ2P;
+extern long long memL2L;
+extern long long memM2M;
+extern long long memM2L;
+extern long long memM2P;
+extern long long memL2P;
+extern long long memQ2PD;
+extern long long memMSC;
+extern long long memIND;
 
 #ifdef MATTDEBUG
-extern long membins[1001];
+extern long long membins[1001];
 #endif
 
 /* types of memory usage by multipole matrix type */

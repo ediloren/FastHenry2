@@ -103,7 +103,7 @@ char *argv[];
   double *R;
   EXTERNAL *ext;
   ind_opts *opts;
-  extern long memcount;
+  extern long long memcount;
 
   char full[_MAX_PATH], drive[_MAX_DRIVE], dir[_MAX_DIR];
 
