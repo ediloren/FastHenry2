@@ -63,16 +63,16 @@ union header {			/* allocated block header - all mem allocated
 				   in units of sizeof(HEADER) bytes */
   struct {
 #if UGDEBG == 1 || UGDEBG == 2
-    long magicno;		/* to check for overwrites */
+    long long magicno;		/* to check for overwrites */
     union header *ptr;		/* next allocated block */
 #endif
 #if UGDEBG == 2
     union header *enlarged;	/* limit of newly enlarged block */
     union header *enlgdfrom;	/* base pointer of newly added block */
-    unsigned int osize;		/* size before enlargement/truncation */
-    unsigned int request;      	/* nbytes requested from allocator */
+    unsigned long long osize;		/* size before enlargement/truncation */
+    unsigned long long request;      	/* nbytes requested from allocator */
 #endif
-    unsigned int size;		/* block size (memory + 1 or 2 header units) */
+    unsigned long long size;		/* block size (memory + 1 or 2 header units) */
   } s;
   union header *lastblock;      /* For freeing (MK  11/95) */
   ALIGN x;			/* for alignment only, never referenced */
@@ -174,17 +174,17 @@ void ufree()
 */
 
 char *ualloc(nbytes)
-unsigned int nbytes;
+unsigned long long nbytes;
 {
   HEADER *mocore();
   HEADER *q;
-  int nunits;			// size in number of sizeof(HEADER)'s 
-  int brkunits;			// number to add to heap 
+  long long nunits;			// size in number of sizeof(HEADER)'s 
+  long long brkunits;			// number to add to heap 
 #if UGDEBG == 2
   HEADER *dummy = 0x0;
   HEADER *dummyret = 0x0;
 #endif
-  static unsigned int topblksize;  	// size of current top block 
+  static unsigned long long topblksize;  	// size of current top block 
 
   if(nbytes == 0) return(NULL);	// should probably return something else 
 
@@ -332,7 +332,7 @@ void ualloc_verify()
   - if base == NULL (not using ugly allocator), final break value is printed
 */
 void uallocEfcy(memcount)
-long memcount;
+long long memcount;
 {
 #if UGDEBG == 2
   HEADER *p;
@@ -340,7 +340,7 @@ long memcount;
   unsigned int stdiowaste = 0;
   int first = 1;
 #endif
-  int total;
+  long long total;
   char *sbrk();
 
   total = (int)(sbrk(0) - (char *)base);
@@ -383,10 +383,10 @@ long memcount;
   uses map table to store pointers to allocated memory, so it will be
   able to globally free it (and to signal which blocks aren't freed) 
 */
-char *dalloc(unsigned int nbytes)
+char *dalloc(unsigned long long nbytes)
 {
 	struct buffer *tmpBuf;
-	unsigned int numUnits;
+	unsigned long long numUnits;
 	char *pointer;
 
 	if (cAllocBegin == 0) {
@@ -411,10 +411,10 @@ char *dalloc(unsigned int nbytes)
 	return(pointer);
 }
 
-void *drealloc(void *pointer, unsigned int size) 
+void *drealloc(void *pointer, unsigned long long size) 
 {
 	struct buffer *tmpBuf;
-	int i, last;
+	long long i, last;
 
 	tmpBuf = pFirstBuf;
 	do {
@@ -448,7 +448,7 @@ void *drealloc(void *pointer, unsigned int size)
 void dfree(void *pointer)
 {
 	struct buffer *tmpBuf;
-	int i, last;
+	long long i, last;
 
 	tmpBuf = pFirstBuf;
 	do {
@@ -481,7 +481,7 @@ void dfree(void *pointer)
 void dfreeall()
 {
 	struct buffer *tmpBuf, *tmpBuf2;
-	int i, last;
+	long long i, last;
 
 	tmpBuf = pFirstBuf;
 	do {
