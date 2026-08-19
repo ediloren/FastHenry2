@@ -1,0 +1,54 @@
+Licence for the M.I.T.-copyrighted material in FastHenry
+=======================================================
+
+FastHenry was developed at the Research Laboratory of Electronics /
+Computational Prototyping Group, Massachusetts Institute of Technology.
+The M.I.T.-copyrighted material was re-released in 2003 under the terms
+reproduced verbatim below.
+
+This text is copied from the FastFieldSolvers licence file already
+carried on the WinMSVS branch of this repository,
+License_and_history/license_for_sources_4.0.txt, in the section headed
+"License agreement for the M.I.T. copyrighted material".
+
+NOTE: many source files in this branch still carry the earlier 1994
+header, which predates the 2003 re-release. This file is added so that
+the 2003 terms travel with the branch, as they do on WinMSVS.
+
+The licence covering FastFieldSolvers' own modifications is NOT stated
+here - only FastFieldSolvers can state it.
+
+-----------------------------------------------------------------------
+
+Copyright (C) 2003 by the Board of Trustees of Massachusetts Institute of
+Technology, hereafter designated as the Copyright Owners.
+ 
+License to use, copy, modify, sell and/or distribute this software and
+its documentation for any purpose is hereby granted without royalty,
+subject to the following terms and conditions:
+ 
+1.  The above copyright notice and this permission notice must
+appear in all copies of the software and related documentation.
+ 
+2.  The names of the Copyright Owners may not be used in advertising or
+publicity pertaining to distribution of the software without the specific,
+prior written permission of the Copyright Owners.
+ 
+3.  THE SOFTWARE IS PROVIDED "AS-IS" AND THE COPYRIGHT OWNERS MAKE NO
+REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, BY WAY OF EXAMPLE, BUT NOT
+LIMITATION.  THE COPYRIGHT OWNERS MAKE NO REPRESENTATIONS OR WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE
+SOFTWARE WILL NOT INFRINGE ANY PATENTS, COPYRIGHTS TRADEMARKS OR OTHER
+RIGHTS. THE COPYRIGHT OWNERS SHALL NOT BE LIABLE FOR ANY LIABILITY OR DAMAGES
+WITH RESPECT TO ANY CLAIM BY LICENSEE OR ANY THIRD PARTY ON ACCOUNT OF, OR
+ARISING FROM THE LICENSE, OR ANY SUBLICENSE OR USE OF THE SOFTWARE OR ANY
+SERVICE OR SUPPORT.
+ 
+LICENSEE shall indemnify, hold harmless and defend the Copyright Owners and
+their trustees, officers, employees, students and agents against any and all
+claims arising out of the exercise of any rights under this Agreement,
+including, without limiting the generality of the foregoing, against any
+damages, losses or liabilities whatsoever with respect to death or injury to
+person or damage to property arising from or out of the possession, use, or
+operation of Software or Licensed Program(s) by LICENSEE or its customers.
+
