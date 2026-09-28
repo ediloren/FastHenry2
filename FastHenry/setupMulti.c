@@ -21,7 +21,7 @@ SYS *indsys;
   extern int num_dummy_panels, num_dielec_panels; 
   extern int num_both_panels, num_cond_panels, up_size, eval_size;
   extern char *title, *ps_file_base;
-  extern long memcount;
+  extern long long memcount;
   extern double prectime, conjtime, dirtime, multime, uptime, downtime;
   extern double evaltime, lutime, fullsoltime, prsetime;
   extern char *kill_name_list;

@@ -25,7 +25,7 @@ struct _timeb timestuff;
 /* define macros for time and resident memory usage checks */
 
 static double dtime = 0.0;
-static long sectime, utime;
+static long long sectime, utime;
 
 #ifdef NOTOTHER
 

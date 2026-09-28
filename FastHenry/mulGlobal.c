@@ -2,21 +2,21 @@
    # ***** */
 #include "mulGlobal.h"
 
-long memcount;	       	/* allocated memory counter */
-long memQ2M;			/* allocated memory counters by function */
-long memQ2L;
-long memQ2P;
-long memL2L;
-long memM2M;
-long memM2L;
-long memM2P;
-long memL2P;
-long memQ2PD;
-long memMSC;
-long memIND;
+long long memcount;	       	/* allocated memory counter */
+long long memQ2M;			/* allocated memory counters by function */
+long long memQ2L;
+long long memQ2P;
+long long memL2L;
+long long memM2M;
+long long memM2L;
+long long memM2P;
+long long memL2P;
+long long memQ2PD;
+long long memMSC;
+long long memIND;
 
 #ifdef MATTDEBUG
-long membins[1001];
+long long membins[1001];
 #endif
 
 /* 
