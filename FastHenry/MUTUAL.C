@@ -5,6 +5,9 @@
 
 #include "FHWindow.h" // Enrico
 
+// angle of 0.001 degrees, in radiants
+#define EPS_ALMOST_PARALLEL_ANGLE 1.74533E-05
+
 /* these are missing in some math.h files */
 // not true anymore - available in math.h
 //extern double asinh();
@@ -259,7 +262,7 @@ FILAMENT *fil1, *fil2;
   double R1sq, R2sq, R3sq, R4sq, m2, l2, u2, v2, alpha2;
 
   // Enrico, bug fix, for touching filaments 
-  double Mln, Mun;
+  double Mst, Mrt;
 
   // As per Grover, the general case is as per pp. 55-57, mutual inductance of two 
   // straigth filaments placed in any desired position. If analyzing the filaments
@@ -296,12 +299,31 @@ FILAMENT *fil1, *fil2;
   //  The line Pp, with length d, is the common perpendicular to both the filaments AB and ab,
   //  and d is therefore the distance between the plane BPC and the plane parallel to BPC
   //  that contains ab. The angle BPC is called epsilon or 'e' in the code here below,
-  //  PA has length u and Pa has length v.
+  //  PA has length u and pa has length v.
 
   // R1 is the length of segment Bb
   // R2 is the length of segment Ba
   // R3 is the length of segment Aa
   // R4 is the length of segment Ab
+  // (imagine straight lines here below...)
+  //
+  //              l
+  //       A---------------B
+  //      /|           ___/
+  //  R3 / |     R2___/  /
+  //    /  |   ___/     |
+  //   /   _\ /         |
+  //  a___/  |         /
+  //   \     |        /
+  //    \    | R4     | R1
+  //     \    \       |
+  //      \    |     /
+  //       \   |    /
+  //        \  |   |
+  //       m \  \  |
+  //          \ | /
+  //           \|/
+  //            b
   //
   // Here below 'Rxsq' is the square of Rx
   R1sq = magdiff2(fil1,1,fil2,1);
@@ -347,53 +369,78 @@ FILAMENT *fil1, *fil2;
    }
 */
 
-  // segments touching at the end points, see above the meaning of 'Rx'
-  if ( (fabs(R1) < EPS)||(fabs(R2) < EPS)||(fabs(R3) < EPS)||(fabs(R4) < EPS) )
-    {
-      if (fabs(R1) < EPS)  R = R3;
-      else if (fabs(R2) < EPS)  R = R4; 
-      else if (fabs(R3) < EPS)  R = R1;
-      else R = R2;
 
-      M = MUOVER4PI*2*(dotprod(fil1,fil2)/(l*m))
-	   *(l*atanh(m/(l+R)) + m*atanh(l/(m+R)));
-      /* note: dotprod should take care of signofM */
-
-      return M;
-    }
-
-  // 'cose' is the cosine of the angle epsilon between the filaments.
-  // It is calculated from 'alpha', 'l' and 'm' using the cosine rule for the triangles,
-  // see Grover (46) at page 52. 
-  // However the cosine of epsilon is also calculated as 'realcos', and compared with 'cose';
-  // a warning is triggered if there's more than 10% difference. 
-  // In any case, the code then assigns to 'cose' the value of 'realcos'.  
-  cose = alpha/(2*l*m);
+// 'cose' is the cosine of the angle epsilon between the filaments.
+// It is calculated from 'alpha', 'l' and 'm' using the cosine rule for the triangles,
+// see Grover (46) at page 52. 
+// However the cosine of epsilon is also calculated as 'realcos', and compared with 'cose';
+// a warning is triggered if there's more than 10% difference. 
+// In any case, the code then assigns to 'cose' the value of 'realcos'.  
+  cose = alpha / (2 * l * m);
   if (fabs(cose) > 1) cose = (cose < 0 ? -1.0 : 1.0);
   // this was unneeded, left over from debug?
   //blah = 1.0 - fabs(cose);
 
   /* let's use the real cosine */
-  realcos = dotprod(fil1, fil2)/(l*m);
+  realcos = dotprod(fil1, fil2) / (l * m);
   /*realcos = dotprod(fil1, fil2)/(fil1->length*fil2->length);*/
 
   /* Segments are perpendicular! Mutual inductance is zero */
   if (fabs(realcos) < EPS)
-    return 0.0;
+      return 0.0;
 
   // check if 'realcos' differs from 'cose' more than 10%
   // this may happen if the segments are far, far away so Rxsq are all similar
   // and the formula for 'alpha' is therefore numerically inaccurate,
   // as it contains the differences of the Rxsq's 
-  if (fabs((realcos - cose)/cose) > 0.1) 
-    if (realcos_error == 0) {
-      viewprintf(stderr, "Internal Warning: realcos = %lg,  cose = %lg\n",realcos, cose);
-      viewprintf(stderr,"  This may be due to two filaments that are separated \n\
+  if (fabs((realcos - cose) / cose) > 0.1)
+      if (realcos_error == 0) {
+          viewprintf(stderr, "Internal Warning: realcos = %lg,  cose = %lg\n", realcos, cose);
+          viewprintf(stderr, "  This may be due to two filaments that are separated \n\
 by a distance 1e10 times their length\n");
-      realcos_error = 1;
-    }
+          realcos_error = 1;
+      }
 
   cose = realcos;
+
+  // segments touching at the end points, see above the meaning of 'Rx'
+  // note that this case also covers parallel segments touching at the end points
+  // Remark: does not check the invalid case of parallel segments which overlap
+  //
+  // if R1 is almost zero, or if at the same time B is on segment ab and b is on segment AB,
+  // the segments overlap on the B and b sides. As they should not overlap, then they touch in B/b.
+  // The first check (R1 almost zero) is not enough: assuring that Rx is greater than EPS does not cover for
+  // subtle cases that would generate #INF later on, when believing that the two segments are
+  // in contact in the middle, as atanh() would have 1.0 as an argument due to numerical roundings.
+  // l = R1 + R4 means b on AB while m = R1 + R2 means B on ab, see above picture with R1, R2, R3, R4
+  R = -1.0;
+  if ((fabs(R1) < EPS) || ((m / (R1 + R2) > 1.0 - EPS) && (l / (R1 + R4) > 1.0 - EPS)) ) {
+      // opposite to R1
+      R = R3;
+  }
+  // if R2 is almost zero, or if at the same time B is on ab and a is on AB, segments touch in B/a
+  else if ((fabs(R2) < EPS) || ((m / (R1 + R2) > 1.0 - EPS) && (l / (R2 + R3) > 1.0 - EPS))) {
+      // opposite to R2
+      R = R4;
+  }
+  // if R3 is almost zero, or if at the same time A is on ab and a is on AB, segments touch in A/a
+  else if ((fabs(R3) < EPS) || ((m / (R3 + R4) > 1.0 - EPS) && (l / (R2 + R3) > 1.0 - EPS))) {
+      // opposite to R3
+      R = R1;
+  }
+  // if R4 is almost zero, or if at the same time A is on ab and b is on AB, segments touch in A/b
+  else if ((fabs(R4) < EPS) || ((m / (R3 + R4) > 1.0 - EPS) && (l / (R1 + R4) > 1.0 - EPS))) {
+      // opposite to R3
+      R = R2;
+  }
+  // condition can only happen if any of the checks above was true
+  if ( R > 0.0 )
+  {
+      M = MUOVER4PI*2*cose*(l*atanh(m/(l+R)) + m*atanh(l/(m+R)));
+      /* note: 'cose' should take care of signofM */
+
+      return M;
+  }
 
 
   /* filaments parallel */
@@ -508,26 +555,32 @@ by a distance 1e10 times their length\n");
   // Segments touching in the middle. In this case, the atanh argument
   // will be near 1, giving infinite as a result
   //
-  //    u     l
+  //    r     s
   //   ----------- filament1
   //      \
-  //     n \  filament2
+  //     t \  filament2
   //        \   
   //
   // In this case, must use the formula for unequal filaments meeting
   // at a point and the summation principle.
   // Therefore, the mutual inductance will be:
-  // M(u+l,n) = M(u,n) + M(l,n), see Grover pg.50 and 52
+  // M(r+s,t) = M(r,t) + M(s,t), see Grover pp. 3, 50 and 52-53
   //
   // Note that segments cannot be neither parallel nor with meeting end points,
   // because they would have been catched before. Therefore, only one atanh argument 
   // out of four can be 1.0 at one time
   //
+  // if point B is on filament m (referenced to the drawing at the beg of the function),
+  // then r = R1, s = R2
   if (m/(R1 + R2) > 1.0-EPS) {
-    Mln = MUOVER4PI*2*(-realcos)*(l*atanh(R1/(l+R4))+R1*atanh(l/(R1+R4)));
-    Mun = MUOVER4PI*2*realcos*(l*atanh(R2/(l+R3))+R2*atanh(l/(R2+R3)));
+    Mst = MUOVER4PI*2*(-cose)*(l*atanh(R1/(l+R4))+R1*atanh(l/(R1+R4)));
+    Mrt = MUOVER4PI*2*cose*(l*atanh(R2/(l+R3))+R2*atanh(l/(R2+R3)));
 	// must subtract: consider segment directions, R1 and R2 are opposite
-	M = Mun - Mln;
+    // (or, if you want, you could say that they should always form an angle eps.
+    // in fact, the current is assumed flowing from a to b and from A to B.
+    // So mutual inductance has always the same sign for the two parts, it reinforces.
+    // We mights as well have kept 'cose' instead of -'cose' and summed up.)
+	M = Mrt - Mst;
     viewprintf(stderr,"Warning: Filaments meeting at a point, case 1\n");
     viewprintf(stderr,"  This is due to non-orthogonal overlapping segments;\n");
     viewprintf(stderr,"  if overlap region is small compared to segment lenght,\n");
@@ -535,10 +588,10 @@ by a distance 1e10 times their length\n");
 	return M;
   }
   if (m/(R3 + R4) > 1.0-EPS) {
-    Mln = MUOVER4PI*2*realcos*(l*atanh(R4/(l+R1))+R4*atanh(l/(R4+R1)));
-    Mun = MUOVER4PI*2*(-realcos)*(l*atanh(R3/(l+R2))+R3*atanh(l/(R3+R2)));
+    Mst = MUOVER4PI*2*cose*(l*atanh(R4/(l+R1))+R4*atanh(l/(R4+R1)));
+    Mrt = MUOVER4PI*2*(-cose)*(l*atanh(R3/(l+R2))+R3*atanh(l/(R3+R2)));
 	// must subtract: consider segment directions, R3 and R4 are opposite
-	M = Mln - Mun;
+	M = Mst - Mrt;
     viewprintf(stderr,"Warning: Filaments meeting at a point, case 2\n");
     viewprintf(stderr,"  This is due to non-orthogonal overlapping segments;\n");
     viewprintf(stderr,"  if overlap region is small compared to segment lenght,\n");
@@ -546,10 +599,10 @@ by a distance 1e10 times their length\n");
 	return M;
   }
   if (l/(R1 + R4) > 1.0-EPS) {
-    Mln = MUOVER4PI*2*(-realcos)*(R1*atanh(m/(R1+R2))+m*atanh(R1/(m+R2)));
-    Mun = MUOVER4PI*2*realcos*(R4*atanh(m/(R4+R3))+m*atanh(R4/(m+R3)));
+    Mst = MUOVER4PI*2*(-cose)*(R1*atanh(m/(R1+R2))+m*atanh(R1/(m+R2)));
+    Mrt = MUOVER4PI*2*cose*(R4*atanh(m/(R4+R3))+m*atanh(R4/(m+R3)));
 	// must subtract: consider segment directions, R4 and R1 are opposite
-	M = Mun - Mln;
+	M = Mrt - Mst;
     viewprintf(stderr,"Warning: Filaments meeting at a point, case 3\n");
     viewprintf(stderr,"  This is due to non-orthogonal overlapping segments;\n");
     viewprintf(stderr,"  if overlap region is small compared to segment lenght,\n");
@@ -557,10 +610,10 @@ by a distance 1e10 times their length\n");
 	return M;
   }
   if (l/(R2 + R3) > 1.0-EPS) {
-    Mln = MUOVER4PI*2*realcos*(R2*atanh(m/(R2+R1))+m*atanh(R2/(m+R1)));
-    Mun = MUOVER4PI*2*(-realcos)*(R3*atanh(m/(R3+R4))+m*atanh(R3/(m+R4)));
+    Mst = MUOVER4PI*2*cose*(R2*atanh(m/(R2+R1))+m*atanh(R2/(m+R1)));
+    Mrt = MUOVER4PI*2*(-cose)*(R3*atanh(m/(R3+R4))+m*atanh(R3/(m+R4)));
 	// must subtract: consider segment directions, R3 and R2 are opposite
-	M = Mln - Mun;
+	M = Mst - Mrt;
     viewprintf(stderr,"Warning: Filaments meeting at a point, case 4\n");
     viewprintf(stderr,"  This is due to non-orthogonal overlapping segments;\n");
     viewprintf(stderr,"  if overlap region is small compared to segment lenght,\n");
@@ -608,10 +661,14 @@ by a distance 1e10 times their length\n");
 	  // actually means coplanar segments, even if we will then use the formula for unequal segments at an angle
 	  // instead of the formula for parallel segments
 	  if( fabs(d)/R3sq > 1e-06  ) { /* verify that d is small compared to R3sq */
-		  if (d_neg_large_error == 0) {
-			  viewprintf(stderr, "Internal warning: square of distance d^2 between filaments is negative and large\n");
-			  viewprintf(stderr, "compared to R3sq (d^2=%g, R3sq=%g)\n", d, R3sq);
-			  d_neg_large_error = 1;
+          // even if 'd' is not small compared to 'R3sq', let's check if the angle; if the segments are 'almost parallel',
+          // then 'd' is negative because of the numerical errors, no need to issue an alarming warning to the user
+          if( acos(fabs(cose)) >  EPS_ALMOST_PARALLEL_ANGLE ) {
+              if (d_neg_large_error == 0) {
+                  viewprintf(stderr, "Internal warning: square of distance d^2 between filaments is negative and large\n");
+                  viewprintf(stderr, "compared to R3sq (d^2=%g, R3sq=%g)\n", d, R3sq);
+                  d_neg_large_error = 1;
+              }
 		  }
 	  }
 	  d = 0.0;
